@@ -572,7 +572,7 @@ echo "Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happs
 
 # Search tools
 sudo pacman -S mlocate recoll --noconfirm --needed
-vim -c ":%s ":%s|topdirs = / ~|topdirs = / ~|g" -c ":wq" /home/$USER/.recoll/recoll.conf
+vim -c ":%s|topdirs = / ~|topdirs = / ~|g" -c ":wq" /home/$USER/.recoll/recoll.conf
 sudo updatedb
 
 # Dock conf
@@ -599,57 +599,8 @@ dconf write /com/deepin/dde/sound-effect/suspend-resume "false"
 amixer sset Master unmute
 amixer cset numid=11,iface=MIXER,name='Capture Switch' off
 
-# Equalizer
-git clone https://aur.archlinux.org/alsaequal.git
-cd alsaequal
-makepkg -si --noconfirm
-printf "# Use PulseAudio by default
-pcm.!default {
-  type pulse
-  fallback "sysdefault"
-  hint {
-    show on
-    description "Default ALSA Output (currently PulseAudio Sound Server)"
-  }
-}
-
-ctl.!default {
-  type pulse
-  fallback "sysdefault"
-}
-
-# vim:set ft=alsaconf:
-
-ctl.equal {
-    type equal;
-}
-
-pcm.plugequal {
-    type equal;
-    # Modify the line below if you do not
-    # want to use sound card 0.
-    #slave.pcm "plughw:0,0";
-    # by default we want to play from more sources at time:
-    slave.pcm "plug:dmix";
-}
-
-# pcm.equal {
-# If you do not want the equalizer to be your
-# default soundcard comment the following
-# line and uncomment the above line. (You can
-# choose it as the output device by addressing
-# it with specific apps,eg mpg123 -a equal 06.Back_In_Black.mp3)
-pcm.!default {
-    type plug;
-    slave.pcm plugequal;
-}" | sudo tee -a /etc/asound.conf
-cd ..
-sudo rm -r alsaequal #configure with alsamixer -D equal and alsaequal-mgr save myequalization
-#for more advanced sound tools (Jack, Midis, etc) check my studio/multimedia script and https://wiki.archlinux.org/index.php/JACK_Audio_Connection_Kit and https://wiki.archlinux.org/index.php/Professional_audio and https://wiki.archlinux.org/index.php/USB_MIDI_keyboards and https://github.com/nodiscc/awesome-linuxaudio
-
 # Fixing bugs
 sudo pacman -S deepin-api --noconfirm -needed
-
 
 ### Virtualbox ###
 sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox --noconfirm --needed
