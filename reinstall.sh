@@ -36,6 +36,7 @@ sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
 ### Tor ###
 sudo pacman -S arch-install-scripts base arm --noconfirm --needed
 sudo pacman -S tor --noconfirm --needed
+sudo pacman -S torsocks --noconfirm --needed
 
 #Create user
 TORUSER="tor"
@@ -78,7 +79,7 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
   sudo ln -sr /usr/lib64 $TORCHROOT/lib64
   sudo ln -s $TORCHROOT/usr/lib ${TORCHROOT}/usr/lib64
 fi
-echo 'alias chtor="su - $TORUSER && chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
+#echo 'alias chtor="su - $TORUSER && sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
 # Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
@@ -93,6 +94,7 @@ TORHASH=$(echo -n $RANDOM | sha256sum)
 sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${HASH:-2}/g" -c ":wq" /etc/tor/torrc
+sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
@@ -137,21 +139,20 @@ machinectl login tor-exit #ctrl shift ]
 networkctl
 machine enable $TORCONTAINER #enable at boot
 
-# All DNS queries to Tor--
-echo "DNSPort $TORPORT
-AutomapHostsOnResolve 1
-AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
+# All DNS queries to Tor
+TORDNSPORT=$(shuf -i 2000-65000 -n 1)
+echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc
+echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc
+echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
 sudo pacman -S dnsmasq --noconfirm --needed
-sudo vim -c ":%s/#port=5353/port=$TORPORT/g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#port=.*/port=$TORDNSPORT/g" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s/#conf-file=/usr/share/dnsmasq/trust-anchors.conf/conf-file=/usr/share/dnsmasq/trust-anchors.conf/g" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s/#dnssec/dnssec/g" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s/#no-resolv/no-resolv/g" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s/#server=/localnet/192.168.0.1server=127.0.0.1/g" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s/#listen-address=listen-address=127.0.0.1" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s/#nohook resolv.conf/nohook resolv.conf/g" -c ":wq" /etc/dhcpcd.conf
-sudo dnsmasq 
-echo "You can run Tor DNS queries using tor-resolve duckduckgo.com"
-tor-resolve duckduckgo.com
+sudo dnsmasq
 
 # Pacman over Tor
 sed -i "s,-c -O %o %u,-c -O %o %u \nXferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o,g" /etc/pacman.conf
@@ -532,6 +533,19 @@ cd ..
 sudo make install 
 cd ..
 sudo rm -r pkgtools
+bupkgs(){
+for i in \$( pacman -Qq ); do
+	bacman \$i
+done
+}
+#alias checkpkgs='pacman -Qq | sudo paccheck --sha256sum --quiet'
+#alias listpkgsbysize='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'
+#alias listpkgsbysize='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))'
+#alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'
+#alias purgearchrepo='echo "aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
+#alias kalifyarch='printf "[archstrike] \n Server = https://mirror.archstrike.org/\$arch/\$repo/ " | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --finger 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --lsign-key 9D5F1C051D146843CDA4858BDE64825E7CBC0D51'
+#alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch " | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-key F3104992EBF24EB872B97B9C32B0B4534209170B && Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
+#alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has not key!"'
 
 # AUR-helpers and repositories
 sudo pacman -S yaourt --noconfirm --needed 
@@ -540,20 +554,6 @@ cd aurman
 makepkg -si --noconfirm
 cd ..
 sudo rm -r aurman
-printf "bupkgs(){
-for i in \$( pacman -Qq ); do
-	bacman \$i
-done
-}" | tee -a ~/.bashrc
-echo "alias checkpkgs='pacman -Qq | sudo paccheck --sha256sum --quiet'" | tee -a ~/.bashrc
-echo "alias listpkgsbysize='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'" | tee -a ~/.bashrc
-echo "alias listpkgsbysize='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))" | tee -a ~/.bashrc
-echo "alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'" | tee -a ~/.bashrc
-echo "alias purgearchrepo='echo \"aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")\" " | tee -a ~/.bashrc
-printf "alias kalifyarch='printf \"[archstrike] \n Server = https://mirror.archstrike.org/\$arch/\$repo/ \" | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --finger 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --lsign-key 9D5F1C051D146843CDA4858BDE64825E7CBC0D51'" | sudo tee -a ~/.bashrc
-printf "alias haskellfyarch='printf \"[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch \" | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-key F3104992EBF24EB872B97B9C32B0B4534209170B'" | sudo tee -a ~/.bashrc
-printf "alias haskellfyarch='printf \"[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ \" | sudo tee -a /etc/pacman.conf && echo \"This repo has not key!\"'" | sudo tee -a ~/.bashrc
-echo "Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects try Scotty that also comes with Wrap, or maybe Snap's snaplets" # https://wiki.haskell.org/Web
 
 # Search tools
 sudo pacman -S mlocate recoll --noconfirm --needed
@@ -798,7 +798,7 @@ sudo pacman -S terminator d-feet htop autojump iotop vnstat at nemo task tree re
 REPEATVERSION=4.0.1
 REPEATVER=4_0_1
 wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_$REPEATVER.jar -O /usr/src/repeat.jar && pacman -S jdk8-openjdk --noconfirm --needed
-echo "alias repeatmouse= java -jar /usr/src/repeat.jar" | tee -a ~/.bashrc
+#echo "alias repeatmouse= java -jar /usr/src/repeat.jar" | tee -a ~/.bashrc
 #Blindlector: Orca
 
 ### Browsers ###
