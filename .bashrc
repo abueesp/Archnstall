@@ -940,8 +940,8 @@ alias fxf=securefirefox
 alias securechrome="firejail --private --dns=8.8.8.8 --dns=8.8.4.4 chromium-browser"
 alias chm=securechrome
 alias iron="/opt/iron/./chrome"
-alias icecat="firejail /opt/icecat/./icecat --profile /opt/icecat/profiles"
 alias offline="firejail --net=none"
+alias icecat="firejail /bin/./icecat --profile /opt/icecat/profiles"
 
 ### Conversion Aliases ###
 asciibin () {
@@ -989,7 +989,6 @@ alias gethupgrade='cd $routegeth && ./geth upgradedb --fast console'
 alias gethsheet="https://github.com/ethereum/go-ethereum/wiki/Command-Line-Options"
 alias ethstats="sudo pm2 start /home/$USER/eth-net-intelligence-api/app.json && firefox -new-tab https://ethstats.net/ && parity --max-peers 100 --peers 100 --min-peers 100"
 alias meteor="firefox -new-tab -url http://localhost:3000 && cd /home/$USER/linux && ./geth --rpc --rpccorsdomain='http://localhost:3000'"
-alias icecat=/bin/./icecat
 
 ### Some cheatsheets ###
 alias subst='echo "vi filename.txt -c \":Ubuntu%s/\<tmux\>/Linux/gIc \" -c \":wq \" meaning (:code) (tres after the first apparition of Ubuntu) (% make changes in all lines, use {START-n},{END-n} instead) (s/ search) (\<\> exact word) (UNIX/ old word) (Linux/ new word) (g global – each occurrence in the line is changed, rather than just the first) (I case sensitive) (c confirm signal)"'
@@ -2650,3 +2649,20 @@ if [ -n "$device" ]; then
     rm -rf $tmpdir
 fi
 }
+
+#Archs
+alias chtor="su - $TORUSER && sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"
+bupkgs(){
+for i in \$( pacman -Qq ); do
+	bacman \$i
+done
+}
+alias checkpkgs='pacman -Qq | sudo paccheck --sha256sum --quiet'
+alias listpkgsbysize='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'
+alias listpkgsbysize='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))'
+alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'
+alias purgearchrepo='echo "aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
+alias kalifyarch='printf "[archstrike] \n Server = https://mirror.archstrike.org/\$arch/\$repo/ " | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --finger 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --lsign-key 9D5F1C051D146843CDA4858BDE64825E7CBC0D51'
+alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch " | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-key F3104992EBF24EB872B97B9C32B0B4534209170B && Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
+alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has not key!"'
+alias repeatmouse= java -jar /usr/src/repeat.jar
