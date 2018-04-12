@@ -684,7 +684,7 @@ updateallbash() {
 sudo rm ~/.bashrc-bu
 sudo rm /etc/.bashrc-bu
 sudo cp ~/.bashrc /etc/.bashrc-bu
-sudo wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bashrc-d
+sudo wget https://raw.githubusercontent.com/abueesp/Archnstall/master/.bashrc-d
 sudo cp /etc/.bashrc /etc/.bashrc-bu
 sudo rm /etc/.bashrc
 mv .bashrc-d ~/.bashrc
@@ -693,7 +693,7 @@ sudo cp ~/.bashrc /etc/bash.bashrc
 
 updatebash() {
 sudo cp ~/.bashrc ~/.bashrc-bu
-wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bashrc -O ~/.bashrc-d
+wget https://raw.githubusercontent.com/abueesp/Archnstall/master/.bashrc -O ~/.bashrc-d
 sudo rm ~/.bashrc
 mv ~/.bashrc-d ~/.bashrc
 }
@@ -706,9 +706,9 @@ tmux source-file ~/tmux.conf
 }
 
 getsh() {
-sudo wget https://github.com/abueesp/Scriptnstall/edit/master/reinstall.sh
-sudo wget https://github.com/abueesp/Scriptnstall/edit/master/work.sh
-sudo wget https://github.com/abueesp/Scriptnstall/blob/master/dnie.sh
+sudo wget https://github.com/abueesp/Archnstall/edit/master/reinstall.sh
+cp /home/$USER/.bashrc /home/$USER/.bashrc-d
+sudo wget https://github.com/abueesp/Archnstall/edit/master/.bashrc
 }
 
 she() {
@@ -1625,7 +1625,7 @@ creationtime() {
 
 ### Linux container set: lxc functions ###
 alias lxcinstall='sudo pacman -S install lxc lxd lxcfs openssh-server -y; newgrp lxd; sudo lxd init; mkdir ~/.config/lxc; cp /etc/lxc/default.conf ~/.config/lxc/default.conf; echo "lxc.id_map = u 0 100000 65536" >> ~/.config/lxc/default.conf; echo "lxc.id_map = g 0 100000 65536" >> ~/.config/lxc/default.conf; sudo chmod +x /home/$USER/.local/; sudo chmod +x /home/$USER/.local/share; echo "root veth lxcbr0 10" >> sudo tee -e /etc/lxc/lxc-usernet; echo "$USER veth lxcbr0 10" >> sudo tee -e /etc/lxc/lxc-usernet; printf "Current LXC uses the following kernel features to contain processes: 1. Kernel namespaces (ipc, uts, mount, pid, network and user) \n 2. Apparmor and SELinux profiles \n 3. Seccomp policies \n 4. Chroots (using pivot_root) \n 5. Kernel capabilities \n 6. CGroups (control groups)\n";'
-alias lxcc='echo "You can check the distinct OS distro waves with distrosheet"; read -e -p "Name of the container (MYC by default): " -i "MYC" namecont; lxc-create -t download -n $namecont && wget https://github.com/abueesp/Scriptnstall/raw/master/securelxc.sh && bash securelxc.sh && rm securelxc.sh && echo "Secured and monitoring in $namecont-debug.out"'
+alias lxcc='echo "You can check the distinct OS distro waves with distrosheet"; read -e -p "Name of the container (MYC by default): " -i "MYC" namecont; lxc-create -t download -n $namecont && wget https://github.com/abueesp/Archnstall/raw/master/securelxc.sh && bash securelxc.sh && rm securelxc.sh && echo "Secured and monitoring in $namecont-debug.out"'
 alias lxcs='read -e -p "Name of the container (MYC by default): " -i MYC namecont; lxc-start -n $namecont -F -l debug -o $namecont-debug.out && cat var/lib/lxc/$namecont/config && echo "Monitoring in $namecont-debug.out"; echo "or run -lxc launch images:centos/6/amd64 my_container- or -lxc launch loadedimage my_container"'
 alias lxci='lxc-info -n' 
 alias lxcls='lxc-ls -f' 
