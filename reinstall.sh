@@ -17,32 +17,6 @@
 #torchat i2p freenet   Tomb Keyloggers (also HW Keyloggers) srm
 #customizerom
 
-### Make questions ###
-question(){
-question="${question:=$defaultvar}"
-questionvar="${questionvar:=$defaultvar}"
-questionvar="${questionvar:=$defaultvar}"
-total=15  # total wait time in seconds
-count=0  # counter
-while [ ${count} -lt ${total} ] ; do
-    tlimit=$(( $total - $count ))
-    echo -e "\rYou have ${tlimit} seconds to enter your name: \c"
-    read -p "$question" questionvar
-    if [ -z "$defaultvar" ];
-        then
-        questionvar="${questionvar:=$defaultvar}"
-    fi
-    test ! -z "$questionvar" && { break ; }
-    count=$((count+1))
-done
-if [ ! -z "$questionvar" ] ; then
-    echo -e "\nyYour answer was $questionvar"
-else
-    echo -e "\ntime out"
-fi
-declare "$(echo "$nameofvar")=$questionvar"
-}
-
 ### Restoring Windows on Grub2 ###
 sudo os-prober 
 if [ $? -ne 0 ]
@@ -53,15 +27,14 @@ if [ $? -ne 0 ]
 fi
 
 ### Optimize Pacman, Update, Upgrade, Snapshot ###
+sudo pacman -Sc --noconfirm && sudo pacman-optimize #Improving pacman database access speeds reduces the time taken in database-related tasks
+sudo pacman -Syu --noconfirm #update & upgrade
 sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
 #sudo snapper -c root create-config / #Create snapshot folder (no chsnap for ext4)
 #snapper -c preupgrade create --description preupgrade -c number 1 #Make snapshot preupgrade  (no chsnap for ext4)
-pacman -Sc --noconfirm && pacman-optimize --noconfirm #Improving pacman database access speeds reduces the time taken in database-related tasks
-pacman -Syu #select a fastest mirrors
-sudo pacman -Syu --noconfirm #update & upgrade
 
 ### Tor ###
-sudo pacman -S arch-install-scripts base arm --oconfirm --needed
+sudo pacman -S arch-install-scripts base arm --noconfirm --needed
 sudo pacman -S tor --noconfirm --needed
 
 # Run Tor as chroot
@@ -127,19 +100,17 @@ sudo mkdir $VARCONTAINERS
 sudo ln -s $SVRCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
 sudo mkdir /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d
 sudo ifconfig #adding container ad-hoc vlan
-time=10
-question="Write network interface to create VLAN (wlp2s0 by default): "
-nameofvar="INTERFACE"
-defaultvar=wlp2s0
-question()
+echo -e "\rYou have 15 seconds to enter your name: \c"
+read -t 15 -p "Write network interface to create VLAN (wlp2s0 by default): " INTERFACE
+INTERFACE="${INTERFACE:=wlp2s0}"
 VLANINTERFACE="${INTERFACE:0:2}.tor"
 sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%4094)+1))
 networkctl
 printf "[Service] 
 ExecStart=
-ExecStart=/usr/bin/systemd-nspawn --quiet --keep-unit --boot --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]
-echo $(tty)
-#sudo gedit $SVRCONTAINERS/$TORCONTAINER/etc/securetty
+ExecStart=/usr/bin/systemd-nspawn --quiet --boot --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]
+echo $(tty) # --keep-unit
+#sudo gedit $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 #ExecStop
 #https://wiki.archlinux.org/index.php/Systemd-nspawn#root_login_fails
 
@@ -151,7 +122,7 @@ machinectl login tor-exit
 networkctl
 machine enable $TORCONTAINER #enable at boot
 
-# All DNS queries to Tor
+# All DNS queries to Tor--
 echo "DNSPort $TORPORT
 AutomapHostsOnResolve 1
 AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
@@ -428,11 +399,10 @@ WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/suricata@$VLAN
 sudo systemctl enable --now suricata@$VLANINTERFACE.service
 
 # Ports
-time=15
-question="At this point you should decide what ports you want to open to incoming connections, which are handled by the TCP and UDP chains. For example to open connections for a web server add, without commas: 80 web, 443 https, 22 ssh, 5353 chrome, $TORPORT tor... by default 443 and all of them udp and tcp): "
+echo -e "\rYou have 15 seconds to enter your name: \c"
+read -t 15 -p "At this point you should decide what ports you want to open to incoming connections, which are handled by the TCP and UDP chains. For example to open connections for a web server add, without commas: 80 web, 443 https, 22 ssh, 5353 chrome, $TORPORT tor... by default 443 and all of them udp and tcp): " ports
 nameofvar="ports"
-defaultvar=443
-question()
+ports="${ports:=443}"
 
 # Iptables
 sudo pacman -S iptables gufw --noconfirm --needed
@@ -756,39 +726,21 @@ git config --global credential.helper cache
 # Set git to use the credential memory cache
 git config --global credential.helper 'cache --timeout=3600'
 # Set the cache to timeout after 1 hour (setting is in seconds)
-
-time=10
-question="Please set your git username: "
-nameofvar="gitusername"
-defaultvar=$USER
-question()
+echo -e "\rYou have 10 seconds to enter each git data: \c"
+read -t 10 -p "Please set your git username (by default $USER): " gitusername
+gitusername="${gitusername=$USER}"
 git config --global user.name $gitusername
-
-time=10
-question="Please set your git mail: "
-nameofvar="gitmail"
-defaultvar=$USER
-question()
+read -t 10 -p "Please set your git mail  (by default $USER@localhost): " gitmail
+gitmail="${gitmail=$USER@localhost}"
 git config --global user.email $gitmail
-
-time=10
-question="Please set your core editor: "
-nameofvar="giteditor"
-defaultvar="vim"
-question()
+read -t 10 -p "Please set your core editor (by default vim): " giteditor
+giteditor="${giteditor=vim}"
 git config --global core.editor $giteditor
-
-time=10
-question="Please set your gitdiff: "
-nameofvar="gitdiff"
-defaultvar="vim-diff"
-question()
+read -t 10 -p "Please set your gitdiff (by default vimdiff): " gitdiff
+gitdiff="${gitdiff=vimdiff}"
 git config --global merge.tool $gitdiff
-
-time=10
-question="Do you want to create a new gpg key for Git?: "
-nameofvar="creategitkey"
-defaultvar="N"
+read -t 10 -p "Do you want to create a new gpg key for git?: " creategitkey
+creategitkey="${creategitkey=N}"
 case "$creategitkey" in
     [yY][eE][sS]|[yY]) 
         gpg2 --full-gen-key --expert
@@ -799,13 +751,8 @@ case "$creategitkey" in
 	gpg --list-secret-keys
         ;;
 esac
-question()
-
-time=30
-question="Introduce the key username (and open https://github.com/settings/keys): "
-nameofvar="keyusername"
-defaultvar=""
-question()
+echo -e "\rYou have 60 seconds to enter your git gpg key: \c"
+read -t 60 -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
 gpg --export -a $keyusername
 git config --global user.signingkey $keyusername
 git config --global commit.gpgsign true
@@ -1025,12 +972,8 @@ wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/weechat.conf 
 weechat -r "/key bind meta-g /go"  -r "/quit -yes"
 weechat -r "/set weechat.bar.status.color_bg 0" "/set weechat.bar.title.color_bg 0" "/set weechat.color.chat_nick_colors 1,2,3,4,5,6" "/set buffers.color.hotlist_message_fg 7" "/set weechat.bar.buffers.position top" "/set weechat.bar.buffers.items buffers" "/set weechat.look.prefix_same_nick '⤷'" "/set weechat.look.prefix_error '⚠'" "/set weechat.look.prefix_network 'ℹ'" "/set weechat.look.prefix_action '⚡'" "/set weechat.look.bar_more_down '▼▼'" "/set weechat.look.bar_more_left '◀◀'" "/set weechat.look.bar_more_right '▶▶'" "/set weechat.look.bar_more_up '▲▲'" "/set weechat.look.prefix_suffix '╡'" "/set weechat.look.prefix_align_max '15'"  -r "/quit -yes"
 weechat -r "/mouse enable" -r "/quit -yes"
-time=10
-question="Introduce Weechat username: "
-nameofvar="UNAME"
-defaultvar=""
-question()
-
+echo -e "\rYou have 10 seconds to enter your username: \c"
+read -t 10 -p "Introduce Weechat username: " UNAME
 weechat -r '/set irc.server.freenode.username "$UNAME"  -r "/quit -yes"'
 weechat -r "/server add freenode chat.freenode.net/6697 -ssl -autoconnect" -r '/set irc.server.freenode.addresses "chat.freenode.net/6697"' -r "/set irc.server.freenode.ssl on" -r "/quit -yes"
 #Whatsapp and axolotl
@@ -1045,19 +988,12 @@ weechat -r "/script install arespond.py atcomplete.py auth.rb auto_away.py autoa
 sudo -H pip install websocket-client
 wget https://raw.githubusercontent.com/wee-slack/wee-slack/master/wee_slack.py
 cp wee_slack.py ~/.weechat/python/autoload
-
-time=10
-question="Introduce a secure pass to protect tokens: "
-nameofvar="PAZWE"
-defaultvar="$USER"
-question()
+echo -e "\rYou have 10 seconds to enter your pass: \c"
+read -t 10 -p "Introduce a secure pass to protect tokens: " PAZWE
+PAZWE="${PAZWE=$USER}"
 weechat -r "/secure passphrase $PAZWE" -r "/quit"
-
-time=10
-question="Introduce your Slack token. For connected groups introduce tokens separated by commas: "
-nameofvar="SLACKTOKEN"
-defaultvar=""
-question()
+echo -e "\rYou have 60 seconds to enter your Slack token: \c"
+read -t 60 -p "Introduce your Slack token. For connected groups introduce tokens separated by commas: " SLACKTOKEN
 weechat -r "/set plugins.var.python.slack.slack_api_token $SLACKTOKEN" -r "/secure set slack_token $SLACKTOKEN" -r "/set plugins.var.python.slack.slack_api_token ${sec.data.slack_token}" -r "/save" -r "/python reload" -r "/set plugins.var.python.slack.server_aliases 'my-slack-subdomain:mysub,other-domain:coolbeans'" -r "/set plugins.var.python.slack.show_reaction_nicks on" -r "/quit"
 #As a relay host server
 #read -p "Introduce password for relay host: " PRHOST
