@@ -115,15 +115,25 @@ printf "[Service]
 ExecStart=
 ExecStart=/usr/bin/systemd-nspawn --quiet --boot --keep-unit --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]. You can use --ephemeral instead of --keep-unit --link-journal=guest and then you can delete the machine
 sudo systemctl daemon-reload
-TERMINAL=echo "$(tty)"
-TERM="${TERMINAL:5:3}0" 
+TERMINAL=$(echo "$(tty)")
+TERM="${TERMINAL:5:4}0"
 echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+TERM="${TERMINAL:5:4}1"
+echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+TERM="${TERMINAL:5:4}2"
+echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+TERM="${TERMINAL:5:4}3"
+echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
+TERM="${TERMINAL:5:4}4"
+echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+TERM="${TERMINAL:5:4}5"
+echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 
 # Checking conf
 sudo systemctl daemon-reload
 systemctl start systemd-nspawn@tor-exit.service
 machinectl -a
-machinectl login tor-exit
+machinectl login tor-exit #ctrl shift ]
 networkctl
 machine enable $TORCONTAINER #enable at boot
 
