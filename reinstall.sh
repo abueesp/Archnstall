@@ -877,28 +877,10 @@ cd ..
 cd ..
 cd ..
 cd ~/.mozilla/firefox/*.default
-echo 'privacy.firstparty.isolate = true
-privacy.resistFingerprinting = true
-privacy.trackingprotection.enabled = true
-browser.cache.offline.enable = false
-browser.safebrowsing.malware.enabled = false
-browser.safebrowsing.phishing.enabled = false
-browser.send_pings = false
-browser.sessionstore.max_tabs_undo = 0
-accessibility.blockautorefresh = 1
-browser.urlbar.speculativeConnect.enabled = false
-dom.battery.enabled = false
-dom.event.clipboardevents.enabled = false
-geo.enabled = false
-media.navigator.enabled = false
-network.cookie.cookieBehavior = 1
-network.cookie.lifetimePolicy = 2
-webgl.disabled = true
-user_pref("browser.search.defaulturl","https://searx.me/");
-user_pref("browser.search.defaultenginename","Searx");
-' | tee -a user.js 
-cd
-firefox --new-tab about:config 
+#vim -c ':%s/user_pref("browser.safebrowsing.*//g' -c ":wq" prefs.js
+vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("toolkit.telemetry.cachedClientID".*//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s|user_pref("privacy.trackingprotection.pbmode.enabled", false);|user_pref("privacy.trackingprotection.pbmode.enabled", true);|g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 
 #Opera
 sudo pacman -S opera opera-developer --noconfirm --needed
@@ -908,12 +890,14 @@ sudo pacman -S vivaldi --noconfirm --needed
 
 #Chromium
 sudo pacman -S chromium --noconfirm --needed
-#vim -c ":%s|google.com|google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl|g" -c ":wq" ~/.config/chromium/Default/Preferences
-#vim -c ":%s|Yahoo|ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|google.com|ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|Google|Ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|yahoo.com|google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|Yahoo|Google|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #CREATEHASH=$(sha256sum ~/.config/chromium/Default/Preferences)
 #HASH=$(echo $CREATEHASH | head -n1 | sed -e 's/\s.*$//')
 #HASHPREF=$(echo $HASH | awk '{print toupper($0)}')
-#vim -c ":%s 's/"super_mac":".*"}}/"super_mac":"$HASHPREF"}}/g' -c ":wq" ~/.config/chromium/Default/'Secure Preferences'
+#vim -c ":%s/"super_mac":".*"}}/"super_mac":"$HASHPREF"}}/g' -c ":wq" ~/.config/chromium/Default/'Secure Preferences'
 chromium-browser https://chrome.google.com/webstore/detail/url-tracking-stripper-red/flnagcobkfofedknnnmofijmmkbgfamf
 chromium-browser https://chrome.google.com/webstore/detail/dont-track-me-google/gdbofhhdmcladcmmfjolgndfkpobecpg
 chromium-browser https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
