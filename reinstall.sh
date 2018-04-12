@@ -37,6 +37,11 @@ sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
 sudo pacman -S arch-install-scripts base arm --noconfirm --needed
 sudo pacman -S tor --noconfirm --needed
 
+#Create user
+TORUSER="tor"
+sudo useradd -m $TORUSER
+sudo passwd $TORUSER
+
 # Run Tor as chroot
 sudo find /var/lib/tor/ ! -user tor -exec chown tor:tor {} \;
 sudo chown -R tor:tor /var/lib/tor/
@@ -73,7 +78,7 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
   sudo ln -sr /usr/lib64 $TORCHROOT/lib64
   sudo ln -s $TORCHROOT/usr/lib ${TORCHROOT}/usr/lib64
 fi
-echo 'alias chtor="chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
+echo 'alias chtor="su - $TORUSER && chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
 # Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
@@ -108,11 +113,11 @@ sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%409
 networkctl
 printf "[Service] 
 ExecStart=
-ExecStart=/usr/bin/systemd-nspawn --quiet --boot --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]
-echo $(tty) # --keep-unit
-#sudo gedit $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
-#ExecStop
-#https://wiki.archlinux.org/index.php/Systemd-nspawn#root_login_fails
+ExecStart=/usr/bin/systemd-nspawn --quiet --boot --keep-unit --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]. You can use --ephemeral instead of --keep-unit --link-journal=guest and then you can delete the machine
+sudo systemctl daemon-reload
+TERMINAL=echo "$(tty)"
+TERM="${TERMINAL:5:3}0" 
+echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 
 # Checking conf
 sudo systemctl daemon-reload
@@ -787,6 +792,10 @@ echo "alias repeatmouse= java -jar /usr/src/repeat.jar" | tee -a ~/.bashrc
 #Blindlector: Orca
 
 ### Browsers ###
+#Flash
+sudo pacman -Rc flashplugin pepper-flash --noconfirm
+yaourt lightspark --noconfirm
+
 #Firefox
 sudo pacman -S firefox --noconfirm --needed
 sudo pacman -S firefox-developer --noconfirm --needed
@@ -795,6 +804,7 @@ mkdir -p extensions
 cd extensions
 mkdir privacy
 cd privacy
+wget https://addons.mozilla.org/firefox/downloads/file/839942/startpagecom_private_search_engine.xpi
 wget https://www.eff.org/files/privacy-badger-latest.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/706680/google_redirects_fixer_tracking_remover-3.0.0-an+fx.xpi GoogleRedirectFixer.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/727843/skip_redirect-2.2.1-fx.xpi SkipRedirect.xpi
@@ -898,7 +908,8 @@ sudo pacman -S vivaldi --noconfirm --needed
 
 #Chromium
 sudo pacman -S chromium --noconfirm --needed
-#vim -c ":%s/google.com/google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl/g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|google.com|google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|Yahoo|ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #CREATEHASH=$(sha256sum ~/.config/chromium/Default/Preferences)
 #HASH=$(echo $CREATEHASH | head -n1 | sed -e 's/\s.*$//')
 #HASHPREF=$(echo $HASH | awk '{print toupper($0)}')
