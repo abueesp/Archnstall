@@ -580,7 +580,8 @@ dconf write /com/deepin/dde/sound-effect/dialog-error-serious "false"
 dconf write /com/deepin/dde/sound-effect/dialog-error-critical "false"
 dconf write /com/deepin/dde/sound-effect/suspend-resume "false"
 
-# Unmute sound
+# Sound
+aurman -S indicator-sound-switcher --noconfirm
 amixer sset Master unmute
 amixer cset numid=11,iface=MIXER,name='Capture Switch' off
 
