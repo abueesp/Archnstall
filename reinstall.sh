@@ -79,7 +79,7 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
   sudo ln -sr /usr/lib64 $TORCHROOT/lib64
   sudo ln -s $TORCHROOT/usr/lib ${TORCHROOT}/usr/lib64
 fi
-#echo 'alias chtor="su - $TORUSER && sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
+#echo 'alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
 # Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
