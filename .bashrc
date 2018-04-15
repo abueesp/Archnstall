@@ -2653,7 +2653,7 @@ fi
 }
 
 #Archs
-alias chtor="su - $TORUSER && sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"
+alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"
 bupkgs(){
 for i in $(pacman -Qq ); do
 	bacman $i
