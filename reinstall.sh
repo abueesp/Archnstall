@@ -456,6 +456,8 @@ sudo iptables restart
 # No cups
 sudo cupsctl -E --no-remote-any
 sudo service cups-browsed stop
+sudo systemctl cupsd
+sudo systemctl disable org.cups.cupsd
 
 #Nftables
 sudo pacman -S nftables --noconfirm --needed
