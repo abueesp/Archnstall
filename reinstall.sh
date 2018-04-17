@@ -1103,4 +1103,9 @@ fi
 ### Frugalware Stable ISO
 #wget http://www13.frugalware.org/pub/frugalware/frugalware-stable-iso/fvbe-2.1-gnome-x86_64.iso
 
+### Security Onion
+#wget https://github.com/Security-Onion-Solutions/security-onion/raw/master/sigs/securityonion-14.04.5.11.iso.sig
+#wget https://github.com/Security-Onion-Solutions/security-onion/releases/download/v14.04.5.11_20180328/securityonion-14.04.5.11.iso
+
+
 echo "EOF"
