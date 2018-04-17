@@ -81,6 +81,24 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
 fi
 #echo 'alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
+# All DNS queries to Tor
+TORDNSPORT=$(shuf -i 2000-65000 -n 1)
+echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc
+echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc
+echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
+sudo pacman -S dnsmasq --noconfirm --needed
+sudo vim -c ":%s/#port=.*/port=$TORDNSPORT/g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#conf-file=/usr/share/dnsmasq/trust-anchors.conf/conf-file=/usr/share/dnsmasq/trust-anchors.conf/g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#dnssec/dnssec/g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#no-resolv/no-resolv/g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#server=/localnet/192.168.0.1server=127.0.0.1/g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#listen-address=listen-address=127.0.0.1" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s/#nohook resolv.conf/nohook resolv.conf/g" -c ":wq" /etc/dhcpcd.conf
+sudo dnsmasq
+
+# Pacman over Tor
+sed -i "s,-c -O %o %u,-c -O %o %u \nXferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o,g" /etc/pacman.conf
+
 # Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
 echo "[Action]
@@ -94,7 +112,7 @@ TORHASH=$(echo -n $RANDOM | sha256sum)
 sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${HASH:-2}/g" -c ":wq" /etc/tor/torrc
-sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf
+sudo vim -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
@@ -132,30 +150,29 @@ TERM="${TERMINAL:5:4}5"
 echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 
 # Checking conf
+sudo cp $TORCHROOT/hosts           $TORCHROOT/etc/
+sudo cp $TORCHROOT/host.conf       $TORCHROOT/etc/
+sudo cp $TORCHROOT/localtime       $TORCHROOT/etc/
+sudo cp $TORCHROOT/nsswitch.conf   $TORCHROOT/etc/
+sudo cp $TORCHROOT/resolv.conf     $TORCHROOT/etc/
+sudo cp $TORCHROOT/tor/torrc       $TORCHROOT/etc/tor/
+sudo cp $TORCHROOT/bin/tor         $TORCHROOT/usr/bin/
+sudo cp $TORCHROOT/share/tor/geoip* $TORCHROOT/usr/share/tor/
+sudo cp $TORCHROOT/usr/lib/
+sudo cp $TORCHROOT/usr/lib/
+sudo cp -r $TORCHROOT/var/lib/ /var/lib/tor
+sudo chown -R tor:tor $TORCHROOT/var/lib/tor
+cp /etc/tor/torrc
+cp /etc/dnsmasq.conf
+cp /etc/dhcpcd.conf
+cp /etc/pacman.conf
+
 sudo systemctl daemon-reload
 systemctl start systemd-nspawn@tor-exit.service
 machinectl -a
 machinectl login tor-exit #ctrl shift ]
 networkctl
 machine enable $TORCONTAINER #enable at boot
-
-# All DNS queries to Tor
-TORDNSPORT=$(shuf -i 2000-65000 -n 1)
-echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc
-echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc
-echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
-sudo pacman -S dnsmasq --noconfirm --needed
-sudo vim -c ":%s/#port=.*/port=$TORDNSPORT/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#conf-file=/usr/share/dnsmasq/trust-anchors.conf/conf-file=/usr/share/dnsmasq/trust-anchors.conf/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#dnssec/dnssec/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#no-resolv/no-resolv/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#server=/localnet/192.168.0.1server=127.0.0.1/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#listen-address=listen-address=127.0.0.1" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#nohook resolv.conf/nohook resolv.conf/g" -c ":wq" /etc/dhcpcd.conf
-sudo dnsmasq
-
-# Pacman over Tor
-sed -i "s,-c -O %o %u,-c -O %o %u \nXferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o,g" /etc/pacman.conf
 
 ### Shadowsocks ###
 sudo pacman -S shadowsocks-qt5 shadowsocks --noconfirm --needed
@@ -788,10 +805,10 @@ wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.tmux.conf
 ### Office tools ###
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
 sudo pacman -S libreoffice grc unoconv detox pandoc duplicity deja-dup --noconfirm --needed #Text tools
+yaourt -S apvlv --noconfirm --needed
 sudo pacman -S xmlstarlet jq datamash bc gawk mawk --noconfirm --needed #XML and jquery #wc join paste cut sort uniq
 sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
-
 
 ### Other Tools ###
 sudo pacman -S brasero qemu archiso --noconfirm --needed
@@ -805,7 +822,7 @@ wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_
 ### Browsers ###
 #Flash
 sudo pacman -Rc flashplugin pepper-flash --noconfirm
-yaourt lightspark --noconfirm
+yaourt -S lightspark --noconfirm --needed
 
 #Firefox
 sudo pacman -S firefox --noconfirm --needed
