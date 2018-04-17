@@ -83,17 +83,17 @@ fi
 
 # All DNS queries to Tor
 TORDNSPORT=$(shuf -i 2000-65000 -n 1)
-echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc
-echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc
+echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc 
+echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc 
 echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
 sudo pacman -S dnsmasq --noconfirm --needed
-sudo vim -c ":%s/#port=.*/port=$TORDNSPORT/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#conf-file=/usr/share/dnsmasq/trust-anchors.conf/conf-file=/usr/share/dnsmasq/trust-anchors.conf/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#dnssec/dnssec/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#no-resolv/no-resolv/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#server=/localnet/192.168.0.1server=127.0.0.1/g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#listen-address=listen-address=127.0.0.1" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s/#nohook resolv.conf/nohook resolv.conf/g" -c ":wq" /etc/dhcpcd.conf
+sudo vim -c ":%s|#port=|port=$TORDNSPORT |g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s|#conf-file=/usr/share/dnsmasq/trust-anchors.conf|conf-file=/usr/share/dnsmasq/trust-anchors.conf|g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s|#dnssec|dnssec|g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s|#no-resolv|no-resolv|g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s|#server=/localnet/192.168.0.1|server=127.0.0.1|g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s|#listen-address=|listen-address=127.0.0.1|g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s|#nohook resolv.conf|nohook resolv.conf|g" -c ":wq" /etc/dhcpcd.conf
 sudo dnsmasq
 
 # Pacman over Tor
@@ -442,7 +442,7 @@ sudo pacman -S iptables gufw --noconfirm --needed
 sudo iptables -F
 sudo iptables -A INPUT -i lo -j ACCEPT
 for i in $ipports; do
-	sudo iptables -A INPUT -p tcp --dport $i accept
+	sudo iptables -A INPUT -p tcp --dport $i
 done
 sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -P INPUT DROP
