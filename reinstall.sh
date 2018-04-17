@@ -1086,6 +1086,9 @@ echo "Tiger — Security tool that can be use both as a security audit and intru
 aurman -S tiger --needed --noconfirm --noedit
 sudo tiger
 
+#Tor-browser
+LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
+aurman -S tor-browser-$LANGUAGE --needed --noconfirm
 
 ### Autoremove and Snapshot ###
 sudo pacman -Rns $(pacman -Qtdq) --noconfirm
@@ -1107,5 +1110,8 @@ fi
 #wget https://github.com/Security-Onion-Solutions/security-onion/raw/master/sigs/securityonion-14.04.5.11.iso.sig
 #wget https://github.com/Security-Onion-Solutions/security-onion/releases/download/v14.04.5.11_20180328/securityonion-14.04.5.11.iso
 
+### Tails
+#wget https://tails.braingap.uk/tails/stable/tails-amd64-3.6.2/tails-amd64-3.6.2.iso
+#wget https://tails.boum.org/torrents/files/tails-amd64-3.6.2.iso.sig
 
 echo "EOF"
