@@ -6,6 +6,8 @@ FCEDIT=vi
 
 LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
 
+alias torwai="curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/ | cat | grep -m 1 Congratulations | xargs && tor-resolve https://check.torproject.org/ && echo 'Country' && curl ipinfo.io/country && echo 'IP - For deeper testing visit http://ip-check.info/' && echo 'DNS - For deeper testing visit https://www.dnsleaktest.com/'"
+
 ###For bc
 #export BC_ENV_ARGS=$HOME/.bc #start it with bc -l ~/.bc
 alias superbc="bc -l $HOME/.bc"
