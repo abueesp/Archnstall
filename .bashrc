@@ -2655,7 +2655,7 @@ fi
 }
 
 #Archs
-alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"
+alias chtor="sudo chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"
 alias machinetor="echo 'Use Tails, changemymac, and tor-browser' && machinectl login tor-exit"
 bupkgs(){
 for i in $(pacman -Qq ); do
