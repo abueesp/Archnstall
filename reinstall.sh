@@ -919,17 +919,17 @@ sudo -H pip install saltpack
 
 ### Communications ###
 #IRC
-sudo hexchat -S weechat --noconfirm --needed
+sudo pacman -S weechat hexchat --noconfirm --needed
 
-#P2P Videocalls
+#Intranet
+yaourt -S beebeep --noconfirm --needed
+
+#P2P Videocalls and messaging
 sudo pacman -S libringclient ring-daemon ring-gnome --noconfirm --needed
 #yaourt -S jitsi --noconfirm --needed
-
-#Messaging
-yaourt -S ring --noconfirm --needed
 #yaourt -S qtox --noconfirm --needed
 
-#Multi social media
+#All-in-a-box
 yaourt -S rambox-bin --noconfirm --needed
 
 
