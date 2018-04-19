@@ -223,7 +223,7 @@ sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 
 # Bluetooth
 sudo vi /etc/bluetooth/main.conf -c ':%s|#AutoEnable=false|AutoEnable=false|g' -c ':wq'
-rfkill block bluetooth
+sudo rfkill block bluetooth
 
 # USBGuard and USB readonly (previous checker -noexec and --rw included on alias monta)
 #git clone https://aur.archlinux.org/usbguard.git
@@ -282,7 +282,7 @@ fi
 sudo pacman -S sshguard --noconfirm --needed
 sudo vim -c ":%s ":%s|BLACKLIST_FILE=120:/var/db/sshguard/blacklist.db|BLACKLIST_FILE=50:/var/db/sshguard/blacklist.db|g" -c ":wq" /etc/sshguard.conf #Danger level: 5 failed logins -> banned
 sudo vim -c ":%s ":%s|THRESHOLD=30|THRESHOLD=10|g" -c ":wq"  /etc/sshguard.conf 
-sudo systemctl enable --now sshguard.service --restart
+sudo systemctl enable --now sshguard.service
 
 # OpenSSL and NSS
 sudo pacman -S openssl nss --noconfirm --needed
