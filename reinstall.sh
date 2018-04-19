@@ -1019,7 +1019,7 @@ sudo tiger
 
 #Tor-browser
 LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
-aurman -S tor-browser-$LANGUAGE --needed --noconfirm
+aurman -S tor-browser-$LANGUAGE --needed --noconfirm --noedit
 
 ### Autoremove and Snapshot ###
 sudo pacman -Rns $(pacman -Qtdq) --noconfirm
