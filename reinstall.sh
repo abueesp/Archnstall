@@ -57,14 +57,14 @@ sudo mkdir -p $TORCHROOT/usr/lib
 sudo mkdir -p $TORCHROOT/usr/share/tor
 sudo mkdir -p $TORCHROOT/var/lib
 sudo ln -s /usr/lib  $TORCHROOT/lib
-sudo cp /etc/hosts           $TORCHROOT/etc/
-sudo cp /etc/host.conf       $TORCHROOT/etc/
-sudo cp /etc/localtime       $TORCHROOT/etc/
-sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/
-sudo cp /etc/resolv.conf     $TORCHROOT/etc/
-sudo cp /etc/tor/torrc       $TORCHROOT/etc/tor/
-sudo cp /usr/bin/tor         $TORCHROOT/usr/bin/
-sudo cp /usr/share/tor/geoip* $TORCHROOT/usr/share/tor/
+sudo cp /etc/hosts           $TORCHROOT/etc/hosts
+sudo cp /etc/host.conf       $TORCHROOT/etc/host.conf
+sudo cp /etc/localtime       $TORCHROOT/etc/localtime
+sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf 
+sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf 
+sudo cp /etc/tor/torrc       $TORCHROOT/etc/tor/torrc
+sudo cp /usr/bin/tor         $TORCHROOT/usr/bin/tor
+sudo cp /usr/share/tor/geoip* $TORCHROOT/usr/share/tor/geoip*
 sudo cp /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
 sudo cp $(ldd /usr/bin/tor | awk '{print $3}'|grep --color=never "^/") $TORCHROOT/usr/lib/
 sudo cp -r /var/lib/tor      $TORCHROOT/var/lib/
@@ -174,86 +174,9 @@ machinectl login tor-exit #ctrl shift ]
 networkctl
 machine enable $TORCONTAINER #enable at boot
 
-### Shadowsocks ###
+### Shadowsocks & GPG ###
 sudo pacman -S shadowsocks-qt5 shadowsocks --noconfirm --needed
-
-### GPG2 ###
-mkdir gpg2
-cd gpg2
-gpg2 --keyserver hkp://pgp.mit.edu --recv-keys 249B39D24F25E3B6
-gpg2 --keyserver hkp://pgp.mit.edu --recv-keys 2071B08A33BD3F06
-
-installfunction(){
-wget https://www.gnupg.org/ftp/gcrypt/$NAME/$NAME-$VERSION.tar.bz2
-sha1=$(sha1sum $NAME-$VERSION.tar.bz2)
-if [ "$sha1" == "$SHA  $NAME-$VERSION.tar.bz2" ]
-then
-    echo "PACKAGE VERIFIED"
-else
-    echo "PACKAGE NOT VERIFIED"
-    exit
-fi
-wget https://www.gnupg.org/ftp/gcrypt/$NAME/$NAME-$VERSION.tar.bz2.sig
-gpg --verify $NAME-$VERSION.tar.bz2.sig $NAME-$VERSION.tar.bz2
-if [ $? -eq 0 ]
-then
-    echo "GOOD SIGNATURE"
-else
-    echo "BAD SIGNATURE"
-    exit
-fi
-tar xvjf $NAME-$VERSION.tar.bz2
-cd $NAME-$VERSION
-./configure
-sudo make
-sudo make install
-cd ..
-rm $NAME-$VERSION.tar.bz2 
-rm $NAME-$VERSION.tar.bz2.sig
-sudo rm -r $NAME-$VERSION
-}
-
-NAME=libgpg-error
-VERSION=1.28
-SHA=2b9baae264f3e82ebe00dcd10bae3f2d64232c10
-#installfunction
-
-NAME=libgcrypt
-VERSION=1.8.2
-SHA=ab8aae5d7a68f8e0988f90e11e7f6a4805af5c8d
-installfunction
-
-NAME=libassuan
-VERSION=2.5.1
-SHA=c8432695bf1daa914a92f51e911881ed93d50604
-installfunction
-
-NAME=npth
-VERSION=1.5
-SHA=93ddf1a3bdbca00fb4cf811498094ca61bbb8ee1
-installfunction
-
-NAME=gnupg
-VERSION=2.2.5
-SHA=9dec110397e460b3950943e18f5873a4f277f216
-installfunction
-
-NAME=gpgme
-VERSION=1.10.0
-SHA=77d3390887da25ed70b7ac04392360efbdca501f
-installfunction
-
-NAME=gpa
-VERSION=0.9.10
-SHA=c629348725c1bf5dafd57f8a70187dc89815ce60
-installfunction
-
-gpg2 --delete-secret-and-public-keys --batch --yes  249B39D24F25E3B6
-gpg2 --delete-secret-and-public-keys --batch --yes  2071B08A33BD3F06
-
-cd ..
-sudo rm -r gpg2
-
+sudo pacman -S gnupg gnupg2 --noconfirm --needed
 
 ### Security ###
 # Password management
