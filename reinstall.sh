@@ -97,7 +97,7 @@ sudo vim -c ":%s|#nohook resolv.conf|nohook resolv.conf|g" -c ":wq" /etc/dhcpcd.
 sudo dnsmasq
 
 # Pacman over Tor
-sed -i "s,-c -O %o %u,-c -O %o %u \nXferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o,g" /etc/pacman.conf
+echo "XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" | sudo tee -a /etc/pacman.conf
 
 # Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
 sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
@@ -150,7 +150,7 @@ TERM="${TERMINAL:5:4}5"
 echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 
 # Checking conf
-sudo cp $TORCHROOT/bin/tor         $TORCHROOT/usr/bin/
+sudo cp -r $TORCHROOT/bin/ $TORCHROOT/usr/bin/
 sudo cp -r $TORCHROOT/var/lib/ /var/lib/tor
 sudo chown -R tor:tor $TORCHROOT/var/lib/tor
 sudo cp /etc/tor/torrc $TORCHROOT/etc/tor/torrc
