@@ -150,22 +150,13 @@ TERM="${TERMINAL:5:4}5"
 echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 
 # Checking conf
-sudo cp $TORCHROOT/hosts           $TORCHROOT/etc/
-sudo cp $TORCHROOT/host.conf       $TORCHROOT/etc/
-sudo cp $TORCHROOT/localtime       $TORCHROOT/etc/
-sudo cp $TORCHROOT/nsswitch.conf   $TORCHROOT/etc/
-sudo cp $TORCHROOT/resolv.conf     $TORCHROOT/etc/
-sudo cp $TORCHROOT/tor/torrc       $TORCHROOT/etc/tor/
 sudo cp $TORCHROOT/bin/tor         $TORCHROOT/usr/bin/
-sudo cp $TORCHROOT/share/tor/geoip* $TORCHROOT/usr/share/tor/
-sudo cp $TORCHROOT/usr/lib/
-sudo cp $TORCHROOT/usr/lib/
 sudo cp -r $TORCHROOT/var/lib/ /var/lib/tor
 sudo chown -R tor:tor $TORCHROOT/var/lib/tor
-cp /etc/tor/torrc
-cp /etc/dnsmasq.conf
-cp /etc/dhcpcd.conf
-cp /etc/pacman.conf
+sudo cp /etc/tor/torrc $TORCHROOT/etc/tor/torrc
+sudo cp /etc/dnsmasq.conf $TORCHROOT/etc/dnsmasq
+sudo cp /etc/dhcpcd.conf $TORCHROOT/etc/dhcpcd.conf
+sudo cp /etc/pacman.conf $TORCHROOT/etc/pacman.conf
 
 sudo systemctl daemon-reload
 systemctl start systemd-nspawn@tor-exit.service
