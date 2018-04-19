@@ -126,7 +126,7 @@ sudo ln -s $SVRCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
 sudo mkdir /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d
 sudo ifconfig #adding container ad-hoc vlan
 echo -e "\rYou have 15 seconds to enter your name: \c"
-read -t 15 -p "Write network interface to create VLAN (wlp2s0 by default): " INTERFACE
+read -p "Write network interface to create VLAN (wlp2s0 by default): " INTERFACE
 INTERFACE="${INTERFACE:=wlp2s0}"
 VLANINTERFACE="${INTERFACE:0:2}.tor"
 sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%4094)+1))
@@ -349,7 +349,7 @@ sudo systemctl enable --now suricata@$VLANINTERFACE.service
 
 # Ports
 echo -e "\rYou have 15 seconds to enter your name: \c"
-read -t 15 -p "At this point you should decide what ports you want to open to incoming connections, which are handled by the TCP and UDP chains. For example to open connections for a web server add, without commas: 80 web, 443 https, 22 ssh, 5353 chrome, $TORPORT tor... by default 443 and all of them udp and tcp): " ports
+read -p "At this point you should decide what ports you want to open to incoming connections, which are handled by the TCP and UDP chains. For example to open connections for a web server add, without commas: 80 web, 443 https, 22 ssh, 5353 chrome, $TORPORT tor... by default 443 and all of them udp and tcp): " ports
 nameofvar="ports"
 ports="${ports:=443}"
 
@@ -517,7 +517,7 @@ dconf write /com/deepin/dde/sound-effect/dialog-error-critical "false"
 dconf write /com/deepin/dde/sound-effect/suspend-resume "false"
 
 # Sound
-aurman -S indicator-sound-switcher --noconfirm
+aurman -S indicator-sound-switcher --noconfirm --needed --noedit
 amixer sset Master unmute
 amixer cset numid=11,iface=MIXER,name='Capture Switch' off
 
@@ -525,9 +525,18 @@ amixer cset numid=11,iface=MIXER,name='Capture Switch' off
 sudo pacman -S deepin-api --noconfirm -needed
 
 ### Virtualbox ###
-sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox --noconfirm --needed
+pacman -Si linux
+sudo pacman -S linux-headers
+sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox virtualbox-guest-iso --noconfirm --needed
+sudo modprobe -a vboxdrv vboxnetflt vboxpci vboxnetadp
+sudo /sbin/rcvboxdrv -h
 sudo gpasswd -a $USER vboxusers
-sudo /sbin/rcvboxdrv setup
+echo "vboxdrv" | tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxnetadp" | tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxnetflt" | tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxpci" | tee -a /etc/modules-load.d/virtualbox.conf
+
+
 version=$(vboxmanage -v)
 echo $version
 var1=$(echo $version | cut -d 'r' -f 1)
@@ -572,7 +581,7 @@ if [ -e "/home/$USER/.vim_runtime/vimrcs/basic.vim" ];
 		VIMRC=.vimrc
 fi
 
-echo '\n' | tee -a $VIMRC
+echo ' ' | tee -a $VIMRC
 echo '\" => Commands' | tee -a $VIMRC
 echo ":nnoremap <C-B> <C-V>" | tee -a $VIMRC
 echo ":nnoremap <C-O> o<Esc>" | tee -a $VIMRC
@@ -581,7 +590,7 @@ echo "set autoindent" | tee -a $VIMRC
 echo "set paste" | tee -a $VIMRC
 echo "set mouse=a" | tee -a $VIMRC
 
-echo '\n' | tee -a $VIMRC
+echo ' ' | tee -a $VIMRC
 echo '\" => Arrow keys' | tee -a $VIMRC
 echo "nnoremap <silent> <ESC>OA <UP>" | tee -a $VIMRC
 echo "nnoremap <silent> <ESC>OB <DOWN>" | tee -a $VIMRC
@@ -592,8 +601,8 @@ echo "inoremap <silent> <ESC>OB <DOWN>" | tee -a $VIMRC
 echo "inoremap <silent> <ESC>OC <RIGHT>" | tee -a $VIMRC
 echo "inoremap <silent> <ESC>OD <LEFT>" | tee -a $VIMRC
 
-echo '\n' | tee -a $VIMRC
-echo '\" => Arrow keys' | tee -a $VIMRC
+echo ' ' | tee -a $VIMRC
+echo '\" => Macros' | tee -a $VIMRC
 function sendtovimrc(){
 echo "let @$key='$VIMINSTRUCTION'" | tee -a $VIMRC
 #please note the double set of quotes
@@ -679,19 +688,19 @@ git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=3600'
 # Set the cache to timeout after 1 hour (setting is in seconds)
 echo -e "\rYou have 10 seconds to enter each git data: \c"
-read -t 10 -p "Please set your git username (by default $USER): " gitusername
+read -p "Please set your git username (by default $USER): " gitusername
 gitusername="${gitusername=$USER}"
 git config --global user.name $gitusername
-read -t 10 -p "Please set your git mail  (by default $USER@localhost): " gitmail
+read -p "Please set your git mail  (by default $USER@localhost): " gitmail
 gitmail="${gitmail=$USER@localhost}"
 git config --global user.email $gitmail
-read -t 10 -p "Please set your core editor (by default vim): " giteditor
+read -p "Please set your core editor (by default vim): " giteditor
 giteditor="${giteditor=vim}"
 git config --global core.editor $giteditor
-read -t 10 -p "Please set your gitdiff (by default vimdiff): " gitdiff
+read -p "Please set your gitdiff (by default vimdiff): " gitdiff
 gitdiff="${gitdiff=vimdiff}"
 git config --global merge.tool $gitdiff
-read -t 10 -p "Do you want to create a new gpg key for git?: " creategitkey
+read -p "Do you want to create a new gpg key for git?: " creategitkey
 creategitkey="${creategitkey=N}"
 case "$creategitkey" in
     [yY][eE][sS]|[yY]) 
@@ -704,7 +713,7 @@ case "$creategitkey" in
         ;;
 esac
 echo -e "\rYou have 60 seconds to enter your git gpg key: \c"
-read -t 60 -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
+read -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
 gpg --export -a $keyusername
 git config --global user.signingkey $keyusername
 git config --global commit.gpgsign true
@@ -837,7 +846,7 @@ sudo pacman -S vivaldi --noconfirm --needed
 
 #Chromium
 sudo pacman -S chromium --noconfirm --needed
-#vim -c ":%s|google.com|ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s|google.com|ixquick.com|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #vim -c ":%s|Google|Ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #vim -c ":%s|yahoo.com|google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #vim -c ":%s|Yahoo|Google|g" -c ":wq" ~/.config/chromium/Default/Preferences
@@ -915,7 +924,7 @@ weechat -r "/key bind meta-g /go"  -r "/quit -yes"
 weechat -r "/set weechat.bar.status.color_bg 0" "/set weechat.bar.title.color_bg 0" "/set weechat.color.chat_nick_colors 1,2,3,4,5,6" "/set buffers.color.hotlist_message_fg 7" "/set weechat.bar.buffers.position top" "/set weechat.bar.buffers.items buffers" "/set weechat.look.prefix_same_nick '⤷'" "/set weechat.look.prefix_error '⚠'" "/set weechat.look.prefix_network 'ℹ'" "/set weechat.look.prefix_action '⚡'" "/set weechat.look.bar_more_down '▼▼'" "/set weechat.look.bar_more_left '◀◀'" "/set weechat.look.bar_more_right '▶▶'" "/set weechat.look.bar_more_up '▲▲'" "/set weechat.look.prefix_suffix '╡'" "/set weechat.look.prefix_align_max '15'"  -r "/quit -yes"
 weechat -r "/mouse enable" -r "/quit -yes"
 echo -e "\rYou have 10 seconds to enter your username: \c"
-read -t 10 -p "Introduce Weechat username: " UNAME
+read -p "Introduce Weechat username: " UNAME
 weechat -r '/set irc.server.freenode.username "$UNAME"  -r "/quit -yes"'
 weechat -r "/server add freenode chat.freenode.net/6697 -ssl -autoconnect" -r '/set irc.server.freenode.addresses "chat.freenode.net/6697"' -r "/set irc.server.freenode.ssl on" -r "/quit -yes"
 #Whatsapp and axolotl
@@ -928,14 +937,16 @@ sudo -H pip install python-potr
 weechat -r "/script install arespond.py atcomplete.py auth.rb auto_away.py autoauth.py autoconf.py autoconnet.py autojoin.py autjoinem.py awaylog.pl bandwidth.py bufsave.py bufsize.py chanmon.pl colorize_nicks.py  completion.py correction_completion.py fish.py go.py gribble.py highmon.pl ircrypt.py iset.pl notifo.py  otr.py queryman.py seeks.pl responsive_layout.py screen_away.py urlbuf.py urlgrab.py urlhinter.py weefish.rb yaaa.pl yaurls.pl weerock.pl whatismyip.py whowas_timeago.py whoissource.py whois_on_query.py windicate.py"  -r "/quit"
 #Slack
 sudo -H pip install websocket-client
+mkdir ~/.weechat
+mkdir ~/.weechat/python
 wget https://raw.githubusercontent.com/wee-slack/wee-slack/master/wee_slack.py
 cp wee_slack.py ~/.weechat/python/autoload
 echo -e "\rYou have 10 seconds to enter your pass: \c"
-read -t 10 -p "Introduce a secure pass to protect tokens: " PAZWE
+read -p "Introduce a secure pass to protect tokens: " PAZWE
 PAZWE="${PAZWE=$USER}"
 weechat -r "/secure passphrase $PAZWE" -r "/quit"
 echo -e "\rYou have 60 seconds to enter your Slack token: \c"
-read -t 60 -p "Introduce your Slack token. For connected groups introduce tokens separated by commas: " SLACKTOKEN
+read -p "Introduce your Slack token. For connected groups introduce tokens separated by commas: " SLACKTOKEN
 weechat -r "/set plugins.var.python.slack.slack_api_token $SLACKTOKEN" -r "/secure set slack_token $SLACKTOKEN" -r "/set plugins.var.python.slack.slack_api_token ${sec.data.slack_token}" -r "/save" -r "/python reload" -r "/set plugins.var.python.slack.server_aliases 'my-slack-subdomain:mysub,other-domain:coolbeans'" -r "/set plugins.var.python.slack.show_reaction_nicks on" -r "/quit"
 #As a relay host server
 #read -p "Introduce password for relay host: " PRHOST
