@@ -81,6 +81,21 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
 fi
 #echo 'alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
+# Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
+sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
+echo "[Action]
+Description = Ports lower than 1024 available for Tor
+Exec = sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor" | sudo tee -a /usr/share/libalpm/hooks/tor.hook
+TORPORT=$(shuf -i 2000-65000 -n 1)
+echo "TORPORT $TORPORT"
+TORCONTROLPORT=$(shuf -i 2000-65000 -n 1)
+echo "TORCONTROLPORT $TORCONTROLPORT"
+TORHASH=$(echo -n $RANDOM | sha256sum)
+sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
+sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
+sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${HASH:-2}/g" -c ":wq" /etc/tor/torrc
+sudo vim -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf
+
 # All DNS queries to Tor
 TORDNSPORT=$(shuf -i 2000-65000 -n 1)
 echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc 
@@ -98,21 +113,6 @@ sudo dnsmasq
 
 # Pacman over Tor
 echo "XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" | sudo tee -a /etc/pacman.conf
-
-# Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
-sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
-echo "[Action]
-Description = Ports lower than 1024 available for Tor
-Exec = sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor" | sudo tee -a /usr/share/libalpm/hooks/tor.hook
-TORPORT=$(shuf -i 2000-65000 -n 1)
-echo "TORPORT $TORPORT"
-TORCONTROLPORT=$(shuf -i 2000-65000 -n 1)
-echo "TORCONTROLPORT $TORCONTROLPORT"
-TORHASH=$(echo -n $RANDOM | sha256sum)
-sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
-sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
-sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${HASH:-2}/g" -c ":wq" /etc/tor/torrc
-sudo vim -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
