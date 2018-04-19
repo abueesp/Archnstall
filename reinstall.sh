@@ -917,8 +917,9 @@ sudo -H pip install scdl
 sudo -H pip install setuptools
 sudo -H pip install saltpack
 
-### WeeChat ###
-sudo pacman -S weechat --noconfirm --yes
+### Communications ###
+#IRC
+sudo pacman -S weechat --noconfirm --needed
 rm ~/.weechat/weechat.conf
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/weechat.conf -O ~/.weechat/weechat.conf
 #weechat -r "/script install vimode.py" script not installed to avoid conflicts
@@ -956,6 +957,19 @@ weechat -r "/set plugins.var.python.slack.slack_api_token $SLACKTOKEN" -r "/secu
 #weechat -r "/relay add weechat 9001" -r "/set relay.network.password $PRHOST" -r "/relay sslcertkey" -r "/relay add ssl.weechat 9001"  -r "/quit"
 #echo "You need to verify the certificate at ~/.weechat/ssl first"
 #firefox --new-tab https://www.glowing-bear.org/
+#sudo pacman -S hexchat --noconfirm --needed
+
+#P2P Videocalls
+sudo pacman -S libringclient ring-daemon ring-gnome --noconfirm --needed
+#yaourt -S jitsi --noconfirm --needed
+
+#Messaging
+yaourt -S ring --noconfirm --needed
+#yaourt -S qtox --noconfirm --needed
+
+#Multi social media
+yaourt -S rambox-bin --noconfirm --needed
+
 
 ### Rootkit checking and Audits ###
 #Unhide
