@@ -2671,3 +2671,4 @@ alias kalifyarch='printf "[archstrike] \n Server = https://mirror.archstrike.org
 alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch " | sudo tee -a /etc/pacman.conf && sudo pacman-key -- recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-    key F3104992EBF24EB872B97B9C32B0B4534209170B && Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects     try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
 alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has   not key!"'
 alias repeatmouse="java -jar /usr/src/repeat.jar"
+alias plotsystemd="systemd-analyze plot > plot.svg && deepin-image-viewer plot.svg"
