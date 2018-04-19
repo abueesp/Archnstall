@@ -958,7 +958,7 @@ weechat -r "/set plugins.var.python.slack.slack_api_token $SLACKTOKEN" -r "/secu
 ### Rootkit checking and Audits ###
 #Unhide
 echo "Unhide — A forensic tool to find processes hidden by rootkits, LKMs or by other techniques. "
-sudo pacman unhide -S --noconfirm --needed #Rkhunter instead of chkrootkit
+sudo pacman unhide -S --noconfirm --needed
 sudo unhide -m -d sys procall brute reverse
 printf'[Unit]
 Unit sudo unhide -m -d sys procall brute reverse
@@ -1003,7 +1003,8 @@ WantedBy=timers.target
 #for mail check https://wiki.archlinux.org/index.php/Systemd/Timers#MAILTO' |  sudo tee /etc/systemd/system/unhide.timer
 sudo chmod u+rwx /etc/systemd/system/unhide.timer 
 sudo chmod go-rwx /etc/systemd/system/unhide.timer 
-sudo chmod go-rwx /etc/rkhunter.conf 
+sudo chmod go-rwx /etc/rkhunter.conf
+sudo rkhunter --propupd #Avoid warning abuot rkhunter.dat
 sudo rkhunter --skip-keypress --summary --check --hash sha256 -x
 
 #Lynis
