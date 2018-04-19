@@ -194,8 +194,8 @@ sudo vim -c ":%s/auth       required   pam_tally.so/#auth       required   pam_t
 echo "Please lock down your BIOS" 
 
 # Avoid fork bombs
-sudo vim -c ":%s/#@faculty        soft    nproc           20/@faculty        soft    nproc           1000/g" -c ":wq" 
-sudo vim -c ":%s/#@faculty        hard    nproc           50/@faculty        hard    nproc           2000/g" -c ":wq" 
+sudo vim -c ":%s/#@faculty        soft    nproc           20/@faculty        soft    nproc           1000/g" -c ":wq" /etc/security/limits.conf
+sudo vim -c ":%s/#@faculty        hard    nproc           50/@faculty        hard    nproc           2000/g" -c ":wq" /etc/security/limits.conf
 
 # Prevent sudo from SFTP: 
 echo "auth   required   /lib/security/pam_listfile.so   item=user sense=deny file=/etc/vsftpd.ftpusers onerr=succeed" | sudo tee -a /etc/pam.d/vsftpd
