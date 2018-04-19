@@ -304,8 +304,10 @@ gpg2 --delete-secret-and-public-keys --batch --yes 801C7171DAC74A6D3A61ED81F7F9B
 #vi /etc/suricata/suricata.yaml -c ":%s|HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"|HOME_NET: \"[$myip]\"|g" -c ":wq"
 sudo vim -c ":%s ":%s|# -|-|g" -c ":wq" /etc/suricata/suricata.yaml #activate all rules
 suricatasslrule(){ #blacklistsslcertificates
-wget https://sslbl.abuse.ch/blacklist/$SSLRULES -O /etc/suricata/rules/$SSLRULES
-wget https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules -O /etc/suricata/rules/$SSLRULES_aggressive.rules
+wget https://sslbl.abuse.ch/blacklist/$SSLRULES 
+sudo mv $SSLRULES /etc/suricata/rules/$SSLRULES
+wget https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules
+sudo mv https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules -O /etc/suricata/rules/$SSLRULES_aggressive.rules
 echo " - $SSLRULES    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl blacklist rules
 #echo " - $SSLRULES_aggresive.rules    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
 #notice that aggresive rules are not activated
@@ -467,8 +469,8 @@ sudo make install
 cd ..
 sudo rm -r pkgtools
 bupkgs(){
-for i in \$( pacman -Qq ); do
-	bacman \$i
+for i in $( pacman -Qq ); do
+	bacman $i
 done
 }
 #alias checkpkgs='pacman -Qq | sudo paccheck --sha256sum --quiet'
