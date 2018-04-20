@@ -178,21 +178,19 @@ sudo pacman -S libpwquality --noconfirm --needed
 ##########Activate password requirements (Activate password required pam_cracklib.so retry=2 minlen=10 difok=6 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1 and password required pam_unix.so use_authtok sha512 shadow and deactivate password required pam_unix.so sha512 shadow nullok)
 #sudo vim -c ":%1,2s/#password/password" -c ":wq" /etc/pam.d/passwd 
 #sudo vim -c ":%3s/password/#password" -c ":wq" /etc/pam.d/passwd
-sudo chage -M -1 365 $USER #force to change password every 90 days (-M, -W only for warning) but without password expiration (-1, -I will set a different days for password expiration, and -E a data where account will be locked)
-sudo chage -W 90 $USER #Warning days for password changing
-pwmake 512 #Create a secure 512 bits password
-chage -l $USER #Change password
-###ALL DOWN!
 echo "auth optional pam_faildelay.so delay=1" | sudo tee -a /etc/pam.d/system-login #Increase delay in case of failed password (in this case, decreased, time in ms)
-echo "auth required pam_tally2.so deny=3 unlock_time=5000 onerr=succeed" | sudo tee -a /etc/pam.d/system-login #Lockout user after three failed login attempts (pam_tally is deprecated and superseded by pam_tally2, time in ms
+echo "auth required pam_tally2.so deny=3 unlock_time=5 root_unlock_time=15 onerr=succeed" | sudo tee -a /etc/pam.d/system-login #Lockout user after three failed login attempts (pam_tally is deprecated and superseded by pam_tally2, time in ms
 echo "account required pam_tally2.so" | sudo tee -a /etc/pam.d/system-login
 sudo vim -c ":%s/auth       required   pam_tally.so/#auth       required   pam_tally.so/g" -c ":wq" /etc/pam.d/system-login
 #echo "MENU MASTER PASSWD $syspass" | sudo tee -a syslinux.cfg #Syslinux bootloader security master password
 # TAKE BETWEEN root: AND : FROM $(sudo cat /etc/shadow | grep root)
 #https://wiki.archlinux.org/index.php/GRUB/Tips_and_tricks#Password_protection_of_GRUB_menu
-
+sudo chage -M -1 365 $USER #force to change password every 90 days (-M, -W only for warning) but without password expiration (-1, -I will set a different days for password expiration, and -E a data where account will be locked)
+sudo chage -W 90 $USER #Warning days for password changing
+pwmake 512 #Create a secure 512 bits password
+chage -l $USER #Change password
 #BIOS lock down
-echo "Please lock down your BIOS" 
+echo " >>>>>> Please lock down your BIOS <<<<< " 
 
 # Avoid fork bombs
 sudo vim -c ":%s/#@faculty        soft    nproc           20/@faculty        soft    nproc           1000/g" -c ":wq" /etc/security/limits.conf
@@ -257,9 +255,9 @@ echo 'Section "ServerFlags"
 EndSection' | sudo tee -a /usr/share/X11/xorg.conf.d/ 50-notsudo.conf
 
 # Extra recommendations
-echo "Do not use rlogin, rsh, and telnet"
-echo "Take care of securing sftp, auth, nfs, rpc, postfix, samba and sql https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Securing_Services.html"
-echo "Take care of securing Docker https://wiki.archlinux.org/index.php/Docker#Insecure_registries https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_atomic_host/7/html-single/getting_started_with_containers/"
+echo ">>> Do not use rlogin, rsh, and telnet <<<"
+echo ">>> Take care of securing sftp, auth, nfs, rpc, postfix, samba and sql https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Securing_Services.html <<<"
+echo ">>> Take care of securing Docker https://wiki.archlinux.org/index.php/Docker#Insecure_registries https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux_atomic_host/7/html-single/getting_started_with_containers/ <<<"
 
 
 ### Network ###
