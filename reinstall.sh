@@ -269,26 +269,26 @@ if [ -s /etc/ssh/sshd_config ]
 then
     echo "PermitRootLogin no" | sudo tee -a /etc/ssh/sshd_config
     echo "Protocol 2" | sudo tee -a /etc/ssh/sshd_config
-    MaxAuthTries 3 | sudo tee -a etc/ssh/sshd_config
+    echo "MaxAuthTries 3" | sudo tee -a etc/ssh/sshd_config
 else
     sudo vi /etc/ssh/sshd_config -c ':%s/PermitRootLogin without password/PermitRootLogin no/g' -c ':wq'
     sudo vi /etc/ssh/sshd_config -c ':%s/Protocol 2,1/Protocol 2/g' -c ':wq'
-    sudo vi etc/ssh/sshd_config -c ":%s|MaxAuthTries 6|MaxAuthTries 3|g" -c ":wq" 
+    sudo vi /etc/ssh/sshd_config -c ":%s|MaxAuthTries 6|MaxAuthTries 3|g" -c ":wq" 
 
 fi
 
 # SSHguard (prefered over Fail2ban)
 sudo pacman -S sshguard --noconfirm --needed
-sudo vim -c ":%s ":%s|BLACKLIST_FILE=120:/var/db/sshguard/blacklist.db|BLACKLIST_FILE=50:/var/db/sshguard/blacklist.db|g" -c ":wq" /etc/sshguard.conf #Danger level: 5 failed logins -> banned
-sudo vim -c ":%s ":%s|THRESHOLD=30|THRESHOLD=10|g" -c ":wq"  /etc/sshguard.conf 
+sudo vim -c ":%s|BLACKLIST_FILE=120:/var/db/sshguard/blacklist.db|BLACKLIST_FILE=50:/var/db/sshguard/blacklist.db|g" -c ":wq" /etc/sshguard.conf #Danger level: 5 failed logins -> banned
+sudo vim -c ":%s|THRESHOLD=30|THRESHOLD=10|g" -c ":wq"  /etc/sshguard.conf 
 sudo systemctl enable --now sshguard.service
 
 # OpenSSL and NSS
 sudo pacman -S openssl nss --noconfirm --needed
 cat $(locate ca-certificates) #check all certificates
 #blacklist ssl symanteccertificate
-wget https://crt.sh/?d=19538258 -O /etc/ca-certificates/trust-source/blacklist/19538258-Symantec.crt  #Blacklist Symantec SSL Cert
-etc/ca-certificates/trust-source/blacklist/
+wget https://crt.sh/?d=19538258 
+sudo mv index.html?d=19538258 /etc/ca-certificates/trust-source/blacklist/19538258-Symantec.crt  #Blacklist Symantec SSL Cert
 sudo update-ca-trust
 
 # Suricata IDS/IPS (prefered over Snort https://www.aldeid.com/wiki/Suricata-vs-snort)
