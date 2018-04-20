@@ -152,7 +152,6 @@ TERM="${TERMINAL:5:4}5"
 echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 
 # Checking conf
-sudo cp -r $TORCHROOT/bin/ $TORCHROOT/usr/bin/
 sudo cp -r $TORCHROOT/var/lib/ /var/lib/tor
 sudo chown -R tor:tor $TORCHROOT/var/lib/tor
 sudo cp /etc/tor/torrc $TORCHROOT/etc/tor/torrc
