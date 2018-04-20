@@ -299,9 +299,8 @@ makepkg -si --noconfirm
 cd ..
 sudo rm -r suricata
 gpg2 --delete-secret-and-public-keys --batch --yes 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
-
-#vi /etc/suricata/suricata.yaml -c ":%s|HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"|HOME_NET: \"[$myip]\"|g" -c ":wq"
-sudo vim -c ":%s ":%s|# -|-|g" -c ":wq" /etc/suricata/suricata.yaml #activate all rules
+#sudo vim /etc/suricata/suricata.yaml -c ":%s|HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"|HOME_NET: \"[$myip]\"|g" -c ":wq"
+sudo vim -c ":%s|# -|-|g" -c ":wq" /etc/suricata/suricata.yaml #activate rules
 suricatasslrule(){ #blacklistsslcertificates
 wget https://sslbl.abuse.ch/blacklist/$SSLRULES 
 sudo mv $SSLRULES /etc/suricata/rules/$SSLRULES
