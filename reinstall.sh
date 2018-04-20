@@ -400,25 +400,25 @@ table inet filter {
                 counter drop
         }
 }" | sudo tee -a /etc/nftables.conf #other examples https://wiki.archlinux.org/index.php/Nftables#Examples
-nft flush ruleset #Flush the current ruleset:
-nft add table inet filter #Add a table:
+sudo nft flush ruleset #Flush the current ruleset:
+sudo nft add table inet filter #Add a table:
 #Add the input, forward, and output base chains. The policy for input and forward will be to drop. The policy for output will be to accept.
-nft add chain inet filter input { type filter hook input priority 0 \; policy drop \; }
-nft add chain inet filter forward { type filter hook forward priority 0 \; policy drop \; }
-nft add chain inet filter output { type filter hook output priority 0 \; policy accept \; }
+sudo nft add chain inet filter input { type filter hook input priority 0 \; policy drop \; }
+sudo nft add chain inet filter forward { type filter hook forward priority 0 \; policy drop \; }
+sudo nft add chain inet filter output { type filter hook output priority 0 \; policy accept \; }
 #Add two regular chains that will be associated with tcp and udp:
-nft add chain inet filter TCP
-nft add chain inet filter UDP
-nft add rule inet filter input ct state related,established accept #Related and established traffic will be accepted:
-nft add rule inet filter input iif lo accept #All loopback interface traffic will be accepted:
-nft add rule inet filter input ct state invalid drop #Drop any invalid traffic:
-nft add rule inet filter input ip protocol icmp icmp type echo-request ct state new accept #New echo requests (pings) will be accepted:
-nft add rule inet filter input ip protocol udp ct state new jump UDP #New upd traffic will jump to the UDP chain:
-nft add rule inet filter input ip protocol tcp tcp flags \& \(fin\|syn\|rst\|ack\) == syn ct state new jump TCP #New tcp traffic will jump to the TCP chain:
+sudo nft add chain inet filter TCP
+sudo nft add chain inet filter UDP
+sudo nft add rule inet filter input ct state related,established accept #Related and established traffic will be accepted:
+sudo nft add rule inet filter input iif lo accept #All loopback interface traffic will be accepted:
+sudo add rule inet filter input ct state invalid drop #Drop any invalid traffic:
+sudo add rule inet filter input ip protocol icmp icmp type echo-request ct state new accept #New echo requests (pings) will be accepted:
+sudo add rule inet filter input ip protocol udp ct state new jump UDP #New upd traffic will jump to the UDP chain:
+sudo add rule inet filter input ip protocol tcp tcp flags \& \(fin\|syn\|rst\|ack\) == syn ct state new jump TCP #New tcp traffic will jump to the TCP chain:
 #Reject all traffic that was not processed by other rules:
-nft add rule inet filter input ip protocol udp reject
-nft add rule inet filter input ip protocol tcp reject with tcp reset
-nft add rule inet filter input counter reject with icmp type prot-unreachable
+sudo add rule inet filter input ip protocol udp reject
+sudo add rule inet filter input ip protocol tcp reject with tcp reset
+sudo add rule inet filter input counter reject with icmp type prot-unreachable
 
 # Rootkit checking and Audits (see at the EOF)
 
@@ -491,6 +491,10 @@ sudo pacman -S downgrader --noconfirm --needed
 
 # Search tools
 sudo pacman -S mlocate recoll --noconfirm --needed
+if [ ! -f /home/$USER/.recoll/recoll.conf ]; then
+    mkdir /home/$USER/.recoll
+    cp /usr/share/recoll/examples/recoll.conf /home/$USER/.recoll/recoll.conf
+fi
 vim -c ":%s|topdirs = / ~|topdirs = / ~|g" -c ":wq" /home/$USER/.recoll/recoll.conf
 sudo updatedb
 
@@ -529,10 +533,10 @@ sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox virtualbox-guest-iso 
 sudo modprobe -a vboxdrv vboxnetflt vboxpci vboxnetadp
 sudo /sbin/rcvboxdrv -h
 sudo gpasswd -a $USER vboxusers
-echo "vboxdrv" | tee -a /etc/modules-load.d/virtualbox.conf
-echo "vboxnetadp" | tee -a /etc/modules-load.d/virtualbox.conf
-echo "vboxnetflt" | tee -a /etc/modules-load.d/virtualbox.conf
-echo "vboxpci" | tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxdrv" | sudo tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxnetadp" | sudo tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxnetflt" | sudo tee -a /etc/modules-load.d/virtualbox.conf
+echo "vboxpci" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 
 
 version=$(vboxmanage -v)
