@@ -1,8 +1,7 @@
-###DNS and Firewall
-###Revisar password management
-##Awesome Linux
 
 ### Questions ### https://www.archlinux.org/feeds/news/ https://wiki.archlinux.org/index.php/IRC_channel (add to weechat) https://www.archlinux.org/feeds/  https://security.archlinux.org/
+#DNS (unbound resolv.conf dnssec dyndns) and Firewall
+#Awesome Linux
 #create encfs alias
 #torb yes but torify udp Connection to a local address are denied since it might be a TCP DNS query to a local DNS server. Rejecting it for safety reasons. (in tsocks_connect() at connect.c
 #unbound resolv.conf dnssec dyndns
@@ -11,12 +10,8 @@
 #machinectl? 
 #next4 snapper? 
 #different results on listpkgsbysize? 
-#journalctl -p err..alert journalctl -p 3 -xb?
 #UsbGuard requires lrelease-qt4 but not on qt4-4.8.7-23, only qt4-4.8.7-24?
-#lyns? "Minimal of 2 responsive nameservers" and audit port
-#own repo
 #create pkgbuild from deb ^https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
-#torchat i2p freenet   Tomb Keyloggers (also HW Keyloggers) srm
 #customizerom
 
 ### Restoring Windows on Grub2 ###
