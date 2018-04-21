@@ -935,7 +935,7 @@ yaourt -S rambox-bin --noconfirm --needed
 echo "Unhide — A forensic tool to find processes hidden by rootkits, LKMs or by other techniques. "
 sudo pacman unhide -S --noconfirm --needed
 sudo unhide -m -d sys procall brute reverse
-printf'[Unit]
+printf '[Unit]
 Unit sudo unhide -m -d sys procall brute reverse
 Description=Run unhide weekly and on boot
 
@@ -948,21 +948,6 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 #for mail check https://wiki.archlinux.org/index.php/Systemd/Timers#MAILTO' | sudo tee /etc/systemd/system/unhide.timer
-sudo chmod u+rwx /etc/systemd/system/unhide.timer 
-sudo chmod go-rwx /etc/systemd/system/unhide.timer 
-sudo chmod go-rwx /etc/rkhunter.conf
-
-#Rkhunter
-echo "Rkhunter — Checks machines for the presence of rootkits and other unwanted tools."
-sudo pacman rkhunter -S --noconfirm --needed #Rkhunter instead of chkrootkit
-echo 'SCRIPTWHITELIST="/usr/bin/egrep"' | sudo tee -a /etc/rkhunter.conf #false positive In Arch it is a bash script not a binary
-echo 'SCRIPTWHITELIST="/usr/bin/fgrep"' | sudo tee -a /etc/rkhunter.conf #false positive In Arch it is a bash script not a binary
-echo 'SCRIPTWHITELIST="/usr/bin/ldd"' | sudo tee -a /etc/rkhunter.conf #false positive In Arch it is a bash script not a binary
-echo 'EXISTWHITELIST="/usr/bin/vendor_perl/GET"' | sudo tee -a /etc/rkhunter.conf #false positive Not in Arch installations
-echo 'ALLOWHIDDENFILE="/etc/.updated"' | sudo tee -a /etc/rkhunter.conf #false positive This file was created by systemd-update-done. Its only purpose is to hold a timestamp of the time this directory was updated. See man:systemd-update-done.service(8).
-echo 'ALLOWHIDDENFILE="/usr/share/man/man5/.k5login.5.gz"' | sudo tee -a /etc/rkhunter.conf #false positive duplicated for krb5 package
-echo 'ALLOWHIDDENFILE="/usr/share/man/man5/.k5login.5.gz"' | sudo tee -a  /etc/rkhunter.conf #false positive duplicated for krb5 package
-echo 'ALLOWDEVFILE="/dev/dsp"' | sudo tee -a  /etc/rkhunter.conf #false positive https://wiki.archlinux.org/index.php/Open_Sound_System
 printf'[Unit]
 Unit=sudo rkhunter --skip-keypress --summary --check --hash sha256 -x
 Description=Run unhide weekly and on boot
@@ -978,9 +963,24 @@ WantedBy=timers.target
 #for mail check https://wiki.archlinux.org/index.php/Systemd/Timers#MAILTO' |  sudo tee /etc/systemd/system/unhide.timer
 sudo chmod u+rwx /etc/systemd/system/unhide.timer 
 sudo chmod go-rwx /etc/systemd/system/unhide.timer 
+
+#Rkhunter
+echo "Rkhunter — Checks machines for the presence of rootkits and other unwanted tools."
+sudo pacman rkhunter -S --noconfirm --needed #Rkhunter instead of chkrootkit
+sudo touch /etc/rkhunter.conf
+echo 'SCRIPTWHITELIST="/usr/bin/egrep"' | sudo tee -a /etc/rkhunter.conf #false positive In Arch it is a bash script not a binary
+echo 'SCRIPTWHITELIST="/usr/bin/fgrep"' | sudo tee -a /etc/rkhunter.conf #false positive In Arch it is a bash script not a binary
+echo 'SCRIPTWHITELIST="/usr/bin/ldd"' | sudo tee -a /etc/rkhunter.conf #false positive In Arch it is a bash script not a binary
+echo 'EXISTWHITELIST="/usr/bin/vendor_perl/GET"' | sudo tee -a /etc/rkhunter.conf #false positive Not in Arch installations
+echo 'ALLOWHIDDENFILE="/etc/.updated"' | sudo tee -a /etc/rkhunter.conf #false positive This file was created by systemd-update-done. Its only purpose is to hold a timestamp of the time this directory was updated. See man:systemd-update-done.service(8).
+echo 'ALLOWHIDDENFILE="/usr/share/man/man5/.k5login.5.gz"' | sudo tee -a /etc/rkhunter.conf #false positive duplicated for krb5 package
+echo 'ALLOWHIDDENFILE="/usr/share/man/man5/.k5login.5.gz"' | sudo tee -a  /etc/rkhunter.conf #false positive duplicated for krb5 package
+echo 'ALLOWDEVFILE="/dev/dsp"' | sudo tee -a  /etc/rkhunter.conf #false positive https://wiki.archlinux.org/index.php/Open_Sound_System
 sudo chmod go-rwx /etc/rkhunter.conf
 sudo rkhunter --propupd #Avoid warning abuot rkhunter.dat
-sudo rkhunter --skip-keypress --summary --check --hash sha256 -x
+sudo rkhunter --skip-keypress --summary --check --hash sha256 -x --configfile /etc/rkhunter.conf
+sudo cat /var/log/rkhunter.log | grep -A 6 Warning
+sudo cat /var/log/rkhunter.log | grep -A 6 Hidden
 
 #Lynis
 echo "Lynis — Security and system auditing tool to harden Unix/Linux systems. https://cisofy.com/lynis/"
@@ -990,6 +990,8 @@ sudo lynis audit system
 #Tiger
 echo "Tiger — Security tool that can be use both as a security audit and intrusion detection system. http://www.nongnu.org/tiger/" 
 aurman -S tiger --needed --noconfirm --noedit
+sudo vim -c ":%s|which ypcat|which ypcat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
+sudo vim -c ":%s|which niscat|which niscat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
 sudo tiger
 
 #Tor-browser
