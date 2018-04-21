@@ -127,7 +127,6 @@ sudo mkdir $VARCONTAINERS
 sudo ln -s $SVRCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
 sudo mkdir /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d
 sudo ifconfig #adding container ad-hoc vlan
-echo -e "\rYou have 15 seconds to enter your name: \c"
 read -p "Write network interface to create VLAN (wlp2s0 by default): " INTERFACE
 INTERFACE="${INTERFACE:=wlp2s0}"
 VLANINTERFACE="${INTERFACE:0:2}.tor"
@@ -346,7 +345,6 @@ WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/suricata@$VLAN
 sudo systemctl enable --now suricata@$VLANINTERFACE.service
 
 # Ports
-echo -e "\rYou have 15 seconds to enter your name: \c"
 read -p "At this point you should decide what ports you want to open to incoming connections, which are handled by the TCP and UDP chains. For example to open connections for a web server add, without commas: 80 web, 443 https, 22 ssh, 5353 chrome, $TORPORT tor... by default 443 and all of them udp and tcp): " ports
 nameofvar="ports"
 ports="${ports:=443}"
@@ -554,9 +552,9 @@ sudo pacman -S dkms vagrant --noconfirm --needed
 vagrant plugin install vagrant-vbguest
 wget http://download.virtualbox.org/virtualbox/$var1/VBoxGuestAdditions_$var1.iso
 sudo mv VBoxGuestAdditions_$var1.iso /usr/share/VBoxGuestAdditions_$var1.iso
-echo "To insert iso additions, install first your vm"
+echo "To insert iso additions, install a vm named 'myvm' and move the .iso to your user folder"
 virtualbox
-vboxmanage storageattach work --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/home/$USER/VBox**.iso"
+vboxmanage storageattach myvm --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/home/$USER/VBox**.iso"
 
 
 ### Emacs ###
@@ -689,7 +687,6 @@ git config --global credential.helper cache
 # Set git to use the credential memory cache
 git config --global credential.helper 'cache --timeout=3600'
 # Set the cache to timeout after 1 hour (setting is in seconds)
-echo -e "\rYou have 10 seconds to enter each git data: \c"
 read -p "Please set your git username (by default $USER): " gitusername
 gitusername="${gitusername=$USER}"
 git config --global user.name $gitusername
@@ -714,7 +711,6 @@ case "$creategitkey" in
 	gpg --list-secret-keys
         ;;
 esac
-echo -e "\rYou have 60 seconds to enter your git gpg key: \c"
 read -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
 gpg --export -a $keyusername
 git config --global user.signingkey $keyusername
@@ -836,9 +832,10 @@ cd ..
 cd ..
 cd ~/.mozilla/firefox/*.default
 #vim -c ':%s/user_pref("browser.safebrowsing.*//g' -c ":wq" prefs.js
-vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
-vim -c ':%s/user_pref("toolkit.telemetry.cachedClientID".*//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
-vim -c ':%s|user_pref("privacy.trackingprotection.pbmode.enabled", false);|user_pref("privacy.trackingprotection.pbmode.enabled", true);|g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" prefs.js
+vim -c ':%s/user_pref("toolkit.telemetry.cachedClientID".*//g' -c ":wq" prefs.js
+vim -c ':%s|user_pref("privacy.trackingprotection.pbmode.enabled", false);|user_pref("privacy.trackingprotection.pbmode.enabled", true);|g' -c ":wq" prefs.js
+cd
 
 #Opera
 sudo pacman -S opera opera-developer --noconfirm --needed
@@ -856,20 +853,20 @@ sudo pacman -S chromium --noconfirm --needed
 #HASH=$(echo $CREATEHASH | head -n1 | sed -e 's/\s.*$//')
 #HASHPREF=$(echo $HASH | awk '{print toupper($0)}')
 #vim -c ":%s/"super_mac":".*"}}/"super_mac":"$HASHPREF"}}/g' -c ":wq" ~/.config/chromium/Default/'Secure Preferences'
-chromium-browser https://chrome.google.com/webstore/detail/url-tracking-stripper-red/flnagcobkfofedknnnmofijmmkbgfamf
-chromium-browser https://chrome.google.com/webstore/detail/dont-track-me-google/gdbofhhdmcladcmmfjolgndfkpobecpg
-chromium-browser https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
-chromium-browser https://chrome.google.com/webstore/detail/adblock/gighmmpiobklfepjocnamgkkbiglidom
-chromium-browser https://chrome.google.com/webstore/detail/session-buddy/edacconmaakjimmfgnblocblbcdcpbko
-chromium-browser https://chrome.google.com/webstore/detail/project-naptha/molncoemjfmpgdkbdlbjmhlcgniigdnf
-chromium-browser https://chrome.google.com/webstore/detail/form-filler/bnjjngeaknajbdcgpfkgnonkmififhfo
-chromium-browser https://chrome.google.com/webstore/detail/autoform/fdedjnkmcijdhgbcmmjdogphnmfdjjik
-chromium-browser https://chrome.google.com/webstore/detail/m-i-m/jlppachnphenhdidmmpnbdjaipfigoic
-chromium-browser https://chrome.google.com/webstore/detail/librarian-for-arxiv-ferma/ddoflfjcbemgfgpgbnlmaedfkpkfffbm
-chromium-browser https://chrome.google.com/webstore/detail/noiszy/immakaidhkcddagdjmedphlnamlcdcbg
-chromium-browser https://chrome.google.com/webstore/detail/ciiva-search/fkmanbkfjcpkhonmmdopjmjopbclegel
-chromium-browser https://blockchain-dns.info/files/BDNS-1.0.8.crx
-chromium-browser https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfks
+chromium https://chrome.google.com/webstore/detail/url-tracking-stripper-red/flnagcobkfofedknnnmofijmmkbgfamf
+chromium https://chrome.google.com/webstore/detail/dont-track-me-google/gdbofhhdmcladcmmfjolgndfkpobecpg
+chromium https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
+chromium https://chrome.google.com/webstore/detail/adblock/gighmmpiobklfepjocnamgkkbiglidom
+chromium https://chrome.google.com/webstore/detail/session-buddy/edacconmaakjimmfgnblocblbcdcpbko
+chromium https://chrome.google.com/webstore/detail/project-naptha/molncoemjfmpgdkbdlbjmhlcgniigdnf
+chromium https://chrome.google.com/webstore/detail/auto-form-filler/cfghpjmgdnienmgcajbmjjemfnnmldlh 
+chromium https://chrome.google.com/webstore/detail/autoform/fdedjnkmcijdhgbcmmjdogphnmfdjjik
+chromium https://chrome.google.com/webstore/detail/m-i-m/jlppachnphenhdidmmpnbdjaipfigoic
+chromium https://chrome.google.com/webstore/detail/librarian-for-arxiv-ferma/ddoflfjcbemgfgpgbnlmaedfkpkfffbm
+chromium https://chrome.google.com/webstore/detail/noiszy/immakaidhkcddagdjmedphlnamlcdcbg
+chromium https://chrome.google.com/webstore/detail/ciiva-search/fkmanbkfjcpkhonmmdopjmjopbclegel
+chromium https://blockchain-dns.info/files/BDNS-1.0.8.crx
+chromium https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk 
 
 #Icecat
 sudo pacman -S icecat --noconfirm --needed
@@ -1002,13 +999,6 @@ aurman -S tor-browser-$LANGUAGE --needed --noconfirm --noedit
 ### Autoremove and Snapshot ###
 sudo pacman -Rns $(pacman -Qtdq) --noconfirm
 sudo pacman -Qq | sudo paccheck --sha256sum --quiet
-if [ $? -eq 0 ]
-then
-    echo "sha256 sum of pkgs validated"
-else
-    echo "bad sha256 sum!"
-    exit
-fi
 #snapper -c initial create --description initial #Make snapshot initial (no chsnap for ext4)
 
 
