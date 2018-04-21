@@ -978,6 +978,7 @@ echo 'ALLOWHIDDENFILE="/usr/share/man/man5/.k5login.5.gz"' | sudo tee -a  /etc/r
 echo 'ALLOWDEVFILE="/dev/dsp"' | sudo tee -a  /etc/rkhunter.conf #false positive https://wiki.archlinux.org/index.php/Open_Sound_System
 sudo chmod go-rwx /etc/rkhunter.conf
 sudo rkhunter --propupd #Avoid warning abuot rkhunter.dat
+sudo rkhunter --update
 sudo rkhunter --skip-keypress --summary --check --hash sha256 -x --configfile /etc/rkhunter.conf
 sudo cat /var/log/rkhunter.log | grep -A 6 Warning
 sudo cat /var/log/rkhunter.log | grep -A 6 Hidden
