@@ -255,9 +255,6 @@ echo ">>> Take care of securing Docker https://wiki.archlinux.org/index.php/Dock
 
 
 ### Network ###
-# Tools
-sudo pacman -S traceroute nmap arp-scan conntrack-tools --noconfirm --needed
-
 # SSH
 if [ -s /etc/ssh/sshd_config ]
 then
@@ -722,6 +719,14 @@ sudo rm ~/.tmux.conf~
 cp ~/.tmux.conf ~/.tmux.conf~
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.tmux.conf
 
+
+### Tools ###
+#Network Tools
+sudo pacman -S traceroute nmap arp-scan conntrack-tools --noconfirm --needed
+yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --needed
+
+#Disk Tools
+sudo pacman -S gparted hdparm -y
 
 ### Office tools ###
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
