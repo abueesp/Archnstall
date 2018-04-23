@@ -190,6 +190,9 @@ echo " >>>>>> Please lock down your BIOS <<<<< "
 sudo vim -c ":%s/#@faculty        soft    nproc           20/@faculty        soft    nproc           1000/g" -c ":wq" /etc/security/limits.conf
 sudo vim -c ":%s/#@faculty        hard    nproc           50/@faculty        hard    nproc           2000/g" -c ":wq" /etc/security/limits.conf
 
+#Disable ICMP
+echo "Check function disableremoteping"
+
 # Prevent sudo from SFTP: 
 echo "auth   required   /lib/security/pam_listfile.so   item=user sense=deny file=/etc/vsftpd.ftpusers onerr=succeed" | sudo tee -a /etc/pam.d/vsftpd
 #Similar line can be added to the PAM configuration files, such as /etc/pam.d/pop and /etc/pam.d/imap for mail clients, or /etc/pam.d/sshd for SSH clients.
