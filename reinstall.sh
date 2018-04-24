@@ -483,7 +483,7 @@ sudo rm -r aurman
 sudo pacman -S downgrader --noconfirm --needed
 
 # Search tools
-sudo pacman -S mlocate recoll --noconfirm --needed
+sudo pacman -S mlocate recoll the_silver_searcher --noconfirm --needed
 if [ ! -f /home/$USER/.recoll/recoll.conf ]; then
     mkdir /home/$USER/.recoll
     cp /usr/share/recoll/examples/recoll.conf /home/$USER/.recoll/recoll.conf
