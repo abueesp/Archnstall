@@ -23,6 +23,15 @@ if [ $? -ne 0 ]
                         echo "No Windows installed"
 fi
 
+### MAC ### 
+echo "Randomize MAC"
+printf'
+[connection-mac-randomization]
+# Randomize MAC for every ethernet connection
+ethernet.cloned-mac-address=random
+# Generate a random MAC for each WiFi and associate the two permanently.
+wifi.cloned-mac-address=stable' | tee -a /etc/NetworkManager/NetworkManager.conf
+
 ### Optimize Pacman, Update, Upgrade, Snapshot ###
 sudo pacman -Sc --noconfirm && sudo pacman-optimize #Improving pacman database access speeds reduces the time taken in database-related tasks
 sudo pacman -Syu --noconfirm #update & upgrade
