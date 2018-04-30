@@ -2693,3 +2693,12 @@ alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~hask
 alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has   not key!"'
 alias repeatmouse="java -jar /usr/src/repeat.jar"
 alias plotsystemd="systemd-analyze plot > plot.svg && deepin-image-viewer plot.svg"
+
+pythonserver(){
+if [ -z "python2" ]
+  then
+  python -m SimpleHTTPServer 8000
+else
+  python2 -m SimpleHTTPServer 8000
+fi
+}
