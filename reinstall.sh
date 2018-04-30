@@ -914,6 +914,11 @@ sudo pacman -S python-pip --nonconfirm --needed
 #Some Python tools
 sudo -H pip install percol #Indexer
 sudo -H pip install shyaml csvkit #yaml csv
+sudo pacman -S the_silver_searcher --noconfirm --needed
+printf 'tag() { 
+command tag "$@"
+source /tmp/tag_aliases}
+alias ag=tag' | tee -a ~/.bashrc
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
