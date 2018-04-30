@@ -491,6 +491,11 @@ sudo pacman -S downgrader --noconfirm --needed
 
 # Search tools
 sudo pacman -S mlocate recoll the_silver_searcher --noconfirm --needed
+yaourt -S tag-ag --noconfirm 
+printf 'tag() { 
+command tag "$@"
+source /tmp/tag_aliases}
+alias ag=tag' | tee -a ~/.bashrc
 if [ ! -f /home/$USER/.recoll/recoll.conf ]; then
     mkdir /home/$USER/.recoll
     cp /usr/share/recoll/examples/recoll.conf /home/$USER/.recoll/recoll.conf
@@ -914,11 +919,6 @@ sudo pacman -S python-pip --nonconfirm --needed
 #Some Python tools
 sudo -H pip install percol #Indexer
 sudo -H pip install shyaml csvkit #yaml csv
-sudo pacman -S the_silver_searcher --noconfirm --needed
-printf 'tag() { 
-command tag "$@"
-source /tmp/tag_aliases}
-alias ag=tag' | tee -a ~/.bashrc
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
