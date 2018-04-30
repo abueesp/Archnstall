@@ -792,8 +792,8 @@ alias opensudo="read -p 'Write down the path/route/file to open permissions: ' A
 alias skill="sudo kill -9"
 alias nmapp="sudo nmap -v -A --reason -O -sV -PO -sU -sX -f -Pn --spoof-mac 0"
 alias nmap100="sudo nmap -F -v -A --reason -O -sV -PO -sU -sX -f -Pn --spoof-mac 0"
-alias lsd="ls -ld && sudo du -sh && ls -i1 -latr  -FGAhp --color=auto" # ltr sort by date
-alias lss="ls -ld && sudo du -sh && ls -i1 -laSr  -FGAhp --color=auto" # lSr sort by size
+alias lsd="ls -ld && sudo du -sh && ls -i1 -latr -FGAhp --color=auto --group-directories-first -C" # ltr sort by date
+alias lss="ls -ld && sudo du -sh && ls -i1 -laSr -FGAhp --color=auto --group-directories-first -C" # lSr sort by size
 alias lsall="ls -ld && sudo du -sh && ls -i1 -latr -lSr -FGAhp --color=auto -t -a -al -lR" # recursive ls
 alias la="ls -ld && ls --color=auto -t -atr" #la is the new ls
 function lgo(){ cd "$@" && la; } #lgo is the new cd + ls
