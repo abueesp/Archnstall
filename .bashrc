@@ -915,13 +915,13 @@ echo $(echo $RANDOM | sudo hashalot -x -s 2 ripemd160)
 echo $(echo $RANDOM | sudo hashalot -x -s 2 rmd160compat)
 echo ""
 echo "Your random 256bits hexadecimal hash is"
-echo $(echo $RANDOM | sudo hashalot -x -s 2 sha256)
+echo $(echo $RANDOM | sha256sum)
 echo ""
 echo "Your random 384bits hexadecimal hash is"
 echo $(echo $RANDOM | sudo hashalot -x -s 2 sha384)
 echo ""
 echo "Your random 512bits hexadecimal hash is"
-echo $(echo $RANDOM | sudo hashalot -x -s 2 sha512)
+echo $(echo $RANDOM | sha512sum)
 }
 
 count() {
