@@ -792,15 +792,18 @@ wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.tmux.conf
 
 
 ### Tools ###
-#Network Tools
+#Network tools
 sudo pacman -S traceroute nmap arp-scan conntrack-tools --noconfirm --needed
 yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --needed
 yaourt -S slurm nethogs --noconfirm #tops
 
-#Disk Tools
+#Backups
+sudo pacman -S duplicity deja-dup borg --noconfirm --needed 
+
+#Disk tools
 sudo pacman -S gparted hdparm -y
 
-### Office tools ###
+#Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
 sudo pacman -S libreoffice grc unoconv detox pandoc duplicity deja-dup --noconfirm --needed #Text tools
 yaourt -S apvlv --noconfirm --needed
@@ -809,7 +812,7 @@ sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
 yaourt -S bashblog-git --noconfirm #blog
 
-### Other Tools ###
+#Other tools
 sudo pacman -S brasero qemu archiso --noconfirm --needed
 sudo pacman -S terminator d-feet htop autojump iotop task atop vnstat at nemo ncdu tree recordmydesktop --noconfirm --needed
 REPEATVERSION=4.0.1
