@@ -822,6 +822,10 @@ wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_
 #Blindlector: Orca
 sudo pacman -S units dateutils --noconfirm --needed
 sudo -H pip install when-changed #run a command (alert) when file is changed
+wget https://gist.githubusercontent.com/Westacular/5996271/raw/147384089e72f4009f177cd2d5c089bb2d8e5934/birthday_second_counter.py
+sudo mv birthday_second_counter.py /bin/timealive
+sudo chmod +x /bin/timealive
+
 
 ### Browsers ###
 #Flash
