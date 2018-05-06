@@ -786,6 +786,7 @@ wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.tmux.conf
 #Network Tools
 sudo pacman -S traceroute nmap arp-scan conntrack-tools --noconfirm --needed
 yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --needed
+yaourt -S slurm nethogs --noconfirm #tops
 
 #Disk Tools
 sudo pacman -S gparted hdparm -y
@@ -797,6 +798,7 @@ yaourt -S apvlv --noconfirm --needed
 sudo pacman -S xmlstarlet jq datamash bc gawk mawk --noconfirm --needed #XML and jquery #wc join paste cut sort uniq
 sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
+yaourt -S bashblog-git --noconfirm #blog
 
 ### Other Tools ###
 sudo pacman -S brasero qemu archiso --noconfirm --needed
@@ -806,6 +808,8 @@ REPEATVER=4_0_1
 wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_$REPEATVER.jar -O /usr/src/repeat.jar && pacman -S jdk8-openjdk --noconfirm --needed
 #echo 'alias repeatmouse="java -jar /usr/src/repeat.jar"' | tee -a ~/.bashrc
 #Blindlector: Orca
+sudo pacman -S units dateutils --noconfirm --needed
+sudo -H pip install when-changed #run a command (alert) when file is changed
 
 ### Browsers ###
 #Flash
