@@ -1203,8 +1203,8 @@ ls /var/crash
 echo "LOGS"
 ls /var/log
 read -p "Introduce what you want check specifying if it is a /cache/file, a /crash/file or a /log/file:" FILE
-sudo pacman -S cat -y
 cat -n /var/$FILE
+less -F /var/$FILE
 read -p "You can search for a concrete word or line using percol or ag" ENTER
 sudo -H pip install percol
 sudo pacman -S the_silver_searcher --needed --noconfirm
