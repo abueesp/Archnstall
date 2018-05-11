@@ -814,7 +814,8 @@ yaourt -S bashblog-git --noconfirm #blog
 
 #Other tools
 sudo pacman -S brasero qemu archiso --noconfirm --needed
-sudo pacman -S terminator d-feet htop autojump iotop task atop vnstat at nemo ncdu tree recordmydesktop --noconfirm --needed
+sudo pacman -S terminator tilix --noconfirm --needed
+sudo pacman -S d-feet htop autojump iotop task atop vnstat at nemo ncdu tree recordmydesktop --noconfirm --needed
 REPEATVERSION=4.0.1
 REPEATVER=4_0_1
 wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_$REPEATVER.jar -O /usr/src/repeat.jar && pacman -S jdk8-openjdk --noconfirm --needed
