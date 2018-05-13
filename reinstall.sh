@@ -14,7 +14,7 @@
 
 ### Restoring Windows on Grub2 ###
 sudo os-prober 
-if [ $? -ne 0 ]
+if [ $1 -ne 0 ]
             then
                         sudo grub-mkconfig -o /boot/grub/grub.cfg
             else
@@ -70,7 +70,7 @@ sudo cp /etc/tor/torrc       $TORCHROOT/etc/tor/torrc
 sudo cp /usr/bin/tor         $TORCHROOT/usr/bin/tor
 sudo cp /usr/share/tor/geoip* $TORCHROOT/usr/share/tor/geoip*
 sudo cp /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
-sudo cp $(ldd /usr/bin/tor | awk '{print $3}'|grep --color=never "^/") $TORCHROOT/usr/lib/
+sudo cp '$(ldd /usr/bin/tor | awk "{print $3}"|grep --color=never "^/") $TORCHROOT/usr/lib/'
 sudo cp -r /var/lib/tor      $TORCHROOT/var/lib/
 sudo chown -R tor:tor $TORCHROOT/var/lib/tor
 sh -c "grep --color=never ^tor /etc/passwd | sudo tee -a $TORCHROOT/etc/passwd"
@@ -97,7 +97,7 @@ echo "TORCONTROLPORT $TORCONTROLPORT"
 TORHASH=$(echo -n $RANDOM | sha256sum)
 sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
-sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${HASH:-2}/g" -c ":wq" /etc/tor/torrc
+sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${TORHASH:-2}/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf
 
 # All DNS queries to Tor
@@ -138,19 +138,19 @@ printf "[Service]
 ExecStart=
 ExecStart=/usr/bin/systemd-nspawn --quiet --boot --keep-unit --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]. You can use --ephemeral instead of --keep-unit --link-journal=guest and then you can delete the machine
 sudo systemctl daemon-reload
-TERMINAL=$(echo "$(tty)")
+TERMINAL=$(tty)
 TERM="${TERMINAL:5:4}0"
-echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}1"
-echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}2"
-echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}3"
-echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
+echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}4"
-echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}5"
-echo $TERM | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
+echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
 
 # Checking conf
 sudo cp -r $TORCHROOT/var/lib/ /var/lib/tor
@@ -186,10 +186,10 @@ sudo vim -c ":%s/auth       required   pam_tally.so/#auth       required   pam_t
 #echo "MENU MASTER PASSWD $syspass" | sudo tee -a syslinux.cfg #Syslinux bootloader security master password
 # TAKE BETWEEN root: AND : FROM $(sudo cat /etc/shadow | grep root)
 #https://wiki.archlinux.org/index.php/GRUB/Tips_and_tricks#Password_protection_of_GRUB_menu
-sudo chage -M -1 365 $USER #force to change password every 90 days (-M, -W only for warning) but without password expiration (-1, -I will set a different days for password expiration, and -E a data where account will be locked)
-sudo chage -W 90 $USER #Warning days for password changing
+sudo chage -M -1 365 "$USER" #force to change password every 90 days (-M, -W only for warning) but without password expiration (-1, -I will set a different days for password expiration, and -E a data where account will be locked)
+sudo chage -W 90 "$USER" #Warning days for password changing
 pwmake 512 #Create a secure 512 bits password
-chage -l $USER #Change password
+chage -l "$USER" #Change password
 #BIOS lock down
 echo " >>>>>> Please lock down your BIOS <<<<< " 
 
@@ -206,7 +206,7 @@ echo "auth   required   /lib/security/pam_listfile.so   item=user sense=deny fil
 
 # TCP Wrappers
 echo "Hello. All activity on this server is logged. Inappropriate uses and access will result in defensive counter-actions." | sudo tee -a /etc/banners/sshd
-echo "ALL : ALL : spawn /bin/echo `date` %c %d >> /var/log/intruder_alert" | sudo tee -a /etc/hosts.deny ##log any connection attempt from any IP and send the date to intruder_alert logfile
+echo "ALL : ALL : spawn /bin/echo $date %c %d >> /var/log/intruder_alert" | sudo tee -a /etc/hosts.deny ##log any connection attempt from any IP and send the date to intruder_alert logfile
 echo "in.telnetd : ALL : severity emerg" | sudo tee -a /etc/hosts.deny ##log any attempt to connect to in.telnetd posting emergency log messages directly to the console
 
 # Encrypt disk to avoid init=/bin/sh
@@ -286,7 +286,7 @@ sudo systemctl enable --now sshguard.service
 
 # OpenSSL and NSS
 sudo pacman -S openssl nss --noconfirm --needed
-cat $(locate ca-certificates) #check all certificates
+cat "$(locate ca-certificates)" #check all certificates
 #blacklist ssl symanteccertificate
 wget https://crt.sh/?d=19538258 
 sudo mv index.html?d=19538258 /etc/ca-certificates/trust-source/blacklist/19538258-Symantec.crt  #Blacklist Symantec SSL Cert
@@ -303,10 +303,10 @@ gpg2 --delete-secret-and-public-keys --batch --yes 801C7171DAC74A6D3A61ED81F7F9B
 #sudo vim /etc/suricata/suricata.yaml -c ":%s|HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"|HOME_NET: \"[$myip]\"|g" -c ":wq"
 sudo vim -c ":%s|# -|-|g" -c ":wq" /etc/suricata/suricata.yaml #activate rules
 suricatasslrule(){ #blacklistsslcertificates
-wget https://sslbl.abuse.ch/blacklist/$SSLRULES 
-sudo mv $SSLRULES /etc/suricata/rules/$SSLRULES
-wget https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules
-sudo mv https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules -O /etc/suricata/rules/$SSLRULES_aggressive.rules
+wget "https://sslbl.abuse.ch/blacklist/$SSLRULES" 
+sudo mv "$SSLRULES" "/etc/suricata/rules/$SSLRULES"
+wget "https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules"
+sudo mv "https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules" -O "/etc/suricata/rules/$SSLRULES_aggressive.rules"
 echo " - $SSLRULES    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl blacklist rules
 #echo " - $SSLRULES_aggresive.rules    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
 #notice that aggresive rules are not activated
@@ -752,16 +752,16 @@ git config --global credential.helper 'cache --timeout=3600'
 # Set the cache to timeout after 1 hour (setting is in seconds)
 read -p "Please set your git username (by default $USER): " gitusername
 gitusername="${gitusername=$USER}"
-git config --global user.name $gitusername
+git config --global user.name "$gitusername"
 read -p "Please set your git mail  (by default $USER@localhost): " gitmail
 gitmail="${gitmail=$USER@localhost}"
-git config --global user.email $gitmail
+git config --global user.email "$gitmail"
 read -p "Please set your core editor (by default vim): " giteditor
 giteditor="${giteditor=vim}"
-git config --global core.editor $giteditor
+git config --global core.editor "$giteditor"
 read -p "Please set your gitdiff (by default vimdiff): " gitdiff
 gitdiff="${gitdiff=vimdiff}"
-git config --global merge.tool $gitdiff
+git config --global merge.tool "$gitdiff"
 read -p "Do you want to create a new gpg key for git?: " creategitkey
 creategitkey="${creategitkey=N}"
 case "$creategitkey" in
@@ -775,8 +775,8 @@ case "$creategitkey" in
         ;;
 esac
 read -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
-gpg --export -a $keyusername
-git config --global user.signingkey $keyusername
+gpg --export -a "$keyusername"
+git config --global user.signingkey "$keyusername"
 git config --global commit.gpgsign true
 git config --list
 time 10
@@ -1081,10 +1081,10 @@ sudo tiger
 
 #Tor-browser
 LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
-aurman -S tor-browser-$LANGUAGE --needed --noconfirm --noedit
+aurman -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
 
 ### Autoremove and Snapshot ###
-sudo pacman -Rns $(pacman -Qtdq) --noconfirm
+sudo pacman -Rns "$(pacman -Qtdq)" --noconfirm
 sudo pacman -Qq | sudo paccheck --sha256sum --quiet
 #snapper -c initial create --description initial #Make snapshot initial (no chsnap for ext4)
 
