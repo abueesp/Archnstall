@@ -814,7 +814,7 @@ yaourt -S bashblog-git --noconfirm #blog
 
 #Other tools
 sudo pacman -S brasero qemu archiso --noconfirm --needed
-sudo pacman -S terminator tilix --noconfirm --needed
+sudo pacman -S terminator tilix shellcheck --noconfirm --needed
 sudo pacman -S d-feet htop autojump iotop task atop vnstat at nemo ncdu tree recordmydesktop --noconfirm --needed
 REPEATVERSION=4.0.1
 REPEATVER=4_0_1
