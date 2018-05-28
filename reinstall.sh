@@ -40,7 +40,6 @@ sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
 ### Tor ###
 sudo pacman -S arch-install-scripts base arm --noconfirm --needed
 sudo pacman -S tor --noconfirm --needed
-sudo pacman -S torsocks --noconfirm --needed
 
 #Create user
 TORUSER="tor"
