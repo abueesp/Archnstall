@@ -537,8 +537,9 @@ amixer cset numid=11,iface=MIXER,name='Capture Switch' off
 sudo pacman -S deepin-api --noconfirm -needed
 
 ### Virtualbox ###
+sudo pacman -S qemu --noconfirm --needed #opensource alternative
 pacman -Si linux
-sudo pacman -S linux-headers
+sudo pacman -S linux-headers --noconfirm --needed
 sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox virtualbox-guest-iso --noconfirm --needed
 sudo modprobe -a vboxdrv vboxnetflt vboxpci vboxnetadp
 sudo /sbin/rcvboxdrv -h
@@ -547,7 +548,6 @@ echo "vboxdrv" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 echo "vboxnetadp" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 echo "vboxnetflt" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 echo "vboxpci" | sudo tee -a /etc/modules-load.d/virtualbox.conf
-
 
 version=$(vboxmanage -v)
 echo $version
