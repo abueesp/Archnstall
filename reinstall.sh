@@ -836,7 +836,7 @@ sudo pacman -S duplicity deja-dup borg --noconfirm --needed
 
 #Disk tools
 sudo pacman -S gparted hdparm -y
-yaourt deskcon filecast --noconfirm --needed #filesharing
+yaourt deskcon filecast --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
 
 #Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
