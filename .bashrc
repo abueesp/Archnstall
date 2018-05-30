@@ -3037,11 +3037,10 @@ alias repeatmouse="java -jar /usr/src/repeat.jar"
 alias plotsystemd="systemd-analyze plot > plot.svg && deepin-image-viewer plot.svg"
 
 pythonserver(){
-if [ -z "python2" ]
-  then
+if type python3 >/dev/null; then
   python -m SimpleHTTPServer 8000
 else
-  python2 -m SimpleHTTPServer 8000
+  python3 -m SimpleHTTPServer 8000
 fi
 }
 
