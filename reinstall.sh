@@ -851,6 +851,24 @@ yaourt -S bashblog-git --noconfirm #blog
 sudo pacman -S brasero qemu archiso --noconfirm --needed
 sudo pacman -S terminator tilix shellcheck rlwrap --noconfirm --needed
 sudo pacman -S d-feet htop autojump iotop task atop vnstat at nemo ncdu tree recordmydesktop --noconfirm --needed
+touch ~/.local/share/nemo/actions/compress.nemo_action
+printf "[Nemo Action]
+Active=true
+Name=Compress...
+Comment=compress %N
+Exec=file-roller -d %F
+Icon-Name=gnome-mime-application-x-compress
+Selection=Any
+Extensions=any;" | tee -a ~/.local/share/nemo/actions/extracthere.nemo_action
+printf "[Nemo Action]
+Active=true
+Name=Extract here
+Comment=Extract here
+Exec=file-roller -h %F
+Icon-Name=gnome-mime-application-x-compress
+ #Stock-Id=gtk-cdrom
+Selection=Any
+Extensions=zip;7z;ar;cbz;cpio;exe;iso;jar;tar;tar;7z;tar.Z;tar.bz2;tar.gz;tar.lz;tar.lzma;tar.xz;" | tee -a ~/.local/share/nemo/actions/extracthere.nemo_action
 REPEATVERSION=4.0.1
 REPEATVER=4_0_1
 wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_$REPEATVER.jar -O /usr/src/repeat.jar && pacman -S jdk8-openjdk --noconfirm --needed
