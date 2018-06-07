@@ -846,7 +846,7 @@ sudo pacman -S xmlstarlet jq datamash bc gawk mawk --noconfirm --needed #XML and
 sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
 yaourt -S bashblog-git --noconfirm #blog
-
+yaourt -S ganttproject --noconfirm #gantt
 #Other tools
 sudo pacman -S brasero qemu archiso --noconfirm --needed
 sudo pacman -S terminator tilix shellcheck rlwrap --noconfirm --needed
