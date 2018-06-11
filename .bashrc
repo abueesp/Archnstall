@@ -65,7 +65,6 @@ fi
 export script_color linenum_color funcname_color
 
 force_color_prompt=yes
-ls --color=always
 export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33'
 
 reset_screen() {
@@ -92,7 +91,7 @@ ${pink} - neton netoff | web browsers: lynx netrik fxf chm iron opera icecat | t
 ${purple} - sysmon appmon filemon foldermon netmon portmon usermon vpnmon webmon hardmon $nc
 
 "
-
+ls --color=always
 ### General term options ###
 shopt -s autocd # Automatically prepend `cd` to directory names.
 shopt -s cdspell # Autocorrect typos in path names when using the `cd` command.
@@ -806,7 +805,7 @@ alias pdf2txt='ls * | sudo xargs -n1 pdftotext'
 alias hardlinks="sudo find / -links +2 -type f -exec ls -li {} \ "
 alias softlinks="sudo find /etc -type l -exec ls -li {} \ "
 alias bashrc='~./bashrc'
-alias sustituye=echo "puedes usar echo 'palabra' | tr a e para 'pelebre' o iconv -f utf-8 -t <tab> file.txt para input conversion o echo “Σολαρις”| uconv -x Greek-Latin -f utf-8 -t utf-8 que da 'Solaris' o sed o vimsubs"
+alias sustituye='echo "puedes usar echo 'palabra' | tr a e para 'pelebre' o iconv -f utf-8 -t <tab> file.txt para input conversion o echo “Σολαρις”| uconv -x Greek-Latin -f utf-8 -t utf-8 que da 'Solaris' o sed o vimsubs"'
 alias protect="read -p 'Which file/directory do you want to protect?' THIS; getfalc -R $THIS > $THIS-prev-permissions.txt; sudo chattr +i $THIS; sudo chmod -R 600 $THIS; sudo chown -R root:root $THIS"
 alias unprotect="read -p 'Which file/directory do you want to unprotect?' THIS; sudo chattr -i $THIS; sudo chmod 777 -R $THIS; sudo chown -R $USER:$USER $THIS; setfalc --restore=$THIS-prev-permissions.txt"
 function lowercase(){
@@ -1453,7 +1452,7 @@ borg init --encryption=authenticated-blake2 $BORG_REPO
 borg create -s --progress $BORG_REPO::$REPO $BUFOLDER
 }
 listborg(){
-if [ -z "$BORG_REPO" ];
+if [ -z "$BORG_REPO" ]; then
 	read -p "Insert path for backup-repo (f.i. /home/$USER/borg-bu-repo or ssh://user@host:port/path/to/repo): " BORG_REPO
 fi
 borg list $BORG_REPO
@@ -1461,7 +1460,7 @@ read -p "Insert date to see the files: " REPO
 borg list $BORG_REPO::$REPO
 }
 extractborg(){
-if [ -z "$BORG_REPO" ];
+if [ -z "$BORG_REPO" ]; then
 	read -p "Insert path for backup-repo (f.i. /home/$USER/borg-bu-repo or ssh://user@host:port/path/to/repo): " BORG_REPO
 fi
 borg list $BORG_REPO
@@ -1469,7 +1468,7 @@ read -p "Insert date to extract the files: " REPO
 borg extract $BORG_REPO::$REPO
 }
 deleteborg(){
-if [ -z "$BORG_REPO" ];
+if [ -z "$BORG_REPO" ]; then
 	read -p "Insert path for backup-repo (f.i. /home/$USER/borg-bu-repo or ssh://user@host:port/path/to/repo): " BORG_REPO
 fi
 borg list $BORG_REPO
