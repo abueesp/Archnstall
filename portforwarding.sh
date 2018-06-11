@@ -1,4 +1,4 @@
-https://pastebin.com/aXZQVyiM
+#https://pastebin.com/aXZQVyiM
 ### Port knocking ###
 #Daemon
 sudo pacman -S knockd --noconfirm --needed
