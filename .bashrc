@@ -704,9 +704,9 @@ tmux source-file ~/tmux.conf
 }
 
 getsh() {
-sudo wget https://github.com/abueesp/Archnstall/edit/master/reinstall.sh
+wget https://raw.githubusercontent.com/abueesp/Archnstall/master/reinstall.sh
 cp /home/$USER/.bashrc /home/$USER/.bashrc-d
-sudo wget https://github.com/abueesp/Archnstall/edit/master/.bashrc
+wget https://raw.githubusercontent.com/abueesp/Archnstall/master/.bashrc
 }
 
 she() {
