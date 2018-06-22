@@ -853,7 +853,7 @@ yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --nee
 yaourt -S slurm nethogs --noconfirm #tops
 
 #Backups
-sudo pacman -S duplicity deja-dup borg --noconfirm --needed 
+sudo pacman -S duplicity borg --noconfirm --needed 
 
 #Disk tools
 sudo pacman -S gparted hdparm -y
