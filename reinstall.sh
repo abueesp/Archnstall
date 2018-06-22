@@ -854,14 +854,14 @@ yaourt -S slurm nethogs --noconfirm #tops
 
 #Backups
 sudo pacman -S duplicity borg --noconfirm --needed 
-
+yaourt -S duply --noconfirm --needed #duplicity-gui
 #Disk tools
 sudo pacman -S gparted hdparm -y
 yaourt deskcon filecast --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
 
 #Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
-sudo pacman -S libreoffice grc unoconv detox pandoc duplicity deja-dup --noconfirm --needed #Text tools
+sudo pacman -S libreoffice grc unoconv detox pandoc --noconfirm --needed #Text tools
 yaourt -S apvlv --noconfirm --needed
 sudo pacman -S xmlstarlet jq datamash bc gawk mawk --noconfirm --needed #XML and jquery #wc join paste cut sort uniq
 sudo pacman -S blender --noconfirm --needed
