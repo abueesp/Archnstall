@@ -692,8 +692,8 @@ git clone https://github.com/tpope/vim-surround $PATHOGENFOLDER/vim-surround
 wget https://raw.githubusercontent.com/xuhdev/vim-latex-live-preview/master/plugin/latexlivepreview.vim -O $PATHOGENFOLDER/latexlivepreview.vim
 git clone https://github.com/vim-latex/vim-latex $PATHOGENFOLDER/vim-latex
 
-mkdir -p /home/nudo/~/.vim_runtime/sources_forked/vim-snippets/snippets
-cd /home/nudo/~/.vim_runtime/sources_forked/vim-snippets/snippets
+mkdir -p /home/$USER/~/.vim_runtime/sources_forked/vim-snippets/snippets
+cd /home/$USER/~/.vim_runtime/sources_forked/vim-snippets/snippets
 git clone https://github.com/Chalarangelo/30-seconds-of-code/tree/master/test
 mv test 30secJavaScript
 cd 30secJavaScript
