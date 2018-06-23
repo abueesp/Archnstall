@@ -232,6 +232,22 @@ sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 # Bluetooth
 sudo vi /etc/bluetooth/main.conf -c ':%s|#AutoEnable=false|AutoEnable=false|g' -c ':wq'
 sudo rfkill block bluetooth
+printf "[General]
+Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
+vim -c "%s/    fi
+fi/    fi
+fi
+fi
+sudo vim -c "%s|#load-module module-switch-on-connect|load-module module-switch-on-connect|g" -c ":wq" /etc/pulse/default.pa
+sudo vim -c "%s|load-module module-suspend-on-idle|\#load-module module-suspend-on-idle|g" -c ":wq" /etc/pulse/default.pa
+echo "enable-lfe-remixing = yes" | sudo tee -a 
+pulseaudio -k
+pulseaudio --start
+sudo systemctl stop bluetooth.service
+sudo pkill -9 /usr/lib/bluetooth/obexd
+sudo pkill -9 /usr/lib/bluetooth/bluetoothd
+sudo systemctl start bluetooth.service
+
 
 # USBGuard and USB readonly (previous checker -noexec and --rw included on alias monta)
 #git clone https://aur.archlinux.org/usbguard.git
@@ -857,7 +873,7 @@ sudo pacman -S duplicity borg --noconfirm --needed
 yaourt -S duply --noconfirm --needed #duplicity-gui
 #Disk tools
 sudo pacman -S gparted hdparm -y
-yaourt deskcon filecast --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
+yaourt deskcon filecast obexfs --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
 
 #Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
