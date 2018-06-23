@@ -34,10 +34,8 @@ function tst {
 #--------------------------------------------------------------------
 
 # Install Pulseaudio & Bluez
-tst sudo pacman -Rc alsa-utils pavucontrol --noconfirm
 tst sudo pacman -Rc bluez pulseaudio pulseaudio-bluetooth --noconfirm
 tst sudo pacman -S bluez pulseaudio pulseaudio-bluetooth --noconfirm
-tst sudo pacman -S alsa-utils pavucontrol --noconfirm
 
 # Install dbus for python
 tst sudo pacman -Rc python-dbus --noconfirm
@@ -240,7 +238,10 @@ elif [ "`w -hs $user`" ]; then
 	# else if user session exist(to prevent running on system startup) - run script from user
 	machinectl shell --uid=$user .host ${BASH_SOURCE[0]}
 fi' | sudo tee -a bt-auto-enable-a2dp.sh
+echo "Installing some tools"
+tst sudo pacman -Rc blueman alsa-utils pavucontrol --noconfirm
+tst sudo pacman -S blueman alsa-utils pavucontrol --noconfirm 
 echo ""
 echo "No errors were found" 
 echo ""
-echo "Please reboot your system"
+echo "Please reboot your system and  use pavucontrol and blueman-manager to control the audio and bluetooth devices"
