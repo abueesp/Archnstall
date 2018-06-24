@@ -451,6 +451,7 @@ sudo pacman -S clamav bleachbit --noconfirm --needed
 # .bashrc
 mv ~/.bashrc ~/.previous-bashrc
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bashrc
+sudo pacman -S onboard --noconfirm --needed #Virtual keyboard
 
 # Snapshots configuration (no chsnap for ext4)
 #snapper -c original create --description original #Make snapshot original
