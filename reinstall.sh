@@ -14,7 +14,7 @@
 
 ### Restoring Windows on Grub2 ###
 sudo os-prober 
-if [ $(sudo os-prober) -ne 0 ]
+if [ $1 -z 0 ]
             then
                         sudo grub-mkconfig -o /boot/grub/grub.cfg
             else
@@ -23,12 +23,12 @@ fi
 
 ### MAC ### 
 echo "Randomize MAC"
-printf'
-[connection-mac-randomization]
-# Randomize MAC for every ethernet connection
-ethernet.cloned-mac-address=random
-# Generate a random MAC for each WiFi and associate the two permanently.
-wifi.cloned-mac-address=stable' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
+echo ''
+echo '[connection-mac-randomization]' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
+echo '# Randomize MAC for every ethernet connection' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
+echo 'ethernet.cloned-mac-address=random' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
+echo '# Generate a random MAC for each WiFi and associate the two permanently.' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
+echo 'wifi.cloned-mac-address=stable' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
 
 ### Optimize Pacman, Update, Upgrade, Snapshot ###
 sudo pacman -Sc --noconfirm #Improving pacman database access speeds reduces the time taken in database-related tasks
@@ -55,9 +55,9 @@ TORHASH=$(echo -n $RANDOM | sha256sum)
 sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${TORHASH:-2}/g" -c ":wq" /etc/tor/torrc
-echo "StrictNodes 1" | tee -a /etc/tor/torrc
-echo "ExitNodes " | tee -a /etc/tor/torrc
-echo "ExcludeNodes {us},{uk},{ca},{se},{fr},{pt},{de},{dk},{es},{nl},{kr},{ee}" | tee -a /etc/tor/torrc
+echo "StrictNodes 1" | sudo tee -a /etc/tor/torrc
+echo "ExitNodes " | sudo tee -a /etc/tor/torrc
+echo "ExcludeNodes {us},{uk},{ca},{se},{fr},{pt},{de},{dk},{es},{nl},{kr},{ee}" | sudo tee -a /etc/tor/torrc
 sudo vim -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf                 
 
 # All DNS queries to Tor
@@ -103,7 +103,6 @@ sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf
 sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf 
 sudo cp /etc/tor/torrc       $TORCHROOT/etc/tor/torrc
 sudo cp /usr/bin/tor         $TORCHROOT/usr/bin/tor
-sudo cp /usr/share/tor/geoip* $TORCHROOT/usr/share/tor/geoip*
 sudo cp /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
 sudo cp '$(ldd /usr/bin/tor | awk "{print $3}"|grep --color=never "^/") $TORCHROOT/usr/lib/'
 sudo cp -r /var/lib/tor      $TORCHROOT/var/lib/
