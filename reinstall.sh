@@ -506,9 +506,9 @@ cd aurman
 makepkg -si --noconfirm
 cd ..
 sudo rm -r aurman
-sudo pacman -S downgrader --noconfirm --needed
 
 # Search tools
+gpg2 --keyserver ha.pool.sks-keyservers.net --recv-keys 465022E743D71E39 #for mlocate
 sudo pacman -S mlocate recoll the_silver_searcher --noconfirm --needed #find locate
 yaourt -S tag-ag --noconfirm 
 printf 'tag() { 
@@ -562,7 +562,6 @@ echo "vboxdrv" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 echo "vboxnetadp" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 echo "vboxnetflt" | sudo tee -a /etc/modules-load.d/virtualbox.conf
 echo "vboxpci" | sudo tee -a /etc/modules-load.d/virtualbox.conf
-
 version=$(vboxmanage -v)
 echo $version
 var1=$(echo $version | cut -d 'r' -f 1)
@@ -580,7 +579,7 @@ wget http://download.virtualbox.org/virtualbox/$var1/VBoxGuestAdditions_$var1.is
 sudo mv VBoxGuestAdditions_$var1.iso /usr/share/VBoxGuestAdditions_$var1.iso
 echo "To insert iso additions, install a vm named 'myvm' and move the .iso to your user folder"
 virtualbox
-vboxmanage storageattach myvm --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/home/$USER/VBox**.iso"
+vboxmanage storageattach myvm --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/usr/share/VBoxGuestAdditions_$var1.iso"
 
 
 ### Emacs ###
