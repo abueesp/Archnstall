@@ -14,7 +14,7 @@
 
 ### Restoring Windows on Grub2 ###
 sudo os-prober 
-if [ $1 -ne 0 ]
+if [ $(sudo os-prober) -ne 0 ]
             then
                         sudo grub-mkconfig -o /boot/grub/grub.cfg
             else
@@ -28,11 +28,11 @@ printf'
 # Randomize MAC for every ethernet connection
 ethernet.cloned-mac-address=random
 # Generate a random MAC for each WiFi and associate the two permanently.
-wifi.cloned-mac-address=stable' | tee -a /etc/NetworkManager/NetworkManager.conf
+wifi.cloned-mac-address=stable' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
 
 ### Optimize Pacman, Update, Upgrade, Snapshot ###
-sudo pacman -Sc --noconfirm && sudo pacman-optimize #Improving pacman database access speeds reduces the time taken in database-related tasks
-sudo pacman -Syu --noconfirm #update & upgrade
+sudo pacman -Sc --noconfirm #Improving pacman database access speeds reduces the time taken in database-related tasks
+sudo pacman -Syu --noconfirm #upd	ate & upgrade
 sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
 #sudo snapper -c root create-config / #Create snapshot folder (no chsnap for ext4)
 #snapper -c preupgrade create --description preupgrade -c number 1 #Make snapshot preupgrade  (no chsnap for ext4)
