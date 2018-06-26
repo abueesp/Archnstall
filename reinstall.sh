@@ -924,7 +924,6 @@ yaourt -S lightspark-git --noconfirm --needed
 #Firefox
 sudo pacman -S firefox --noconfirm --needed
 sudo pacman -S firefox-developer --noconfirm --needed
-cd Downloads
 mkdir -p extensions
 cd extensions
 mkdir privacy
@@ -1008,7 +1007,7 @@ wget https://addons.mozilla.org/firefox/downloads/file/345004/live_http_headers_
 wget https://addons.mozilla.org/firefox/downloads/file/782839/recap-1.1.8-an+fx.xpi -O RECAPforsearchingUSLawDB.xpi
 cd ..
 cd ..
-cd ..
+
 cd ~/.mozilla/firefox/*.default
 #vim -c ':%s/user_pref("browser.safebrowsing.*//g' -c ":wq" prefs.js
 vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" prefs.js
