@@ -1022,8 +1022,7 @@ sudo pacman -S opera opera-developer --noconfirm --needed
 sudo pacman -S vivaldi --noconfirm --needed
 
 #Chromium
-sudo pacman -S ungoogled-chromium --noconfirm --needed
-echo "alias chromium='ungoogled-chromium'" | tee -a $HOME/$USER/.bashrc
+sudo pacman -S chromium --noconfirm --needed
 #vim -c ":%s|google.com|ixquick.com|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #vim -c ":%s|Google|Ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
 #vim -c ":%s|yahoo.com|google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl|g" -c ":wq" ~/.config/chromium/Default/Preferences
