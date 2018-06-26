@@ -866,8 +866,8 @@ yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --nee
 yaourt -S slurm nethogs --noconfirm #tops
 
 #Backups
-sudo pacman -S duplicity borg --noconfirm --needed 
-yaourt -S duply --noconfirm --needed #duplicity-gui
+sudo pacman -S duplicity deja-dup borg --noconfirm --needed 
+
 #Disk tools
 sudo pacman -S gparted hdparm -y
 yaourt deskcon filecast obexfs --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
