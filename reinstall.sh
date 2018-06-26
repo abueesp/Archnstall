@@ -919,7 +919,7 @@ sudo pacman -S colordiff kompare --noconfirm --needed
 ### Browsers ###
 #Flash
 sudo pacman -Rc flashplugin pepper-flash --noconfirm
-yaourt -S lightspark --noconfirm --needed
+yaourt -S lightspark-git --noconfirm --needed
 
 #Firefox
 sudo pacman -S firefox --noconfirm --needed
