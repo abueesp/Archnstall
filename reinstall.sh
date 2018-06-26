@@ -133,8 +133,8 @@ sudo mkdir $VARCONTAINERS
 sudo ln -s $SVRCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
 sudo mkdir /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d
 sudo ifconfig #adding container ad-hoc vlan
-read -p "Write network interface to create VLAN (wlp2s0 by default): " INTERFACE
-INTERFACE="${INTERFACE:=wlp2s0}"
+read -p "Write network interface to create VLAN (wlp1s0 by default): " INTERFACE
+INTERFACE="${INTERFACE:=wlp1s0}"
 VLANINTERFACE="${INTERFACE:0:2}.tor"
 sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%4094)+1))
 networkctl
@@ -219,7 +219,7 @@ echo "in.telnetd : ALL : severity emerg" | sudo tee -a /etc/hosts.deny ##log any
 sudo pacman -S encfs pam_encfs --noconfirm --needed #Check https://wiki.archlinux.org/index.php/Disk_encryption#Comparison_table
 
 # Kernel hardening
-sudo pacman -S linux-hardened --needed --noconfig
+sudo pacman -S linux-hardened --needed --noconfirm
 echo "kernel.dmesg_restrict = 1" | sudo tee -a /etc/sysctl.d/50-dmesg-restrict.conf #Restricting access to kernel logs
 echo "kernel.kptr_restrict = 1" | sudo tee -a /etc/sysctl.d/50-kptr-restrict.conf #Restricting access to kernel pointers in the proc filesystem
 
@@ -229,14 +229,10 @@ sudo pacman -S bubblewrap --noconfirm --needed
 sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 
 # Bluetooth
-sudo vi /etc/bluetooth/main.conf -c ':%s|#AutoEnable=false|AutoEnable=false|g' -c ':wq'
+sudo vim /etc/bluetooth/main.conf -c ':%s|#AutoEnable=false|AutoEnable=false|g' -c ':wq'
 sudo rfkill block bluetooth
 printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
-vim -c "%s/    fi
-fi/    fi
-fi
-fi
 sudo vim -c "%s|#load-module module-switch-on-connect|load-module module-switch-on-connect|g" -c ":wq" /etc/pulse/default.pa
 sudo vim -c "%s|load-module module-suspend-on-idle|\#load-module module-suspend-on-idle|g" -c ":wq" /etc/pulse/default.pa
 echo "enable-lfe-remixing = yes" | sudo tee -a 
@@ -286,15 +282,15 @@ echo ">>> Take care of securing Docker https://wiki.archlinux.org/index.php/Dock
 
 ### Network ###
 # SSH
-if [ -s /etc/ssh/sshd_config ]
+if [ ! -f /etc/ssh/sshd_config ];
 then
     echo "PermitRootLogin no" | sudo tee -a /etc/ssh/sshd_config
     echo "Protocol 2" | sudo tee -a /etc/ssh/sshd_config
     echo "MaxAuthTries 3" | sudo tee -a etc/ssh/sshd_config
 else
-    sudo vi /etc/ssh/sshd_config -c ':%s/PermitRootLogin without password/PermitRootLogin no/g' -c ':wq'
-    sudo vi /etc/ssh/sshd_config -c ':%s/Protocol 2,1/Protocol 2/g' -c ':wq'
-    sudo vi /etc/ssh/sshd_config -c ":%s|MaxAuthTries 6|MaxAuthTries 3|g" -c ":wq" 
+    sudo vim /etc/ssh/sshd_config -c ':%s/PermitRootLogin without password/PermitRootLogin no/g' -c ':wq'
+    sudo vim /etc/ssh/sshd_config -c ':%s/Protocol 2,1/Protocol 2/g' -c ':wq'
+    sudo vim /etc/ssh/sshd_config -c ":%s|MaxAuthTries 6|MaxAuthTries 3|g" -c ":wq" 
 
 fi
 
@@ -314,6 +310,7 @@ sudo update-ca-trust
 
 # Suricata IDS/IPS (prefered over Snort https://www.aldeid.com/wiki/Suricata-vs-snort)
 gpg2 --keyserver hkp://pgp.mit.edu --recv-keys 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
+gpg2 --keyserver hkp://pgp.mit.edu --recv-keys F7F9B0A300C1B70D
 git clone https://aur.archlinux.org/suricata.git
 cd suricata
 makepkg -si --noconfirm
@@ -356,7 +353,7 @@ sudo systemctl enable --now suricata@$INTERFACE.service
 echo "[Unit]
 Description=Suricata Intrusion Detection Service listening on '%I'
 After=network.target
- 
+ `12q
 [Service]
 Type=forking
 ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.yaml -i %i -D
