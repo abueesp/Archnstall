@@ -309,8 +309,7 @@ sudo mv index.html?d=19538258 /etc/ca-certificates/trust-source/blacklist/195382
 sudo update-ca-trust
 
 # Suricata IDS/IPS (prefered over Snort https://www.aldeid.com/wiki/Suricata-vs-snort)
-gpg2 --keyserver hkp://pgp.mit.edu --recv-keys 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
-gpg2 --keyserver hkp://pgp.mit.edu --recv-keys F7F9B0A300C1B70D
+gpg2 --keyserver ha.pool.sks-keyservers.net --recv-keys 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
 git clone https://aur.archlinux.org/suricata.git
 cd suricata
 makepkg -si --noconfirm
@@ -320,21 +319,20 @@ gpg2 --delete-secret-and-public-keys --batch --yes 801C7171DAC74A6D3A61ED81F7F9B
 #sudo vim /etc/suricata/suricata.yaml -c ":%s|HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"|HOME_NET: \"[$myip]\"|g" -c ":wq"
 sudo vim -c ":%s|# -|-|g" -c ":wq" /etc/suricata/suricata.yaml #activate rules
 suricatasslrule(){ #blacklistsslcertificates
-wget "https://sslbl.abuse.ch/blacklist/$SSLRULES" 
-sudo mv "$SSLRULES" "/etc/suricata/rules/$SSLRULES"
-wget "https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules"
-sudo mv "https://sslbl.abuse.ch/blacklist/$SSLRULES_aggressive.rules" -O "/etc/suricata/rules/$SSLRULES_aggressive.rules"
-echo " - $SSLRULES    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl blacklist rules
-#echo " - $SSLRULES_aggresive.rules    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
+url=$SSLRULES".rules"
+agurl=$SSLRULES"_aggressive.rules"
+wget "https://sslbl.abuse.ch/blacklist/$url"	
+sudo mv "$url" "/etc/suricata/rules/$url"
+wget "https://sslbl.abuse.ch/blacklist/$agurl"
+sudo mv "$agurl" "/etc/suricata/rules/$agurl"
+echo " - $url   # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl blacklist rules
+echo "# - $agurl    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
 #notice that aggresive rules are not activated
 }
-SSLRULES=sslblacklist.rules
+
+SSLRULES=sslblacklist
 suricatasslrule
-SSLRULES=sslipblacklist.rules
-suricatasslrule
-SSLRULES=dyre_sslblacklist.rules
-suricatasslrule
-SSLRULES=dyre_sslipblacklist.rules
+SSLRULES=dyre_sslipblacklist
 suricatasslrule
 sudo suricata -c /etc/suricata/suricata.yaml -s signatures.rules -i $INTERFACE -D #start suricata and enable interfaces
 echo "[Unit]
@@ -344,8 +342,8 @@ After=network.target
 [Service]
 Type=forking
 ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.yaml -i %i -D
-ExecReload=/bin/kill -HUP $MAINPID
- 
+ExecReload=/bin/kill -HUP \$MAINPID
+
 [Install]
 WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/suricata@$INTERFACE.service
 sudo systemctl enable --now suricata@$INTERFACE.service
@@ -353,11 +351,11 @@ sudo systemctl enable --now suricata@$INTERFACE.service
 echo "[Unit]
 Description=Suricata Intrusion Detection Service listening on '%I'
 After=network.target
- `12q
+
 [Service]
 Type=forking
 ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.yaml -i %i -D
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP \$MAINPID
  
 [Install]
 WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/suricata@$VLANINTERFACE.service
@@ -428,14 +426,14 @@ sudo nft add chain inet filter TCP
 sudo nft add chain inet filter UDP
 sudo nft add rule inet filter input ct state related,established accept #Related and established traffic will be accepted:
 sudo nft add rule inet filter input iif lo accept #All loopback interface traffic will be accepted:
-sudo add rule inet filter input ct state invalid drop #Drop any invalid traffic:
-sudo add rule inet filter input ip protocol icmp icmp type echo-request ct state new accept #New echo requests (pings) will be accepted:
-sudo add rule inet filter input ip protocol udp ct state new jump UDP #New upd traffic will jump to the UDP chain:
-sudo add rule inet filter input ip protocol tcp tcp flags \& \(fin\|syn\|rst\|ack\) == syn ct state new jump TCP #New tcp traffic will jump to the TCP chain:
+sudo nft add rule inet filter input ct state invalid drop #Drop any invalid traffic:
+sudo nft add rule inet filter input ip protocol icmp icmp type echo-request ct state new accept #New echo requests (pings) will be accepted:
+sudo nft add rule inet filter input ip protocol udp ct state new jump UDP #New upd traffic will jump to the UDP chain:
+sudo nft add rule inet filter input ip protocol tcp tcp flags \& \(fin\|syn\|rst\|ack\) == syn ct state new jump TCP #New tcp traffic will jump to the TCP chain:
 #Reject all traffic that was not processed by other rules:
-sudo add rule inet filter input ip protocol udp reject
-sudo add rule inet filter input ip protocol tcp reject with tcp reset
-sudo add rule inet filter input counter reject with icmp type prot-unreachable
+sudo nft add rule inet filter input ip protocol udp reject
+sudo nft add rule inet filter input ip protocol tcp reject with tcp reset
+sudo nft add rule inet filter input counter reject with icmp type prot-unreachable
 
 # Rootkit checking and Audits (see at the EOF)
 
@@ -474,8 +472,11 @@ sudo pacman -S onboard --noconfirm --needed #Virtual keyboard
 sudo pacman -S arch-audit pacgraph pacutils --noconfirm --needed 
 
 # PKGtools
-wget https://raw.githubusercontent.com/graysky2/lostfiles/master/lostfiles #Script that identifies files not owned and not created by any Arch Linux package.
-sudo mv lostfiles /usr/bin/lostfiles
+git clone https://github.com/graysky2/lostfiles #Script that identifies files not owned and not created by any Arch Linux package.
+cd lostfiles
+make && sudo make install
+cd ..
+sudo rm -r lostfiles
 git clone https://github.com/Daenyth/pkgtools #newpkg - spec2arch - pkgconflict - whoneeds - pkgclean - maintpkg - pip2arch
 cd pkgtools/scripts/pip2arch
 wget https://raw.githubusercontent.com/lclarkmichalek/pip2arch/master/pip2arch.py
