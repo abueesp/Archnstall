@@ -32,8 +32,9 @@ echo 'wifi.cloned-mac-address=stable' | sudo tee -a /etc/NetworkManager/NetworkM
 
 ### Optimize Pacman, Update, Upgrade, Snapshot ###
 sudo pacman -Sc --noconfirm #Improving pacman database access speeds reduces the time taken in database-related tasks
-sudo pacman -Syu --noconfirm #upd	ate & upgrade
-sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
+sudo pacman-key --refresh-keys #keyring update
+sudo pacman -Syu --noconfirm #update & upgrade
+#sudo pacman -S snap-pac --noconfirm --needed #Installing snapper
 #sudo snapper -c root create-config / #Create snapshot folder (no chsnap for ext4)
 #snapper -c preupgrade create --description preupgrade -c number 1 #Make snapshot preupgrade  (no chsnap for ext4)
 
