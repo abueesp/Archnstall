@@ -876,7 +876,7 @@ yaourt deskcon filecast obexfs --noconfirm --needed #filesharing: wifiserver wit
 #Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
 sudo pacman -S libreoffice grc unoconv detox pandoc --noconfirm --needed #Text tools
-yaourt -S apvlv --noconfirm --needed
+yaourt -S evince-no-gnome --noconfirm --needed
 sudo pacman -S xmlstarlet jq datamash bc gawk mawk --noconfirm --needed #XML and jquery #wc join paste cut sort uniq
 sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
