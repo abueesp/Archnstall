@@ -906,7 +906,9 @@ Selection=Any
 Extensions=zip;7z;ar;cbz;cpio;exe;iso;jar;tar;tar;7z;tar.Z;tar.bz2;tar.gz;tar.lz;tar.lzma;tar.xz;" | tee -a ~/.local/share/nemo/actions/extracthere.nemo_action
 REPEATVERSION=4.0.1
 REPEATVER=4_0_1
-wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_$REPEATVER.jar -O /usr/src/repeat.jar && pacman -S jdk8-openjdk --noconfirm --needed
+wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_$REPEATVER.jar
+sudo mv Repeat_$REPEATVER.jar /usr/src/repeat.jar
+sudo pacman -S jdk8-openjdk --noconfirm --needed
 #echo 'alias repeatmouse="java -jar /usr/src/repeat.jar"' | tee -a ~/.bashrc
 #Blindlector: Orca
 sudo pacman -S units dateutils --noconfirm --needed
