@@ -234,9 +234,15 @@ sudo vim /etc/bluetooth/main.conf -c ':%s|#AutoEnable=false|AutoEnable=false|g' 
 sudo rfkill block bluetooth
 printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
+echo "enable-lfe-remixing = yes" | sudo tee -a /etc/pulse/default.pa 
+
 sudo vim -c "%s|#load-module module-switch-on-connect|load-module module-switch-on-connect|g" -c ":wq" /etc/pulse/default.pa
 sudo vim -c "%s|load-module module-suspend-on-idle|\#load-module module-suspend-on-idle|g" -c ":wq" /etc/pulse/default.pa
-echo "enable-lfe-remixing = yes" | sudo tee -a 
+sudo sed -i 's|    /usr/bin/pactl load-module module-x11-xsmp “display=$DISPLAY session_manager=$SESSION_MANAGER” > /dev/null|
+\n    /usr/bin/pactl load-module module-x11-xsmp "display=$DISPLAY session_manager=$SESSION_MANAGER" > /dev/null
+\n    /usr/bin/pactl load-module module-bluetooth-policy
+\n    /usr/bin/pactl load-module module-bluetooth-discover' /usr/bin/start-pulseaudio-x11 #automatic pavucontrol recognition
+
 pulseaudio -k
 pulseaudio --start
 sudo systemctl stop bluetooth.service
