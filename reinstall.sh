@@ -437,10 +437,25 @@ sudo nft add rule inet filter input ip protocol tcp reject with tcp reset
 sudo nft add rule inet filter input counter reject with icmp type prot-unreachable
 
 # Rootkit checking and Audits (see at the EOF)
-
 # Antivirus and Cleaners
 sudo pacman -S clamav bleachbit --noconfirm --needed
-
+#Fixing wall
+sudo rm /usr/bin/wall
+sudo touch /usr/bin/wall
+print"ls /dev/pts/
+read -p 'Introduce receiver separated by commas. Write * for everyone: ' ptslist
+pts=$(echo '$ptslist' | sed 's/,/ /g')
+read -p 'Introduce message or route of file: ' ptsmessage
+if [ ! -f $ptsmessage ];
+then
+    for pts in /dev/pts/$ptslist; do
+      echo '$ptsmessage' > $pts
+    done
+else
+    for pts in /dev/pts/$ptslist; do
+      cat '$ptsmessage' > $pts
+    done
+fi" | sudo tee -a /usr/bin/wall
 
 ### Tweaks ###
 # .bashrc
