@@ -3044,9 +3044,9 @@ alias plotsystemd="systemd-analyze plot > plot.svg && deepin-image-viewer plot.s
 
 pythonserver(){
 if type python3 >/dev/null; then
-  python -m SimpleHTTPServer 8000
+  python -m ComplexHTTPServer 8000
 else
-  python3 -m SimpleHTTPServer 8000
+  python3 -m ComplexHTTPServer 8000
 fi
 }
 
