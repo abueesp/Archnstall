@@ -541,7 +541,7 @@ do
     case $opt in
         "1")
             pico2wave -l=es-ES -w=/tmp/test.wav "$(cat $ezte)"
-	    aplay /tmp/test.wav
+	    xdg-open /tmp/test.wav
             rm /tmp/test.wav
             ;;
         "2")
@@ -676,6 +676,7 @@ docsthemagic() {
     done
   sudo mat -c **
   sudo mat **
+  echo "puedes comprobar los errores con aspell -c 'file' y darle formato con fmt"
 }
 
 updateallbash() {
