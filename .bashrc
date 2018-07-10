@@ -3126,3 +3126,5 @@ gzipdifference() {
         printf "\"%s\" is not a file.\n" "$1"
     fi #from https://raw.githubusercontent.com/alrra/dotfiles/master/src/shell/bash_functions 
 }
+
+alias failtossh="journalctl -u sshd |tail -100 | grep -v failure | grep -v Failed"
