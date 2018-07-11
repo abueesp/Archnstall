@@ -729,7 +729,6 @@ antivirus(){
 sudo lynis audit system
 sudo tiger
 sudo unhide -m -d sys procall brute reverse
-sudo apt-get install rkhunter -y
 sudo rkhunter --propupd
 sudo rkhunter --update
 sudo rkhunter --skip-keypress --summary --check --hash sha256 -x
