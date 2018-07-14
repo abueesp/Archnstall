@@ -1229,3 +1229,5 @@ sudo pacman -Qq | sudo paccheck --sha256sum --quiet
 #wget https://tails.boum.org/torrents/files/tails-amd64-3.6.2.iso.sig
 
 echo "EOF"
+
+yaourt -S epson-inkjet-printer-escpr --noconfirm --needed
