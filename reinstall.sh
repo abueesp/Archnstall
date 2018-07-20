@@ -611,6 +611,7 @@ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 cd ~/.emacs.d
 git clone https://github.com/EnigmaCurry/emacs/find/ancient-history
 wget https://github.com/ethereum/emacs-solidity/blob/master/solidity-mode.el
+wget https://melpa.org/packages/vyper-mode-20180707.1235.el
 echo 'Carga los elementos de emacs con (add-to-list load-path "~/.emacs.d/") + (load "myplugin.el")' >> README
 cd ..
 
