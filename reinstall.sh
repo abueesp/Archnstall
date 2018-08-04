@@ -1113,7 +1113,7 @@ sudo pacman -S sniper sniper2 --noconfirm --needed
 #Some Python tools
 sudo -H pip install percol #Indexer
 sudo -H pip install shyaml csvkit #yaml csv
-sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes jypyter with qtconsole
+sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics and jupyter with qtconsole
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
