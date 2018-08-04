@@ -875,7 +875,8 @@ alias catall=readfiles
 alias catfiles="grep . *"
 alias catwithlines='cat -n'
 alias gitlist='git remote -v'
-alias diferencia='printf "sort a b | uniq ==> a union b; uniq -d ==> a intersection b; uniq -u ==> difference a - b"; echo "Puedes usar tambien vim -d o kompare. Para directorios use colordiff -r"; colordiff -ystFpr'alias compara='diff -y -r'
+alias diferencia='printf "sort a b | uniq ==> a union b; uniq -d ==> a intersection b; uniq -u ==> difference a - b"; echo "Puedes usar tambien vim -d o kompare. Para directorios use colordiff -r"; colordiff -ystFpr'
+alias compara='diff -y -r'
 alias adbconnect="mtpfs -o allow_other /mnt/mobile"
 alias adbdisconnect="fusermount -u /mnt/mobile"
 alias androidsdk="sh ~/android-studio**/bin/studio.sh"
@@ -1120,7 +1121,7 @@ RUN find / -perm +6000 -type f -exec chmod a-s {} \; \|| true\
 RUN groupadd -r user && useradd -r -g user $USER\
 USER $USER\
 #Puedes también añadir un DockerCompose.yml file para abrir puertos de servicios determinados \
-version: “2“  services:    web:      build: .     ports:      - “5000:5000“     volumes:      - .:/code     depends_on:      - redis   redis:     image: redis\
+version:  2   services:    web:      build: .     ports:      -  5000:5000      volumes:      - .:/code     depends_on:      - redis   redis:     image: redis\
 #Crea la imagen de docker usando Compose y un Dockerfile \
 Docker build -t imagenameapp:versionapp nameofimage dockerfile. \
 docker-compose up -d \
@@ -1132,7 +1133,7 @@ docker images    \
 docker-compose ps\
 #Check your secure profiles\
 cd /etc/apparmor.d/ && ls\
-Choose a profile and introduce the use–secutity-opt=”apparmor:YOURPROFILE” whenever you run docker\
+Choose a profile and introduce the use–secutity-opt='apparmor:YOURPROFILE' whenever you run docker\
 DO NOT USE SUDO TO RUN THE CONTAINER, BUT SSH OR PASSWORDS INSIDE EITHER\
 #Run a image on a container \
 docker run  -it --name myappimageforcontainer -d -p 1337:80 –lxc-conf /usr/share/lxc/config/common.seccomp -lxc-conf=”lxc.id_map = u 0 100000 65536″ -lxc-conf=”lxc.id_map = g 0 100000 65536″ –cap-drop=fsetid –cap-drop=fowner –cap-drop=mkdnod –cap-drop=net_raw –cap-drop=setgid –cap-drop=setuid –cap-drop=setfcap –cap-drop=setpcap –cap-drop=net_bin_service –cap-drop=sys_chroot –cap-drop=audit_write –cap-drop=audit_control –cap-drop=chown –cap-drop=audit_write –cap-drop=mac_admin –cap-drop=mac_override –cap-drop=mknod –cap-drop=setfcap setpcap –cap-drop=sys_admin –cap-drop=sys_boot –cap-drop=sys_module –cap-drop=sys_nice –cap-drop=sys_pacct –cap-drop=sys_rawio –cap-drop=sys_resource –cap-drop=sys_time –cap-drop=sys_tty_config \
@@ -1145,7 +1146,7 @@ go to IP:1337 and there it is \
 #Audit \
 Audit using lynis audit dockerfile filename\
     SELinux/AppApparmor support – limit processes what resources they can access \
-    Capabilities support – limit the maximum level a functions (or “roles”) a process can achieve within the container\
+    Capabilities support – limit the maximum level a functions (or roles) a process can achieve within the container\
     Auditd/Seccomp support – allow/disallow what system calls can be used by processes\
     docker exec – no more SSH in containers for just management\
     docker exec $INSTANCE_ID rpm -qa to OR docker exec $INSTANCE_ID dpkg -l, to see what packages are installed in a container.\
@@ -2676,7 +2677,7 @@ if [ -d "$1" ]; then
 	set 1 -- $1".zip"
 elif [ -f "$1" ]; then
 	filesz=$(stat --printf="%s" "$1")
-	if [ $filesz > 1073741824]; then
+	if [ "$filesz" > 1073741824 ]; then
 echo "Your file has $filesz bytes and the maximum filesize is 10GB (1073741824 bytes). Do you want to compress it? 0) No 1) Yes 2) Yes, and the file is an office document"
 		options0=("0" "1" "2" "3" "4" "5")
 		select opt0 in "${options0[@]}"
