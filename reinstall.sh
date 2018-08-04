@@ -1107,11 +1107,13 @@ cd ..
 
 ### Python ###
 sudo pacman -S python python3 --noconfirm --needed
-sudo pacman -S python-pip --nonconfirm --needed
+sudo pacman -S python-pip python2-pip --noconfirm --needed
+sudo pacman -S sniper sniper2 --noconfirm --needed
 
 #Some Python tools
 sudo -H pip install percol #Indexer
 sudo -H pip install shyaml csvkit #yaml csv
+sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes jypyter with qtconsole
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
