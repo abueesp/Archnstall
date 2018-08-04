@@ -856,10 +856,19 @@ alias grepp='grep --color=auto -r -H'
 alias egrepp='egrep --color=auto -r -w'
 alias fgrepp='fgrep --color=auto'
 alias pni='sudo pacman -S'
-alias pnr='sudo pacman -Rc'
+alias installpkg=pni
 alias pns='pacman -Ss'
+alias searchpkg=pns
+alias pnr='sudo pacman -Rc'
+alias rmpkg=pns
 alias pnrmorphans='pacman -Rns $(pacman -Qtdq)'
+alias pnrmrepo='echo "aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
 alias pnmirrors='sudo reflector -l 30 -f 10 --save /etc/pacman.d/mirrorlist'
+alias pncheck='pacman -Qq | sudo paccheck --sha256sum --quiet'
+checkpkg=pncheck
+alias pnlss='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'
+alias pnlsd='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))'
+alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'
 alias rename='mv'
 alias readfiles='sudo tail -vn +1 $(find . -maxdepth 1 -not -type d)'
 alias catall=readfiles
