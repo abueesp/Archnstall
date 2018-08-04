@@ -858,6 +858,8 @@ alias fgrepp='fgrep --color=auto'
 alias pni='sudo pacman -S'
 alias pnr='sudo pacman -Rc'
 alias pns='pacman -Ss'
+alias pnrmorphans='pacman -Rns $(pacman -Qtdq)'
+alias pnmirrors='sudo reflector -l 30 -f 10 --save /etc/pacman.d/mirrorlist'
 alias rename='mv'
 alias readfiles='sudo tail -vn +1 $(find . -maxdepth 1 -not -type d)'
 alias catall=readfiles
