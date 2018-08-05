@@ -365,7 +365,7 @@ fi
 
  if [ "$invalid_credentials" == "1" ]; then
  echo "There was a credentials error. Please introduce your credentials"
- exit
+ return
  fi
 
 
@@ -463,7 +463,7 @@ fi
  
  if [ "$invalid_credentials" == "1" ]; then
  echo "There was a credentials error. Please introduce your credentials"
- exit
+ return
  fi
 
  repo_name=$1
@@ -739,7 +739,7 @@ read -p "introduce el nombre del proceso o aplicacion: " app
 pid=$(pidof $app)
 if [ -z "$pid" ]; then
     echo "Ese programa no estaba corriendo o el proceso no fue identificado"
-    exit
+    return
 fi
 apt-cache show $app
 sudo ps ax | grep $app
@@ -855,20 +855,6 @@ alias lvim="vim -c \"normal '0\'" # open vim editor with last edited file
 alias grepp='grep --color=auto -r -H'
 alias egrepp='egrep --color=auto -r -w'
 alias fgrepp='fgrep --color=auto'
-alias pni='sudo pacman -S'
-alias installpkg=pni
-alias pns='pacman -Ss'
-alias searchpkg=pns
-alias pnr='sudo pacman -Rc'
-alias rmpkg=pns
-alias pnrmorphans='pacman -Rns $(pacman -Qtdq)'
-alias pnrmrepo='echo "aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
-alias pnmirrors='sudo reflector -l 30 -f 10 --save /etc/pacman.d/mirrorlist'
-alias pncheck='pacman -Qq | sudo paccheck --sha256sum --quiet'
-checkpkg=pncheck
-alias pnlss='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'
-alias pnlsd='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))'
-alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'
 alias rename='mv'
 alias readfiles='sudo tail -vn +1 $(find . -maxdepth 1 -not -type d)'
 alias catall=readfiles
@@ -1404,13 +1390,13 @@ sudo mount /dev/$sdjah /mnt/$sdjah -noexec --rw
 read -p 'Your disk '$sdjah' was mounted on /mnt/'$sdjah'. Do you want to open it with sudo or without? 1=Sudo 2=Notsudo 3=Goterminal; Q=Do nothing: ' opt
     case $opt in
         "1")
-            echo "You were sudo"; findmnt; sudo nemo /mnt/$sdjah || sudo /mnt/nautilus $sdjah || sudo pantheon-files /mnt/$sdjah; exit;;
+            echo "You were sudo"; findmnt; sudo nemo /mnt/$sdjah || sudo /mnt/nautilus $sdjah || sudo pantheon-files /mnt/$sdjah; return;;
         "2")
-            echo "You were not sudo"; findmnt; nemo /mnt/$sdjah || /mnt/nautilus $sdjah || pantheon-files /mnt/$sdjah; exit;;
+            echo "You were not sudo"; findmnt; nemo /mnt/$sdjah || /mnt/nautilus $sdjah || pantheon-files /mnt/$sdjah; return;;
         "3")
             findmnt; cd /mnt/$sdjah && ls;;
         "Q")
-            exit;;
+            return;;
         *) echo "invalid option";;
     esac
 }
@@ -1554,7 +1540,7 @@ octete=`echo "obase=16;$numbere" | bc`
 firstdigit=${octet:0:1}
 while :; do
 	if [ $((firstdigit%2)) -eq 0 ];
-		then exit
+		then return
 	else
 		number=$RANDOM
 		let "number %= $RANGE"
@@ -1577,7 +1563,6 @@ echo "Enjoy!"
 
 killmycam() {
   if sudo fuser /dev/video0; then 
-  
   read -p "Este es tu proceso de camara. Introduce el numero m del proceso. " camm
   ps axl | grep $camm
   while true; do
@@ -1590,7 +1575,7 @@ killmycam() {
   done
   else
   echo "You cam is not being used by any process."
-  exit 
+  return 
   fi
 }
 
@@ -2962,8 +2947,7 @@ rotate(){
 if [ -z "$1" ]; then
   echo "Missing orientation."
   echo "Usage: $0 [normal|inverted|left|right] [revert_seconds]"
-  echo
-  exit 1
+  return
 fi
 
 function do_rotate
@@ -2980,7 +2964,7 @@ do_rotate $XDISPLAY $1
 if [ ! -z "$2" ]; then
   sleep $2
   do_rotate $XDISPLAY $XROT
-  exit 0
+  return
 fi
 }
 rotatescreen=rotate
@@ -3036,23 +3020,29 @@ sudo vim -c ":%s|-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT|
 }
 
 #Archs
-alias chtor="sudo chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"
-alias machinetor="echo 'Use Tails, changemymac, and tor-browser' && machinectl login tor-exit"
-bupkgs(){
+alias torch="sudo chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"
+alias tormch="echo '[CONF FILE] torrc, [OS] tails, [MAC] changemymac, [BROWSER] tor-browser, [VM] machinectl login tor-exit, [BLOCK OUT] iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid, [EXCEPTION OUT] iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT "
+alias ipkg='sudo pacman -S'
+alias spkg='pacman -Ss'
+alias rmpkg='sudo pacman -Rc'
+alias rmorphanpkg='pacman -Rns $(pacman -Qtdq)'
+alias rmrepo='echo "aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
+alias mirrors='sudo reflector -l 30 -f 10 --save /etc/pacman.d/mirrorlist'
+alias hashpkg='pacman -Qq | sudo paccheck --sha256sum --quiet'
+checkpkg=hashpkg
+alias lsspkg='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'
+alias lsdpkg='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))'
+alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'
+bupkg(){
 for i in $(pacman -Qq ); do
 	bacman $i
 done
 }
-alias hashpkgs='pacman -Qq | sudo paccheck --sha256sum --quiet'
-alias listpkgsbysize="pacgraph -c && expac -H M '%m\t%n' | sort -h && echo 'ONLY INSTALLED (NO BASE OR BASE-DEVEL)' && expac -H M '%011m\t%-           20n\t%10d' $(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n"
-alias listpkgsbydate="expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo 'ONLY INSTALLED (NO BASE OR BASE-DEVEL)' && expac -HM '%-20n\t%10d'        $(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))"
-alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/        Tips_and_tricks'
-alias purgearchrepo="read -p 'Name of repo: ' REPO && paclist $REPO && sudo pacman -Rnsc $(pacman -Sl $REPO | awk  '{print $2}' )"
 alias kalifyarch='printf "[archstrike] \n Server = https://mirror.archstrike.org/\$arch/\$repo/ " | sudo tee -a /etc/pacman.conf && sudo pacman-key -- recv-keys 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --finger 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --lsign-    key 9D5F1C051D146843CDA4858BDE64825E7CBC0D51'
 alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch " | sudo tee -a /etc/pacman.conf && sudo pacman-key -- recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-    key F3104992EBF24EB872B97B9C32B0B4534209170B && Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects     try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
 alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has   not key!"'
 alias repeatmouse="java -jar /usr/src/repeat.jar"
-alias plotsystemd="systemd-analyze plot > plot.svg && deepin-image-viewer plot.svg"
+alias systemdplot="systemd-analyze plot > plot.svg && deepin-image-viewer plot.svg"
 
 pythonserver(){
 if type python3 >/dev/null; then
