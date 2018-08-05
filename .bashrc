@@ -3021,17 +3021,17 @@ sudo vim -c ":%s|-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT|
 
 #Archs
 alias torch="sudo chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"
-alias tormch="echo '[CONF FILE] torrc, [OS] tails, [MAC] changemymac, [BROWSER] tor-browser, [VM] machinectl login tor-exit, [BLOCK OUT] iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid, [EXCEPTION OUT] iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT "
+alias tormch="echo '[CONF FILE] torrc, [OS] tails, [MAC] changemymac, [BROWSER] tor-browser, [VM] machinectl login tor-exit, [BLOCK PING] disableremoteping, [BLOCK OUT] iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid, [EXCEPTION OUT] iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT "
 alias ipkg='sudo pacman -S'
 alias spkg='pacman -Ss'
 alias rmpkg='sudo pacman -Rc'
 alias rmorphanpkg='pacman -Rns $(pacman -Qtdq)'
-alias rmrepo='echo "aurman --stats && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
+alias rmrepo='cat .etc/pacman.d/mirrorlist && read -p \"Name of repo: \" REPO && paclist \$REPO && sudo pacman -Rnsc \$(pacman -Sl \$REPO | grep \"\[installed\]\" | cut -f2 -d\' \")"'
 alias mirrors='sudo reflector -l 30 -f 10 --save /etc/pacman.d/mirrorlist'
 alias hashpkg='pacman -Qq | sudo paccheck --sha256sum --quiet'
 checkpkg=hashpkg
-alias lsspkg='pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n'
-alias lsdpkg='expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))'
+alias lsspkg="pacgraph -c && expac -H M '%m\t%n' | sort -h && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -H M \"%011m\t%-20n\t%10d\" \$(comm -23 <(pacman -Qqen | sort) <(pacman -Qqg base base-devel | sort)) | sort -n"
+alias lsdpkg="expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort && echo \"ONLY INSTALLED (NO BASE OR BASE-DEVEL)\" && expac -HM \"%-20n\t%10d\" \$(comm -23 <(pacman -Qqt | sort) <(pacman -Qqg base base-devel | sort))"
 alias pacmansheet='firefox --new-tab https://wiki.archlinux.org/index.php/Pacman/Rosetta --new-tab https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks'
 bupkg(){
 for i in $(pacman -Qq ); do
