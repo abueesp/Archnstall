@@ -76,8 +76,6 @@ sudo vim -c ":%s|#listen-address=|listen-address=127.0.0.1|g" -c ":wq" /etc/dnsm
 sudo vim -c ":%s|#nohook resolv.conf|nohook resolv.conf|g" -c ":wq" /etc/dhcpcd.conf
 sudo dnsmasq
 
-
-
 #Create user
 TORUSER="tor"
 sudo useradd -m $TORUSER
@@ -121,7 +119,7 @@ fi
 #echo 'alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
 # Pacman over Tor
-sudo vim -c ':%s|#XferCommand = /usr/bin/curl|XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl|g' -c ':wq' /etc/pacman.conf
+sudo vim -c ':%s.#XferCommand = /usr/bin/curl.XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacman.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
@@ -230,7 +228,7 @@ sudo pacman -S bubblewrap --noconfirm --needed
 sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 
 # Bluetooth
-sudo vim /etc/bluetooth/main.conf -c ':%s|#AutoEnable=false|AutoEnable=false|g' -c ':wq'
+sudo vim /etc/bluetooth/main.conf -c ':%s.#Autoenable=False.Autoenable=False.g' -c ':wq'
 sudo rfkill block bluetooth
 printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
@@ -243,7 +241,7 @@ sudo sed -i 's|    /usr/bin/pactl load-module module-x11-xsmp “display=$DISPLA
 \n    /usr/bin/pactl load-module module-bluetooth-policy
 \n    /usr/bin/pactl load-module module-bluetooth-discover' /usr/bin/start-pulseaudio-x11 #automatic pavucontrol recognition
 
-pulseaudio -k
+	pulseaudio -k
 pulseaudio --start
 sudo systemctl stop bluetooth.service
 sudo pkill -9 /usr/lib/bluetooth/obexd
@@ -297,14 +295,14 @@ then
 else
     sudo vim /etc/ssh/sshd_config -c ':%s/PermitRootLogin without password/PermitRootLogin no/g' -c ':wq'
     sudo vim /etc/ssh/sshd_config -c ':%s/Protocol 2,1/Protocol 2/g' -c ':wq'
-    sudo vim /etc/ssh/sshd_config -c ":%s|MaxAuthTries 6|MaxAuthTries 3|g" -c ":wq" 
+    sudo vim /etc/ssh/sshd_config -c ":%s/MaxAuthTries 6/MaxAuthTries 3/g" -c ":wq" 
 
 fi
 
 # SSHguard (prefered over Fail2ban)
 sudo pacman -S sshguard --noconfirm --needed
-sudo vim -c ":%s|BLACKLIST_FILE=120:/var/db/sshguard/blacklist.db|BLACKLIST_FILE=50:/var/db/sshguard/blacklist.db|g" -c ":wq" /etc/sshguard.conf #Danger level: 5 failed logins -> banned
-sudo vim -c ":%s|THRESHOLD=30|THRESHOLD=10|g" -c ":wq"  /etc/sshguard.conf 
+sudo vim -c ":%s,BLACKLIST_FILE=120:/var/db/sshguard/blacklist.db,BLACKLIST_FILE=50:/var/db/sshguard/blacklist.db,g" -c ":wq" /etc/sshguard.conf #Danger level: 5 failed logins -> banned
+sudo vim -c ":%s,THRESHOLD=30,THRESHOLD=10,g" -c ":wq"  /etc/sshguard.conf 
 sudo systemctl enable --now sshguard.service
 
 # OpenSSL and NSS
@@ -323,8 +321,8 @@ makepkg -si --noconfirm
 cd ..
 sudo rm -r suricata
 gpg2 --delete-secret-and-public-keys --batch --yes 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
-#sudo vim /etc/suricata/suricata.yaml -c ":%s|HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"|HOME_NET: \"[$myip]\"|g" -c ":wq"
-sudo vim -c ":%s|# -|-|g" -c ":wq" /etc/suricata/suricata.yaml #activate rules
+#sudo vim -c ":%s,HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\",HOME_NET: \"[$myip]\",g" -c ":wq" /etc/suricata/suricata.yaml
+sudo vim -c ":%s,# -,-,g" -c ":wq" /etc/suricata/suricata.yaml #activate rules
 suricatasslrule(){ #blacklistsslcertificates
 url=$SSLRULES".rules"
 agurl=$SSLRULES"_aggressive.rules"
@@ -382,7 +380,9 @@ for i in $ipports; do
 done
 sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -P INPUT DROP
-sudo iptables -P OUTPUT ACCEPT ##If you are a server change this to DROP OUTPUT connections by default too
+sudo iptables -P OUTPUT ACCEPTo ##If you are a server change this to DROP OUTPUT connections by default too
+#iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid #block all with log
+#iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT #filter exception
 sudo iptables -P FORWARD DROP
 sudo iptables restart
 
@@ -395,7 +395,7 @@ sudo service cups-browsed stop
 sudo systemctl cupsd
 sudo systemctl disable org.cups.cupsd
 
-#Nftables
+# Nftables
 sudo pacman -S nftables --noconfirm --needed
 nftports=$(echo "$ports" | tr '\n' ' ' | sed -e 's/[^0-9]/ /g' -e 's/^ *//g' -e 's/ *$//g' | tr -s ' ' | sed 's/ /\n/g')
 for i in $nftports; do
@@ -491,7 +491,7 @@ sudo pacman -S onboard --noconfirm --needed #Virtual keyboard
 #sudo rm -r snap-pac-grub
 
 # Pacman tools
-sudo pacman -S arch-audit pacgraph pacutils --noconfirm --needed 
+sudo pacman -S arch-audit pacgraph pacutils --noconfirm --needed #personal aliases prefered over pacman-contrib 
 
 # PKGtools
 git clone https://github.com/graysky2/lostfiles #Script that identifies files not owned and not created by any Arch Linux package.
@@ -536,7 +536,7 @@ if [ ! -f /home/$USER/.recoll/recoll.conf ]; then
     mkdir /home/$USER/.recoll
     cp /usr/share/recoll/examples/recoll.conf /home/$USER/.recoll/recoll.conf
 fi
-vim -c ":%s|topdirs = / ~|topdirs = / ~|g" -c ":wq" /home/$USER/.recoll/recoll.conf
+vim -c ":%s.topdirs = / ~.topdirs = / ~.g" -c ":wq" /home/$USER/.recoll/recoll.conf
 sudo updatedb
 
 # Dock conf
@@ -951,7 +951,8 @@ cd privacy
 wget https://addons.mozilla.org/firefox/downloads/file/869616/tracking_token_stripper-2.1-an+fx.xpi GoogleTrackBlock.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/839942/startpagecom_private_search_engine.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/706680/google_redirects_fixer_tracking_remover-3.0.0-an+fx.xpi GoogleRedirectFixer.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/727843/skip_redirect-2.2.1-fx.xpi SkipRedirect.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/727843/skip_redirect-2.2.1-fx.xpi -O SkipRedirect.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/1003544/user_agent_switcher-1.2.1-an+fx.xpi -O UserAgentSwitcher.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/808841/addon-808841-latest.xpi -O AdblockPlus.xpi 
 wget https://addons.mozilla.org/firefox/downloads/latest/497366/addon-497366-latest.xpi -O DisableWebRTC.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/92079/addon-92079-latest.xpi -O CookieManager.xpi
@@ -1028,12 +1029,70 @@ wget https://addons.mozilla.org/firefox/downloads/file/782839/recap-1.1.8-an+fx.
 cd ..
 cd ..
 
-cd ~/.mozilla/firefox/*.default
-#vim -c ':%s/user_pref("browser.safebrowsing.*//g' -c ":wq" prefs.js
-vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" prefs.js
-vim -c ':%s/user_pref("toolkit.telemetry.cachedClientID".*//g' -c ":wq" prefs.js
-vim -c ':%s|user_pref("privacy.trackingprotection.pbmode.enabled", false);|user_pref("privacy.trackingprotection.pbmode.enabled", true);|g' -c ":wq" prefs.js
-cd
+#Delete IDs
+vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("toolkit.telemetry.cachedClientID".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("toolkit.telemetry.previousBuildID".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("browser.search.cohort".*;/user_pref("browser.search.cohort", "testcohort");/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+
+#Delete data
+rm -r ~/.mozilla/firefox/*.default/datareporting/*
+rm -r ~/.mozilla/firefox/*.default/saved-telemetry-pings/
+rm ~/.mozilla/firefox/*.default/SiteSecurityServiceState.txt
+#vim -c ':%s/user_pref("browser.search.countryCode".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js 
+#vim -c ':%s/user_pref("browser.search.region.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #timezone
+echo 'user_pref("privacy.resistFingerprinting", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("privacy.trackingprotection.enabled", false);/user_pref("privacy.trackingprotection.enabled", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+#vim -c ':%s/user_pref("places.history.expiration.transient_current_max_pages".*;/user_pref("places.history.expiration.transient_current_max_pages", 2);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.sessionstore.privacy level", 2);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("network.cookie.cookieBehavior".*);/user_pref("network.cookie.cookieBehavior", 1);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #only cookies from the actual website, but no 3rd party cookies from other websites are accepted
+vim -c ':%s/user_pref("network.cookie.lifetimePolicy".*);/user_pref("network.cookie.lifetimePolicy", 2);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #all cookie data is deleted at the end of the session or when closing the browser
+
+#Extra tabs
+echo 'user_pref("privacy.firstparty.isolate", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.firstparty.isolate.restrict_opener_access", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.userContext.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.userContext.longPressBehavior", 2);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.userContext.ui.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.usercontext.about_newtab_segregation.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+
+#Safebrowsing
+vim -c ':%s/user_pref("browser.safebrowsing.downloads.enabled", false);/user_pref("browser.safebrowsing.downloads.enabled", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", false);/user_pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("safebrowsing.downloads.remote.block_uncommon", false);/user_pref("safebrowsing.downloads.remote.block_uncommon", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("safebrowsing.malware.enabled", false);/user_pref("safebrowsing.malware.enabled", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("safebrowsing.phishing.enabled", false);/user_pref("safebrowsing.phishing.enabled", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.safebrowsing.blockedURIs.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.safebrowsing.debug", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.safebrowsing.reportMalwareMistakeURL", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.safebrowsing.reportPhishMistakeURL", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("urlclassifier.disallow_completions", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("urlclassifier.gethashnoise", 9);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("urlclassifier.gethash.timeout_ms", 3);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("urlclassifier.max-complete-age", 3600);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.storage.default_quota", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #DOM Storage and issues a warning if more than 1 Kb is to be saved 
+echo 'user_pref("offline-apps.quota.warn", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js 
+echo 'user_pref("browser.cache.memory.enable", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #deactivates caching in memory areas of the working memory
+
+
+#DNS
+echo 'user_pref("unetwork.trr.bootstrapAddress", 1.0.0.1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Cloudfare
+echo 'user_pref("network.trr.mode", 3);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Only cloudfare
+echo 'user_pref("network.trr.uri", https://cloudflare-dns.com/dns-query);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+
+Searches and forms
+echo 'user_pref("browser.urlbar.oneOffSearches", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+#echo 'user_pref("browser.search.suggest.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Startpage
+echo 'user_pref("signon.autofillForms", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("signon.autofillForms.http ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("signon.formlessCapture.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("signon.storeWhenAutocompleteOff", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("browser.formfill.enable", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("extensions.formautofill.addresses.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("extensions.formautofill.available", off);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("extensions.formautofill.creditCards.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("extensions.formautofill.heuristics.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+echo 'user_pref("extensions.formautofill.section.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
 
 #Opera
 sudo pacman -S opera opera-developer --noconfirm --needed
