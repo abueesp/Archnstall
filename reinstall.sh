@@ -949,7 +949,7 @@ cd extensions
 mkdir privacy
 cd privacy
 wget https://addons.mozilla.org/firefox/downloads/file/869616/tracking_token_stripper-2.1-an+fx.xpi GoogleTrackBlock.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/839942/startpagecom_private_search_engine.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/839942/startpagecom_private_search_engine.xpi #For others use OpenSearch
 wget https://addons.mozilla.org/firefox/downloads/file/706680/google_redirects_fixer_tracking_remover-3.0.0-an+fx.xpi GoogleRedirectFixer.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/727843/skip_redirect-2.2.1-fx.xpi -O SkipRedirect.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/1003544/user_agent_switcher-1.2.1-an+fx.xpi -O UserAgentSwitcher.xpi
@@ -1047,6 +1047,23 @@ vim -c ':%s/user_pref("privacy.trackingprotection.enabled", false);/user_pref("p
 echo 'user_pref("browser.sessionstore.privacy level", 2);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("network.cookie.cookieBehavior".*);/user_pref("network.cookie.cookieBehavior", 1);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #only cookies from the actual website, but no 3rd party cookies from other websites are accepted
 vim -c ':%s/user_pref("network.cookie.lifetimePolicy".*);/user_pref("network.cookie.lifetimePolicy", 2);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #all cookie data is deleted at the end of the session or when closing the browser
+#echo 'user_pref("media.navigator.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("media.peerconnection.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("media.getusermedia.browser.enabled ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("media.getusermedia.audiocapture.enabled  ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("media.getusermedia.screensharing.enabled ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("geo.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.push.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("dom.push.connection.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.search.geoip.url", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.search.geoSpecificDefaults ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("app.update.lastUpdateTime.telemetry_modules_ping".*;/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("devtools.onboarding.telemetry.logged".*;/user_pref("devtools.onboarding.telemetry.logged", false;/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("devtools.telemetry.tools.opened.version".*;/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("toolkit.telemetry.reportingpolicy.firstRun".*;/user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("datareporting.healthreport.uploadEnabled".*;/user_pref("datareporting.healthreport.uploadEnabled", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("app.normandy.first_run".*;/user_pref("app.normandy.first_run", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("app.normandy.user_id".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 
 #Extra tabs
 echo 'user_pref("privacy.firstparty.isolate", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
