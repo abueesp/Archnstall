@@ -3,14 +3,13 @@
 #DNS (unbound resolv.conf dnssec dyndns) and Firewall
 #Awesome Linux
 #create encfs alias
-#machinectl?  torb yes but torify udp Connection to a local address are denied since it might be a TCP DNS query to a local DNS server. Rejecting it for safety reasons. (in tsocks_connect() at connect.c
 #gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
 # https://kernelnewbies.org/KernelGlossary https://0xax.gitbooks.io/linux-insides/content/Booting/
 #next4 snapper? 
 #different results on listpkgsbysize? 
-#UsbGuard requires lrelease-qt4 but not on qt4-4.8.7-23, only qt4-4.8.7-24?
 #create pkgbuild from deb ^https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
 #customizerom
+#Script music (ready) media (ready) sec (ready) --- upload :)
 
 ### Restoring Windows on Grub2 ###
 sudo os-prober 
@@ -966,9 +965,14 @@ wget https://addons.mozilla.org/firefox/downloads/latest/496120/addon-496120-lat
 wget https://addons.mozilla.org/firefox/downloads/latest/473878/addon-473878-latest.xpi -O RandomAgentSpoofer.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/229918/addon-229918-latest.xpi -O HTTPSEverywhere.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/607454/addon-607454-latest.xpi -O UBlockOrigin.xpi
-wget https://addons.mozilla.org/firefox/downloads/latest/canvasblocker/addon-534930-latest.xpi -O Avoid HTML5 Canvas.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/1035032/enterprise_policy_generator-3.1.0-an+fx.xpi -O PolicyGenerator.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/1030797/canvasblocker-0.5.2b-an+fx.xpi -O BlockCanvas.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/790214/umatrix-1.1.12-an+fx.xpi -O UMatrix.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/872067/firefox_multi_account_containers-6.0.0-an+fx-linux.xpi -O ProfileSwitcher.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/974835/copy_plaintext-1.8-an+fx.xpi -O CopyPlainText.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/860538/behind_the_overlay-0.1.6-an+fx.xpi -O BehindTheOverlay.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/966587/auto_tab_discard-0.2.8-an+fx.xpi -O AutoTabDiscardByMemory.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/969185/foxyproxy_standard-6.3-an+fx.xpi FoxyProxyStandard.xpi
 mkdir otherprivacy
 wget https://addons.mozilla.org/firefox/downloads/latest/certificate-patrol/addon-6415-latest.xpi -O certificate patrol.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/6196/addon-6196-latest.xpi -O PassiveRecon.xpi
@@ -980,8 +984,8 @@ cd github
 wget https://addons.mozilla.org/firefox/downloads/file/976102/octolinker-4.18.1-fx.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/888344/octotree-2.4.6-an+fx.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/846406/codeflower-0.1.3-an+fx.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/880748/lovely_forks-3.3.0-an+fx.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/974367/sourcegraph-1.7.18-an+fx.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/880748/lovely_forks-3.3.0-an+fx.xpi -O LovelyForks
+#wget https://addons.mozilla.org/firefox/downloads/file/974367/sourcegraph-1.7.18-an+fx.xpi
 cd ..
 wget https://addons.mozilla.org/firefox/downloads/file/910464/tab_session_manager-3.1.0-an+fx-linux.xpi -O TabSessionManager.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/355192/addon-355192-latest.xpi -O MindTheTime.xpi
@@ -1015,33 +1019,38 @@ wget https://addons.mozilla.org/firefox/downloads/latest/10586/addon-10586-lates
 wget https://addons.mozilla.org/firefox/downloads/latest/8661/addon-8661-latest.xpi -O WorldIP.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/390151/addon-390151-latest.xpi -O TOS.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/3456/addon-3456-latest.xpi -O WOT.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/140447/cryptofox-2.2-fx.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/140447/cryptofox-2.2-fx.xpi -O CryptoFox.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/copy-as-plain-text/addon-344925-latest.xpi -O CopyasPlainText.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/229626/sql_inject_me-0.4.7-fx.xpi 
 wget https://addons.mozilla.org/firefox/downloads/file/215802/rightclickxss-0.2.1-fx.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/3899/addon-3899-latest.xpi -O HackBar.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/wappalyzer/addon-10229-latest.xpi -O Wappanalyzer.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/344927/addon-344927-latest.xpi -O CookieExportImport.xpi
-wet https://addons.mozilla.org/firefox/downloads/file/204186/fireforce-2.2-fx.xpi 
-wget https://addons.mozilla.org/firefox/downloads/file/224182/csrf_finder-1.2-fx.xpi 
+wet https://addons.mozilla.org/firefox/downloads/file/204186/fireforce-2.2-fx.xpi -O FireForce.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/224182/csrf_finder-1.2-fx.xpi -O CsrfFinder.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/345004/live_http_headers_fixed_by_danyialshahid-0.17.1-signed-sm+fx.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/782839/recap-1.1.8-an+fx.xpi -O RECAPforsearchingUSLawDB.xpi
 cd ..
 cd ..
 
+### START FIREFOX PREFERENCES ###
 #Delete IDs
 vim -c ':%s/user_pref("browser.newtabpage.activity-stream.impressionId".*//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("toolkit.telemetry.cachedClientID".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("toolkit.telemetry.previousBuildID".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("browser.search.cohort".*;/user_pref("browser.search.cohort", "testcohort");/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 
-#Delete data
+#Stop giving-away data unnecessarily
 rm -r ~/.mozilla/firefox/*.default/datareporting/*
 rm -r ~/.mozilla/firefox/*.default/saved-telemetry-pings/
 rm ~/.mozilla/firefox/*.default/SiteSecurityServiceState.txt
 #vim -c ':%s/user_pref("browser.search.countryCode".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js 
 #vim -c ':%s/user_pref("browser.search.region.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #timezone
 echo 'user_pref("privacy.resistFingerprinting", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.resistFingerprinting.block_mozAddonManager", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #deactivates caching in memory areas of the working memory
+echo 'user_pref("privacy.donottrackheader.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("privacy.donottrackheader.value", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.referer.spoofSource", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("privacy.trackingprotection.enabled", false);/user_pref("privacy.trackingprotection.enabled", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 #vim -c ':%s/user_pref("places.history.expiration.transient_current_max_pages".*;/user_pref("places.history.expiration.transient_current_max_pages", 2);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("browser.sessionstore.privacy level", 2);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
@@ -1056,16 +1065,121 @@ echo 'user_pref("geo.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/pr
 echo 'user_pref("dom.push.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 #echo 'user_pref("dom.push.connection.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("browser.search.geoip.url", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
-echo 'user_pref("browser.search.geoSpecificDefaults ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.search.geoSpecificDefaults", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("app.update.lastUpdateTime.telemetry_modules_ping".*;/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("devtools.onboarding.telemetry.logged".*;/user_pref("devtools.onboarding.telemetry.logged", false;/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("devtools.telemetry.tools.opened.version".*;/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("devtools.remote.wifi.scan", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("toolkit.telemetry.reportingpolicy.firstRun".*;/user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("datareporting.healthreport.uploadEnabled".*;/user_pref("datareporting.healthreport.uploadEnabled", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("app.normandy.first_run".*;/user_pref("app.normandy.first_run", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("app.normandy.user_id".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("app.shield.optoutstudies".*;/user_pref("app.shield.optoutstudies", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("beacon.enabled".*;/user_pref("beacon.enabled", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.chrome.errorReporter.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.library.activity-stream.enabled ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.newtabpage.activity-stream.prerender", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.newtabpage.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.ping-center.telemetry", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("app.update.lastUpdateTime.telemetry_modules_ping".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("browser.laterrun.bookkeeping.profileCreationTime".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.ping-center.telemetry", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.send_pings", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.send_pings.max_per_link", 0);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.ping-center.telemetry", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.startup.homepage", about:blank);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.startup.homepage_override.mstone", ignore);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.tabs.crashReporting.sendReport", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("datareporting.policy.dataSubmissionEnabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("datareporting.healthreport.uploadEnabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("device.sensors.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("device.sensors.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("device.sensors.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("pref.privacy.disable_button.view_passwords.*;/user_pref("pref.privacy.disable_button.view_passwords", false);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("full-screen.api.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.webkitBlink.dirPicker.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.webkitBlink.dirPicker.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("marionette.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.serviceWorkers.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("extensions.getAddons.cache.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.allow-experiments", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.captive-portal-service.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.predictor.enable-prefetch", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("toolkit.telemetry.enabled.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("toolkit.telemetry.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("toolkit.telemetry.unified", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("experiments.activeExperiment", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("experiments.supported", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("experiments.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("experiments.activeExperiment", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("identity.fxaccounts.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #disables Firefox account and Sync service
+echo 'user_pref("webextensions.storage.sync.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.uitour.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.urlbar.speculativeConnect.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.autofocus", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.zoom.siteSpecific", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("canvas.capturestream.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 
-#Extra tabs
+#DOM
+echo 'user_pref("dom.ipc.plugins.reportCrashURL", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.enable_performance", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.enable_performance_observer", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.enable_performance_navigation_timing ", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.enable_resource_timing", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.event.clipboardevents.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.requestIdleCallback.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.w3c_pointer_events.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.w3c_touch_events.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.webdriver.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.animations-api.core.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.animations-api.element-animate.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.battery.enabled, false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.battery.enabled, false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("dom.gamepad.enabled, false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.indexedDB.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.mapped_arraybuffer.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.registerProtocolHandler.insecure.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.select_events.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.select_events.textcontrols.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.vibrator.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.webaudio.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.webkitBlink.dirPicker.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.webkitBlink.filesystem.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("dom.ipc.processCount.webLargeAllocation", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #no large memory areas are reserved for websites and> 1 additional, separate processes are started, which signal a larger memory requirement due to WASM or asm.js (eg web games, WASM and asm.js applications)
+echo 'user_pref("dom.largeAllocationHeader.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #no large memory areas are reserved for websites and> 1 additional, separate processes are started, which signal a larger memory requirement due to WASM or asm.js (eg web games, WASM and asm.js applications)
+
+#JS
+echo 'user_pref("javascript.options.asmjs", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.baselineji", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.ion", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.wasm", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.wasm_baselinejit", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.wasm_ionjit", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.discardSystemSource", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("javascript.options.shared_memory", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("jsloader.shareGlobal", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+
+#SSL #4 = TLS 1.3, 3 = TLS 1.2, 2 = TLS 1.1, 1 = TLS 1.0, 0 = SSL 3.0
+echo 'user_pref("security.ssl.errorReporting.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.tls.version.max", 4);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.tls.version.min", 3);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.urlbar.trimURLs", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.altsvc.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.altsvc.oe", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.cert_pinning.enforcement_level", 2);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #0: PKP disabled, 1: "custom MITM" allowed (PKP is not applied to CA certificates imported by the user), 2. PKP is always applied
+echo 'user_pref("security.insecure_connection_icon.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("ssecurity.pki.sha1_enforcement_level", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #with 1, TLS certificates signed using SHA-1 are rejected or a warning appears, with 0 they are accepted
+echo 'user_pref("security.remember_cert_checkbox_default_setting", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.ssl.disable_session_identifiers", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.ssl.require_safe_negotiation", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.ssl.treat_unsafe_negotiation_as_broken", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.tls.enable_0rtt_data", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.mixed_content.block_active_content", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.mixed_content.block_object_subrequest", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.mixed_content.block_display_content", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.mixed_content.upgrade_display_content", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+
+#Isolate tabs
 echo 'user_pref("privacy.firstparty.isolate", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("privacy.firstparty.isolate.restrict_opener_access", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("privacy.userContext.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
@@ -1073,7 +1187,10 @@ echo 'user_pref("privacy.userContext.longPressBehavior", 2);' | tee -a ~/.mozill
 echo 'user_pref("privacy.userContext.ui.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("privacy.usercontext.about_newtab_segregation.enabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 
-#Safebrowsing
+#Safer browsing
+#echo 'user_pref("security.ssl.errorReporting.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Check SSL
+echo 'user_pref("browser.safebrowsing.allowOverride", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.safebrowsing.blockedURIs.enable", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("browser.safebrowsing.downloads.enabled", false);/user_pref("browser.safebrowsing.downloads.enabled", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", false);/user_pref("browser.safebrowsing.downloads.remote.block_potentially_unwanted", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("safebrowsing.downloads.remote.block_uncommon", false);/user_pref("safebrowsing.downloads.remote.block_uncommon", true);/g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
@@ -1090,14 +1207,48 @@ echo 'user_pref("urlclassifier.max-complete-age", 3600);' | tee -a ~/.mozilla/fi
 echo 'user_pref("dom.storage.default_quota", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #DOM Storage and issues a warning if more than 1 Kb is to be saved 
 echo 'user_pref("offline-apps.quota.warn", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js 
 echo 'user_pref("browser.cache.memory.enable", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #deactivates caching in memory areas of the working memory
-
+echo 'user_pref("extensions.getAddons.showPane", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+vim -c ':%s/user_pref("extensions.getAddons.cache.lastUpdate.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("xpinstall.signatures.required", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("extensions.langpacks.signatures.required", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("extensions.pocket.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("extensions.screenshots.disabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("extensions.screenshots.upload-disabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("canvas.capturestream.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("clipboard.plainTextOnly", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Addon xpi for this option
+echo 'user_pref("full-screen-api.ignore-widgets", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("full-screen-api.pointer-lock.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("browser.fullscreen.autohide", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("layout.css.mix-blend-mode.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("layout.css.background-blend-mode.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("layout.css.visited_links_enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("media.autoplay.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("media.video_stats.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("media.webspeech.recognition.enable", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("media.webspeech.synth.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.auth.subresource-http-auth-allow", 0);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.ftp.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.redirection-limit", 2);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.spdy.allow-push", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.spdy.coalesce-hostnames", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.http.speculative-parallel-limit", 0);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+#echo 'user_pref("network.jar.block-remote-files", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.prefetch-next", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.predictor.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("network.predictor.enable-prefetch", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.csp.experimentalEnabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("security.family_safety.mode", 0);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("webgl.disabled", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Problematic?
+echo 'user_pref("security.xpconnect.plugin.unrestricted", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
+echo 'user_pref("layout.css.prefixes.animations", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 
 #DNS
 echo 'user_pref("unetwork.trr.bootstrapAddress", 1.0.0.1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Cloudfare
 echo 'user_pref("network.trr.mode", 3);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Only cloudfare
 echo 'user_pref("network.trr.uri", https://cloudflare-dns.com/dns-query);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 
-Searches and forms
+#Searches and forms
+#echo 'user_pref("browser.autofocus", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #already in stop giving-away data
 echo 'user_pref("browser.urlbar.oneOffSearches", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
 #echo 'user_pref("browser.search.suggest.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #Startpage
 echo 'user_pref("signon.autofillForms", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
@@ -1110,6 +1261,8 @@ echo 'user_pref("extensions.formautofill.available", off);' | tee -a ~/.mozilla/
 echo 'user_pref("extensions.formautofill.creditCards.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
 echo 'user_pref("extensions.formautofill.heuristics.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
 echo 'user_pref("extensions.formautofill.section.enabled", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #No thumbs search engine
+
+### END FIREFOX PREFERENCES ###
 
 #Opera
 sudo pacman -S opera opera-developer --noconfirm --needed
@@ -1155,7 +1308,8 @@ $IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/github-show-email
 #Icecat
 sudo pacman -S icecat --noconfirm --needed
 
-#Terminal explorers: Elinks
+#Elinks terminal browser
+sudo pacman -S elinks --noconfirm --needed
 
 
 ### Calc Tools ###
