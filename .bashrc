@@ -640,7 +640,7 @@ tmux select-pane -t '3'
 tmux send-keys 'ifconfig && read -p "Introduce interface: " INTER && slurm -i $INTER' C-m
 tmux -2 attach-session -t 'MyTS'
 tmux select-window -t 'MyTS:T1'
-echo 'C-a or C-b is the magic key :'
+echo 'C-a or C-b is the magic key!'
 }
 alias tmuxsshrc="read -p 'Which address?: ' ADDRIP && sshrc $ADDRIP -t -- /bin/sh -c 'tmux has-session && exec tmux attach || exec tmux'"
 alias tmuxssh="read -p 'Which address?: ' ADDRIP && ssh $ADDRIP -t -- /bin/sh -c 'tmux has-session && exec tmux attach || exec tmux'"
