@@ -1342,12 +1342,21 @@ sudo pacman -S sniper sniper2 --noconfirm --needed
 #Some Python tools
 sudo -H pip install percol #logs indexer
 sudo -H pip install shyaml csvkit #yaml csv
+
+#Spyder/iPython/Jupyter
 sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics (http://ipython.readthedocs.io/en/stable/interactive/magics.html) and jupyter with qtconsole
-sudo -H install matplotlib numpy Cython
-#ipython profile create myprofile
+sudo -H install matplotlib numpy Cython #extras
+#ipython profile create myprofile #profiles
+IPYTHONPD=/home/nudo/.ipython/profile_default
 cp -R /home/nudo/.ipython/profile_default /home/nudo/.ipython/profile_original
-IPYTHONPDCONF=/home/nudo/.ipython/profile_default/ipython_config.py
-vim -c ":%s,#c.InteractiveShell.banner2 = '',c.InteractiveShell.banner2 = 'Ƀe ℋuman\, be κinđ\, be ωise || List profiles: /home/\$USER/.ipython/profile_\* || Default profile conf file: ls /home/\$USER/.ipython/profile_default/ipython_config.py || Ipython kernel conf file: http://ipython.readthedocs.io/en/stable/config/options/kernel.html || Extensions index: https://github.com/ipython/ipython/wiki/Extensions-Index || Check magics with %quickref || New magics with @register_nameofmagic, or create a class using @magics_class class MyMagics(Magics):        @nameofmagic',g" -c ":wq" $IPYTHONPDCONF
+PYTHONSTARTUP=$IPYTHONPD/pythonstartup #startup imports
+touch $PYTHONSTARTUP
+printf "import matplotlib.pyplot as plt \n
+import numpy as np" | tee -a $PYTHONSTARTUP
+IPYTHONPDCONF=$IPYTHONPD/ipython_config.py #configuration
+vim -c ":%s,#c.InteractiveShellApp.exec_files = \[\],c.InteractiveShellApp.exec_files = \['$PYTHONSTARTUP'\]" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s,#c.InteractiveShell.banner2 = '',c.InteractiveShell.banner2 = 'Ƀe ℋuman\, be κinđ\, be ωise || List profiles: /home/\$USER/.ipython/profile_\* || Default profile load file: $PYTHONSTARTUP || Default profile conf file: ls $IPYTHONPDCONF || Ipython kernel conf file: http://ipython.readthedocs.io/en/stable/config/options/kernel.html || Extensions index: https://github.com/ipython/ipython/wiki/Extensions-Index || Check magics with %quickref || New magics with @register_nameofmagic, or create a class using @magics_class class MyMagics(Magics):        @nameofmagic || Shortcuts: http://ipython.readthedocs.io/en/stable/config/shortcuts/index.html',g" -c ":wq" $IPYTHONPDCONF
+import matplotlib.pyplot as plt
 vim -c ":%s/#c.InteractiveShellApp.extensions = \[\]/c.InteractiveShellApp.extensions = \['autoreload', 'Cython'\]/g" -c ":wq" $IPYTHONPDCONF
 vim -c ":%s/#c.InteractiveShell.colors = 'Neutral'/c.InteractiveShell.colors = 'Linux'/g" -c ":wq" $IPYTHONPDCONF
 vim -c ":%s/#c.TerminalInteractiveShell.editing_mode = 'emacs'/c.TerminalInteractiveShell.editing_mode = 'vi'/g" -c ":wq" $IPYTHONPDCONF
