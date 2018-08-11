@@ -66,14 +66,13 @@ echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc
 echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc 
 echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
 sudo pacman -S dnsmasq --noconfirm --needed
-sudo vim -c ":%s|#port=|port=$TORDNSPORT |g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s|#conf-file=/usr/share/dnsmasq/trust-anchors.conf|conf-file=/usr/share/dnsmasq/trust-anchors.conf|g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s|#dnssec|dnssec|g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s|#no-resolv|no-resolv|g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s|#server=/localnet/192.168.0.1|server=127.0.0.1|g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s|#listen-address=|listen-address=127.0.0.1|g" -c ":wq" /etc/dnsmasq.conf
-sudo vim -c ":%s|#nohook resolv.conf|nohook resolv.conf|g" -c ":wq" /etc/dhcpcd.conf
-sudo dnsmasq
+sudo vim -c ":%s,#port=,port=$TORDNSPORT ,g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s,#conf-file=/usr/share/dnsmasq/trust-anchors.conf,conf-file=/usr/share/dnsmasq/trust-anchors.conf,g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s,#dnssec,dnssec,g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s,#no-resolv,no-resolv,g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s,#server=/localnet/192.168.0.1,server=127.0.0.1,g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s,#listen-address=,listen-address=127.0.0.1,g" -c ":wq" /etc/dnsmasq.conf
+sudo vim -c ":%s,#nohook resolv.conf,nohook resolv.conf,g" -c ":wq" /etc/dhcpcd.conf
 
 #Create user
 TORUSER="tor"
@@ -233,12 +232,12 @@ printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
 echo "enable-lfe-remixing = yes" | sudo tee -a /etc/pulse/default.pa 
 
-sudo vim -c "%s|#load-module module-switch-on-connect|load-module module-switch-on-connect|g" -c ":wq" /etc/pulse/default.pa
-sudo vim -c "%s|load-module module-suspend-on-idle|\#load-module module-suspend-on-idle|g" -c ":wq" /etc/pulse/default.pa
-sudo sed -i 's|    /usr/bin/pactl load-module module-x11-xsmp “display=$DISPLAY session_manager=$SESSION_MANAGER” > /dev/null|
+sudo vim -c "%s,#load-module module-switch-on-connect,load-module module-switch-on-connect,g" -c ":wq" /etc/pulse/default.pa
+sudo vim -c "%s,load-module module-suspend-on-idle,\#load-module module-suspend-on-idle,g" -c ":wq" /etc/pulse/default.pa
+sudo vim -c 's,    /usr/bin/pactl load-module module-x11-xsmp “display=$DISPLAY session_manager=$SESSION_MANAGER” > /dev/null,
 \n    /usr/bin/pactl load-module module-x11-xsmp "display=$DISPLAY session_manager=$SESSION_MANAGER" > /dev/null
 \n    /usr/bin/pactl load-module module-bluetooth-policy
-\n    /usr/bin/pactl load-module module-bluetooth-discover' /usr/bin/start-pulseaudio-x11 #automatic pavucontrol recognition
+\n    /usr/bin/pactl load-module module-bluetooth-discover,g' -c "wq" /usr/bin/start-pulseaudio-x11 #automatic pavucontrol recognition
 
 	pulseaudio -k
 pulseaudio --start
@@ -1272,10 +1271,10 @@ sudo pacman -S vivaldi --noconfirm --needed
 
 #Chromium
 sudo pacman -S chromium --noconfirm --needed
-#vim -c ":%s|google.com|ixquick.com|g" -c ":wq" ~/.config/chromium/Default/Preferences
-#vim -c ":%s|Google|Ixquick|g" -c ":wq" ~/.config/chromium/Default/Preferences
-#vim -c ":%s|yahoo.com|google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl|g" -c ":wq" ~/.config/chromium/Default/Preferences
-#vim -c ":%s|Yahoo|Google|g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s,google.com,ixquick.com,g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s,Google,Ixquick,g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s,yahoo.com,google.jp/search?q=%s&pws=0&ei=#cns=0&gws_rd=ssl,g" -c ":wq" ~/.config/chromium/Default/Preferences
+#vim -c ":%s,Yahoo,Google,g" -c ":wq" ~/.config/chromium/Default/Preferences
 #CREATEHASH=$(sha256sum ~/.config/chromium/Default/Preferences)
 #HASH=$(echo $CREATEHASH | head -n1 | sed -e 's/\s.*$//')
 #HASHPREF=$(echo $HASH | awk '{print toupper($0)}')
@@ -1345,12 +1344,15 @@ sudo -H pip install percol #logs indexer
 sudo -H pip install shyaml csvkit #yaml csv
 sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics and jupyter with qtconsole
 ipython profile create myprofile #ipython extensions https://github.com/ipython/ipython/wiki/Extensions-Index
-vim -c ":%s|#c.InteractiveShell.banner2 = ''|c.InteractiveShell.banner2 = 'Ƀe ℋuman, be κinđ, be ωise'|g" -c ":wq" "/home/$USER/.ipython/myprofile/ipython_config.py
-vim -c ":%s|#c.InteractiveShell.colors = 'Neutral'|c.InteractiveShell.colors = 'Linux'|g" -c ":wq" "/home/$USER/.ipython/myprofile/ipython_config.py
-vim -c ":%s|#c.TerminalInteractiveShell.editing_mode = 'emacs'|c.TerminalInteractiveShell.editing_mode = 'vi'|g" -c ":wq" "/home/$USER/.ipython/myprofile/ipython_config.py
-vim -c ":%s|#c.Completer.debug = False|c.Completer.debug = True|g" -c ":wq" "/home/$USER/.ipython/myprofile/ipython_config.py
-vim -c ":%s|#c.Completer.use_jedi = False|c.Completer.use_jedi = True|g" -c ":wq" "/home/$USER/.ipython/myprofile/ipython_config.py
-vim -c ":%s|#c.StoreMagics.autorestore = False|c.StoreMagics.autorestore = True|g" -c ":wq" "/home/$USER/.ipython/myprofile/ipython_config.py
+vim -c ":%s/#c.InteractiveShell.banner2 = ''/c.InteractiveShell.banner2 = 'Ƀe ℋuman, be κinđ, be ωise'/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+vim -c ":%s/#c.InteractiveShell.colors = 'Neutral'/c.InteractiveShell.colors = 'Linux'/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+vim -c ":%s/#c.TerminalInteractiveShell.editing_mode = 'emacs'/c.TerminalInteractiveShell.editing_mode = 'vi'/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+vim -c ":%s/#c.Completer.debug = False/c.Completer.debug = True/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+vim -c ":%s/#c.Completer.use_jedi = False/c.Completer.use_jedi = True/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+vim -c ":%s/#c.StoreMagics.autorestore = False/c.StoreMagics.autorestore = True/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+cp -R /home/nudo/.ipython/profile_default /home/nudo/.ipython/profile_original
+rm -R /home/nudo/.ipython/profile_default
+cp -R /home/nudo/.ipython/profile_myprofile /home/nudo/.ipython/profile_default
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
@@ -1438,8 +1440,8 @@ sudo lynis audit system
 #Tiger
 echo "Tiger — Security tool that can be use both as a security audit and intrusion detection system. http://www.nongnu.org/tiger/" 
 aurman -S tiger --needed --noconfirm --noedit
-sudo vim -c ":%s|which ypcat|which ypcat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
-sudo vim -c ":%s|which niscat|which niscat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
+sudo vim -c ":%s.which ypcat.which ypcat 2>/dev/null.g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
+sudo vim -c ":%s.which niscat.which niscat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
 sudo tiger
 
 #Tor-browser
