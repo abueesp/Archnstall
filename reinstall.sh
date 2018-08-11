@@ -1345,7 +1345,7 @@ sudo -H pip install shyaml csvkit #yaml csv
 
 #Spyder/iPython/Jupyter
 sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics (http://ipython.readthedocs.io/en/stable/interactive/magics.html) and jupyter with qtconsole
-sudo -H install matplotlib numpy Cython #extras
+sudo -H install matplotlib numpy numba Cython #extras
 #ipython profile create myprofile #profiles
 IPYTHONPD=/home/nudo/.ipython/profile_default
 cp -R /home/nudo/.ipython/profile_default /home/nudo/.ipython/profile_original
