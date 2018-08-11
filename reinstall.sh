@@ -1342,17 +1342,19 @@ sudo pacman -S sniper sniper2 --noconfirm --needed
 #Some Python tools
 sudo -H pip install percol #logs indexer
 sudo -H pip install shyaml csvkit #yaml csv
-sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics and jupyter with qtconsole
-ipython profile create myprofile #ipython extensions https://github.com/ipython/ipython/wiki/Extensions-Index
-vim -c ":%s/#c.InteractiveShell.banner2 = ''/c.InteractiveShell.banner2 = 'Ƀe ℋuman, be κinđ, be ωise'/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
-vim -c ":%s/#c.InteractiveShell.colors = 'Neutral'/c.InteractiveShell.colors = 'Linux'/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
-vim -c ":%s/#c.TerminalInteractiveShell.editing_mode = 'emacs'/c.TerminalInteractiveShell.editing_mode = 'vi'/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
-vim -c ":%s/#c.Completer.debug = False/c.Completer.debug = True/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
-vim -c ":%s/#c.Completer.use_jedi = False/c.Completer.use_jedi = True/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
-vim -c ":%s/#c.StoreMagics.autorestore = False/c.StoreMagics.autorestore = True/g" -c ":wq" /home/$USER/.ipython/profile_myprofile/ipython_config.py
+sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics (http://ipython.readthedocs.io/en/stable/interactive/magics.html) and jupyter with qtconsole
+sudo -H install matplotlib numpy Cython
+#ipython profile create myprofile
 cp -R /home/nudo/.ipython/profile_default /home/nudo/.ipython/profile_original
-rm -R /home/nudo/.ipython/profile_default
-cp -R /home/nudo/.ipython/profile_myprofile /home/nudo/.ipython/profile_default
+IPYTHONPDCONF=/home/nudo/.ipython/profile_default/ipython_config.py
+vim -c ":%s,#c.InteractiveShell.banner2 = '',c.InteractiveShell.banner2 = 'Ƀe ℋuman\, be κinđ\, be ωise || List profiles: /home/\$USER/.ipython/profile_\* || Default profile conf file: ls /home/\$USER/.ipython/profile_default/ipython_config.py || Ipython kernel conf file: http://ipython.readthedocs.io/en/stable/config/options/kernel.html || Extensions index: https://github.com/ipython/ipython/wiki/Extensions-Index || Check magics with %quickref || New magics with @register_nameofmagic, or create a class using @magics_class class MyMagics(Magics):        @nameofmagic',g" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s/#c.InteractiveShellApp.extensions = \[\]/c.InteractiveShellApp.extensions = \['autoreload', 'Cython'\]/g" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s/#c.InteractiveShell.colors = 'Neutral'/c.InteractiveShell.colors = 'Linux'/g" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s/#c.TerminalInteractiveShell.editing_mode = 'emacs'/c.TerminalInteractiveShell.editing_mode = 'vi'/g" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s/#c.Completer.debug = False/c.Completer.debug = True/g" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s/#c.Completer.use_jedi = False/c.Completer.use_jedi = True/g" -c ":wq" $IPYTHONPDCONF
+vim -c ":%s/#c.StoreMagics.autorestore = False/c.StoreMagics.autorestore = True/g" -c ":wq" $IPYTHONPDCONF
+#vim -c ":%s/#c.InteractiveShell.pdb = False/c.InteractiveShell.pdb = True/g" -c ":wq" $IPYTHONPDCONF
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
