@@ -1341,9 +1341,16 @@ sudo pacman -S python-pip python2-pip --noconfirm --needed
 sudo pacman -S sniper sniper2 --noconfirm --needed
 
 #Some Python tools
-sudo -H pip install percol #Indexer
+sudo -H pip install percol #logs indexer
 sudo -H pip install shyaml csvkit #yaml csv
 sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics and jupyter with qtconsole
+ipython profile create myprofile #ipython extensions https://github.com/ipython/ipython/wiki/Extensions-Index
+vim -c ":%s|#c.InteractiveShell.banner2 = ''|c.InteractiveShell.banner2 = 'Ƀe ℋuman, be κinđ, be ωise'|g" -c ":wq" "f/home/nudo/.ipython/myprofile/ipython_config.py
+vim -c ":%s|#c.InteractiveShell.colors = 'Neutral'|c.InteractiveShell.colors = 'Linux'|g" -c ":wq" "f/home/nudo/.ipython/myprofile/ipython_config.py
+vim -c ":%s|#c.TerminalInteractiveShell.editing_mode = 'emacs'|c.TerminalInteractiveShell.editing_mode = 'vi'|g" -c ":wq" "f/home/nudo/.ipython/myprofile/ipython_config.py
+vim -c ":%s|#c.Completer.debug = False|c.Completer.debug = True|g" -c ":wq" "f/home/nudo/.ipython/myprofile/ipython_config.py
+vim -c ":%s|#c.Completer.use_jedi = False|c.Completer.use_jedi = True|g" -c ":wq" "f/home/nudo/.ipython/myprofile/ipython_config.py
+vim -c ":%s|#c.StoreMagics.autorestore = False|c.StoreMagics.autorestore = True|g" -c ":wq" "f/home/nudo/.ipython/myprofile/ipython_config.py
 
 #youtube-dl and soundcloud
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
