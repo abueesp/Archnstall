@@ -1338,6 +1338,7 @@ cd ..
 sudo pacman -S python python3 --noconfirm --needed
 sudo pacman -S python-pip python2-pip --noconfirm --needed
 sudo pacman -S sniper sniper2 --noconfirm --needed
+sudo pacman -S python-pylint python2-pylint --noconfirm --needed
 
 #Some Python tools
 sudo -H pip install percol #logs indexer
