@@ -3039,9 +3039,9 @@ for i in $(pacman -Qq ); do
 	bacman $i
 done
 }
-alias kalifyarch='printf "[archstrike] \n Server = https://mirror.archstrike.org/\$arch/\$repo/ " | sudo tee -a /etc/pacman.conf && sudo pacman-key -- recv-keys 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --finger 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --lsign-    key 9D5F1C051D146843CDA4858BDE64825E7CBC0D51'
-alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch " | sudo tee -a /etc/pacman.conf && sudo pacman-key -- recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-    key F3104992EBF24EB872B97B9C32B0B4534209170B && Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects     try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
-alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has   not key!"'
+alias kalifyarch='echo "[archstrike]" | sudo tee -a /etc/pacman.conf && echo "Server = https://mirror.archstrike.org/\$arch/\$repo/ " | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --finger 9D5F1C051D146843CDA4858BDE64825E7CBC0D51 && sudo pacman-key --lsign- key 9D5F1C051D146843CDA4858BDE64825E7CBC0D51'
+alias haskellfyarch='echo "[haskell-core]" | sudo tee -a /etc/pacman.conf && echo "Server = http://xsounds.org/~haskell/core/\$arch" | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign- key F3104992EBF24EB872B97B9C32B0B4534209170B && echo "Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
+alias rubifyarch='echo "[quarry]" | sudo tee -a /etc/pacman.conf && echo "Server = https://pkgbuild.com/~anatolik/quarry/x86_64/" | sudo tee -a /etc/pacman.conf && echo "This repo has not key!"'
 alias repeatmouse="java -jar /usr/src/repeat.jar"
 alias systemdplot="systemd-analyze plot > plot.svg && deepin-image-viewer plot.svg"
 
