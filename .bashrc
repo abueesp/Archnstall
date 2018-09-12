@@ -1709,9 +1709,9 @@ alias lxcpull='echo "Remember that your source route -> destination route may be
 alias lxcpush='echo "Remember that your destination route -> source route may be  something like  -hosts my_container/route-"; lxc file push'
 
 tconv(){
-read -p "Introduce continent (/Asia/Europe/Africa/America/Australia): " CONTINENT
+read -p "Introduce continent (Asia/Europe/Africa/America/Australia): " CONTINENT
 read -p "Introduce city: " CITY
-TZ='$CONTINENT/$CITY' date
+TZ=$CONTINENT/$CITY date
 }
 
 alias BCE='curl http://api.fixer.io/latest?base=EUR'
