@@ -39,7 +39,7 @@ sudo pacman -Syu --noconfirm #update & upgrade
 
 ### Tor ###
 sudo pacman -S arch-install-scripts base arm --noconfirm --needed
-sudo pacman -S tor --noconfirm --needed
+sudo pacman -S tor torsocks --noconfirm --needed
 
 # Configuration
 # Being able to run tor as a non-root user, and use a port lower than 1024 you can use kernel capabilities. As any upgrade to the tor package will reset the permissions, consider using pacman#Hooks, to automatically set the permissions after upgrades.
@@ -58,7 +58,14 @@ sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${TORHASH:-2
 echo "StrictNodes 1" | sudo tee -a /etc/tor/torrc
 echo "ExitNodes " | sudo tee -a /etc/tor/torrc
 echo "ExcludeNodes {us},{uk},{ca},{se},{fr},{pt},{de},{dk},{es},{nl},{kr},{ee}" | sudo tee -a /etc/tor/torrc
-sudo vim -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" /etc/tor/torsocks.conf                 
+if [ ! -f /etc/tor/torsocks.conf ];
+then
+    sudo touch /etc/tor/torsocks.conf
+    echo "TorPort $TORPORT" | sudo tee -a /etc/tor/torsocks.conf 
+else
+    sudo /etc/tor/torsocks.conf -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" 
+
+fi               
 
 # All DNS queries to Tor
 TORDNSPORT=$(shuf -i 2000-65000 -n 1)
