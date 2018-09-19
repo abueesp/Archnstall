@@ -124,8 +124,8 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
 fi
 #echo 'alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
 
-# Pacman over Tor
-sudo vim -c ':%s.#XferCommand = /usr/bin/curl.XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n.g' -c ':wq' /etc/pacman.conf
+# Pacman over Tor/
+sudo vim -c ':%s.#XferCommand = /usr/bin/curl.#XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacman.conf 
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
