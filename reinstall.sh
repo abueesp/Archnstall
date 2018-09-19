@@ -82,6 +82,10 @@ sudo vim -c ":%s,#server=/localnet/192.168.0.1,server=127.0.0.1,g" -c ":wq" /etc
 sudo vim -c ":%s,#listen-address=,listen-address=127.0.0.1,g" -c ":wq" /etc/dnsmasq.conf
 sudo vim -c ":%s,#nohook resolv.conf,nohook resolv.conf,g" -c ":wq" /etc/dhcpcd.conf
 
+# Pacman over Tor/
+cp /etc/pacman.conf /etc/pacmantor.conf 
+sudo vim -c ':%s.#XferCommand = /usr/bin/curl.#XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacmantor.conf 
+
 #Create user
 TORUSER="tor"
 sudo useradd -m $TORUSER
@@ -106,7 +110,7 @@ sudo cp /etc/host.conf       $TORCHROOT/etc/host.conf
 sudo cp /etc/localtime       $TORCHROOT/etc/localtime
 sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf 
 sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf 
-sudo cp /etc/tor/torrc       $TORCHROOT/etc/tor/torrc
+sudo cp /etc/tor/            $TORCHROOT/etc/tor/
 sudo cp /usr/bin/tor         $TORCHROOT/usr/bin/tor
 sudo cp /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
 sudo cp '$(ldd /usr/bin/tor | awk "{print $3}"|grep --color=never "^/") $TORCHROOT/usr/lib/'
@@ -123,9 +127,13 @@ if [[ "$(uname -m)" == "x86_64" ]]; then
   sudo ln -s $TORCHROOT/usr/lib ${TORCHROOT}/usr/lib64
 fi
 #echo 'alias chtor="sudo chroot --userspec=$TORUSER:$TORUSER /opt/torchroot /usr/bin/tor"' | tee -a .bashrc
-
-# Pacman over Tor/
-sudo vim -c ':%s.#XferCommand = /usr/bin/curl.#XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacman.conf 
+# Checking conf
+sudo cp -r $TORCHROOT/var/lib/tor /var/lib/tor
+sudo chown -R tor:tor $TORCHROOT/var/lib/tor
+sudo cp /etc/tor/ $TORCHROOT/etc/tor/
+sudo cp /etc/dnsmasq.conf $TORCHROOT/etc/dnsmasq
+sudo cp /etc/dhcpcd.conf $TORCHROOT/etc/dhcpcd.conf
+sudo cp /etc/pacmantor.conf $TORCHROOT/etc/pacman.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
@@ -160,15 +168,13 @@ TERM="${TERMINAL:5:4}4"
 echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}5"
 echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
-
 # Checking conf
-sudo cp -r $TORCHROOT/var/lib/ /var/lib/tor
-sudo chown -R tor:tor $TORCHROOT/var/lib/tor
-sudo cp /etc/tor/torrc $TORCHROOT/etc/tor/torrc
-sudo cp /etc/dnsmasq.conf $TORCHROOT/etc/dnsmasq
-sudo cp /etc/dhcpcd.conf $TORCHROOT/etc/dhcpcd.conf
-sudo cp /etc/pacman.conf $TORCHROOT/etc/pacman.conf
-
+sudo cp -r $SVRCONTAINERS/$TORCONTAINER/var/lib/tor /var/lib/tor
+sudo chown -R root:root $SVRCONTAINERS/$TORCONTAINER/var/lib/tor
+sudo cp /etc/tor/ $SVRCONTAINERS/$TORCONTAINER/etc/tor/
+sudo cp /etc/dnsmasq.conf $SVRCONTAINERS/$TORCONTAINER/etc/dnsmasq
+sudo cp /etc/dhcpcd.conf $SVRCONTAINERS/$TORCONTAINER/etc/dhcpcd.conf
+sudo cp /etc/pacmantor.conf $SVRCONTAINERS/$TORCONTAINER/etc/pacman.conf
 sudo systemctl daemon-reload
 systemctl start systemd-nspawn@tor-exit.service
 machinectl -a
