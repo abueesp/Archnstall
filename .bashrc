@@ -3146,7 +3146,6 @@ gzipdifference() {
 }
 
 alias failtossh="journalctl -u sshd |tail -100 | grep -v failure | grep -v Failed"
-alias vpnme='sudo openvpn --config /etc/openvpn/client/testland/IPv4-FullyRouted-Switzerland-Dedicated-IP.ovpn'
 
 alias addtotop='read -p "File down: " FILEDOWN; content=$(cat $FILEDOWN); read -p "Text: " FILETOP; echo -en "$FILETOP\n$content" >$FILEDOWN'
 
