@@ -532,7 +532,18 @@ done
 #alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has not key!"'
 
 # AUR-helpers and repositories
-sudo pacman -S yaourt --noconfirm --needed 
+sudo pacman -S base-devel git wget yajl --noconfirm --needed
+git clone https://aur.archlinux.org/package-query.git
+cd package-query
+makepkg -si --noconfirm --needed
+cd ..
+sudo rm -r package-query
+git clone https://aur.archlinux.org/yaourt.git
+cd yaourt
+makepkg -si --noconfirm --needed
+cd ..
+sudo rm -r yaourt
+
 git clone https://aur.archlinux.org/aurman.git #https://wiki.archlinux.org/index.php/AUR_helpers
 cd aurman
 makepkg -si --noconfirm
