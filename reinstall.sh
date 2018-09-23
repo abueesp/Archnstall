@@ -137,13 +137,12 @@ sudo cp /etc/pacmantor.conf $TORCHROOT/etc/pacman.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
-SVRCONTAINERS=/srv/container
-VARCONTAINERS=/var/lib/container
-sudo mkdir $SVRCONTAINERS
-sudo mkdir $SVRCONTAINERS/$TORCONTAINER
-sudo pacstrap -i -c -d $SVRCONTAINERS/$TORCONTAINER base tor arm --noconfirm --needed
+SRVCONTAINERS=/srv/
+VARCONTAINERS=/var/lib/container/
+sudo mkdir $SRVCONTAINERS/$TORCONTAINER
+sudo pacstrap -i -c -d $SRVCONTAINERS/$TORCONTAINER base tor arm --noconfirm --needed
 sudo mkdir $VARCONTAINERS
-sudo ln -s $SVRCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
+sudo ln -s $SRVCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
 sudo mkdir /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d
 sudo ifconfig #adding container ad-hoc vlan
 read -p "Write network interface to create VLAN (wlp1s0 by default): " INTERFACE
@@ -153,32 +152,34 @@ sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%409
 networkctl
 printf "[Service] 
 ExecStart=
-ExecStart=/usr/bin/systemd-nspawn --quiet --boot --keep-unit --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@tor-exit.service.d/tor-exit.conf #config file [yes, first empty ExecStart is required]. You can use --ephemeral instead of --keep-unit --link-journal=guest and then you can delete the machine
+ExecStart=/usr/bin/systemd-nspawn --quiet --boot --keep-unit --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d/$TORCONTAINER.conf #config file [yes, first empty ExecStart is required]. You can use --ephemeral instead of --keep-unit --link-journal=guest and then you can delete the machine
 sudo systemctl daemon-reload
 TERMINAL=$(tty)
 TERM="${TERMINAL:5:4}0"
-echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}1"
-echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}2"
-echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}3"
-echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}4"
-echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
 TERM="${TERMINAL:5:4}5"
-echo "$TERM" | sudo tee -a $SVRCONTAINERS/$TORCONTAINER/etc/securetty
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 # Checking conf
-sudo cp -r $SVRCONTAINERS/$TORCONTAINER/var/lib/tor /var/lib/tor
-sudo chown -R root:root $SVRCONTAINERS/$TORCONTAINER/var/lib/tor
-sudo cp /etc/tor/ $SVRCONTAINERS/$TORCONTAINER/etc/tor/
-sudo cp /etc/dnsmasq.conf $SVRCONTAINERS/$TORCONTAINER/etc/dnsmasq
-sudo cp /etc/dhcpcd.conf $SVRCONTAINERS/$TORCONTAINER/etc/dhcpcd.conf
-sudo cp /etc/pacmantor.conf $SVRCONTAINERS/$TORCONTAINER/etc/pacman.conf
+sudo cp -R $SRVCONTAINERS/$TORCONTAINER/var/lib/tor /var/lib/tor
+sudo chown -R root:root $SRVCONTAINERS/$TORCONTAINER/var/lib/tor
+sudo cp -R /etc/tor/ $SRVCONTAINERS/$TORCONTAINER/etc/tor/
+sudo cp /etc/dnsmasq.conf $SRVCONTAINERS/$TORCONTAINER/etc/dnsmasq
+sudo cp /etc/dhcpcd.conf $SRVCONTAINERS/$TORCONTAINER/etc/dhcpcd.conf
+sudo cp /etc/pacmantor.conf $SRVCONTAINERS/$TORCONTAINER/etc/pacman.conf
 sudo systemctl daemon-reload
-systemctl start systemd-nspawn@tor-exit.service
+sudo systemd-nspawn --boot --directory=$SRVCONTAINERS/$TORCONTAINER
+systemctl list-machines
+systemctl start systemd-nspawn@$TORCONTAINER.service
 machinectl -a
-machinectl login tor-exit #ctrl shift ]
+machinectl login $TORCONTAINER #ctrl shift ]
 networkctl
 machine enable $TORCONTAINER #enable at boot
 
@@ -220,13 +221,12 @@ echo "auth   required   /lib/security/pam_listfile.so   item=user sense=deny fil
 #Similar line can be added to the PAM configuration files, such as /etc/pam.d/pop and /etc/pam.d/imap for mail clients, or /etc/pam.d/sshd for SSH clients.
 
 # TCP Wrappers
+sudo mkdir -p /etc/banners
 echo "Hello. All activity on this server is logged. Inappropriate uses and access will result in defensive counter-actions." | sudo tee -a /etc/banners/sshd
 echo "ALL : ALL : spawn /bin/echo $date %c %d >> /var/log/intruder_alert" | sudo tee -a /etc/hosts.deny ##log any connection attempt from any IP and send the date to intruder_alert logfile
 echo "in.telnetd : ALL : severity emerg" | sudo tee -a /etc/hosts.deny ##log any attempt to connect to in.telnetd posting emergency log messages directly to the console
 
-# Encrypt disk to avoid init=/bin/sh
-
-# Encryption of filesystems 
+# Encryption of filesystems (Encrypt disk to avoid init=/bin/sh)
 sudo pacman -S encfs pam_encfs --noconfirm --needed #Check https://wiki.archlinux.org/index.php/Disk_encryption#Comparison_table
 
 # Kernel hardening
