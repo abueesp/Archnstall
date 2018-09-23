@@ -396,11 +396,10 @@ for i in $ipports; do
 done
 sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -P INPUT DROP
-sudo iptables -P OUTPUT ACCEPTo ##If you are a server change this to DROP OUTPUT connections by default too
+sudo iptables -P OUTPUT ACCEPT ##If you are a server change this to DROP OUTPUT connections by default too
 #iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid #block all with log
 #iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT #filter exception
 sudo iptables -P FORWARD DROP
-sudo iptables restart
 
 # Avahi daemon
 #sudo service avahi-daemon stop #avahi-daemon
