@@ -48,11 +48,11 @@ sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
 echo "[Action]
 Description = Ports lower than 1024 available for Tor
 Exec = sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor" | sudo tee -a /usr/share/libalpm/hooks/tor.hook
-TORPORT=$(shuf -i 2000-65000 -n 1)
+export TORPORT=$(shuf -i 2000-65000 -n 1)
 echo "TORPORT $TORPORT"
-TORCONTROLPORT=$(shuf -i 2000-65000 -n 1)
+export TORCONTROLPORT=$(shuf -i 2000-65000 -n 1)
 echo "TORCONTROLPORT $TORCONTROLPORT"
-TORHASH=$(echo -n $RANDOM | sha256sum)
+export TORHASH=$(echo -n $RANDOM | sha256sum)
 sudo vim -c ":%s/#SocksPort 9050/SocksPort $TORPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#ControlPort 9051/#ControlPort $TORCONTROLPORT/g" -c ":wq" /etc/tor/torrc
 sudo vim -c ":%s/#HashedControlPassword*$/#HashedControlPassword 16:${TORHASH:-2}/g" -c ":wq" /etc/tor/torrc
@@ -69,7 +69,7 @@ else
 fi               
 
 # All DNS queries to Tor
-TORDNSPORT=$(shuf -i 2000-65000 -n 1)
+export TORDNSPORT=$(shuf -i 2000-65000 -n 1)
 echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc 
 echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc 
 echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
@@ -83,11 +83,11 @@ sudo vim -c ":%s,#listen-address=,listen-address=127.0.0.1,g" -c ":wq" /etc/dnsm
 sudo vim -c ":%s,#nohook resolv.conf,nohook resolv.conf,g" -c ":wq" /etc/dhcpcd.conf
 
 # Pacman over Tor/
-cp /etc/pacman.conf /etc/pacmantor.conf 
+sudo cp /etc/pacman.conf /etc/pacmantor.conf 
 sudo vim -c ':%s.#XferCommand = /usr/bin/curl.#XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacmantor.conf 
 
 #Create user
-TORUSER="tor"
+export TORUSER="tor"
 sudo useradd -m $TORUSER
 sudo passwd $TORUSER
 
@@ -105,15 +105,15 @@ sudo mkdir -p $TORCHROOT/usr/lib
 sudo mkdir -p $TORCHROOT/usr/share/tor
 sudo mkdir -p $TORCHROOT/var/lib
 sudo ln -s /usr/lib  $TORCHROOT/lib
-sudo cp /etc/hosts           $TORCHROOT/etc/hosts
+sudo cp -r /etc/hosts           $TORCHROOT/etc/hosts
 sudo cp /etc/host.conf       $TORCHROOT/etc/host.conf
-sudo cp /etc/localtime       $TORCHROOT/etc/localtime
+sudo cp -r /etc/localtime       $TORCHROOT/etc/localtime
 sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf 
 sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf 
-sudo cp /etc/tor/            $TORCHROOT/etc/tor/
-sudo cp /usr/bin/tor         $TORCHROOT/usr/bin/tor
-sudo cp /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
-sudo cp '$(ldd /usr/bin/tor | awk "{print $3}"|grep --color=never "^/") $TORCHROOT/usr/lib/'
+sudo cp -r /etc/tor/            $TORCHROOT/etc/tor/
+sudo cp -r /usr/bin/tor         $TORCHROOT/usr/bin/tor
+sudo cp -r /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
+for F in $(ldd  -r /usr/bin/tor | awk '{print $3}'|grep --color=never "^/" | sed 's/^.*\(\/lib[0-9]*\/[a-z]*\).*/\/usr\1*/g'); do   sudo cp -R -f ${F}  $TORCHROOT/${F%/*}/.  ;  done
 sudo cp -r /var/lib/tor      $TORCHROOT/var/lib/
 sudo chown -R tor:tor $TORCHROOT/var/lib/tor
 sh -c "grep --color=never ^tor /etc/passwd | sudo tee -a $TORCHROOT/etc/passwd"
