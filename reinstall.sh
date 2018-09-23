@@ -252,8 +252,7 @@ sudo vim -c 's,    /usr/bin/pactl load-module module-x11-xsmp “display=$DISPLA
 \n    /usr/bin/pactl load-module module-x11-xsmp "display=$DISPLAY session_manager=$SESSION_MANAGER" > /dev/null
 \n    /usr/bin/pactl load-module module-bluetooth-policy
 \n    /usr/bin/pactl load-module module-bluetooth-discover,g' -c "wq" /usr/bin/start-pulseaudio-x11 #automatic pavucontrol recognition
-
-	pulseaudio -k
+pulseaudio -k
 pulseaudio --start
 sudo systemctl stop bluetooth.service
 sudo pkill -9 /usr/lib/bluetooth/obexd
@@ -346,7 +345,12 @@ echo " - $url   # available in suricata sources under rules dir" | sudo tee /etc
 echo "# - $agurl    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
 #notice that aggresive rules are not activated
 }
-
+if [ ! -f /var/run/suricata.pid ];
+then
+	sudo pkill -9 suricata
+	sudo killall suricata
+	sudo rm /var/run/suricata.pid
+fi
 SSLRULES=sslblacklist
 suricatasslrule
 SSLRULES=dyre_sslipblacklist
