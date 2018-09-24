@@ -288,7 +288,7 @@ case \$( /usr/bin/tty ) in
 esac" | sudo tee -a /etc/profile.d/shell-timeout.sh
 echo 'Section "ServerFlags"
     Option "DontVTSwitch" "True"
-EndSection' | sudo tee -a /usr/share/X11/xorg.conf.d/ 50-notsudo.conf
+EndSection' | sudo tee -a /usr/share/X11/xorg.conf.d/50-notsudo.conf
 
 # Extra recommendations
 echo ">>> Do not use rlogin, rsh, and telnet <<<"
@@ -460,23 +460,6 @@ sudo nft add rule inet filter input counter reject with icmp type prot-unreachab
 # Rootkit checking and Audits (see at the EOF)
 # Antivirus and Cleaners
 sudo pacman -S clamav bleachbit --noconfirm --needed
-#Fixing wall
-sudo rm /usr/bin/wall
-sudo touch /usr/bin/wall
-print"ls /dev/pts/
-read -p 'Introduce receiver separated by commas. Write * for everyone: ' ptslist
-pts=$(echo '$ptslist' | sed 's/,/ /g')
-read -p 'Introduce message or route of file: ' ptsmessage
-if [ ! -f $ptsmessage ];
-then
-    for pts in /dev/pts/$ptslist; do
-      echo '$ptsmessage' > $pts
-    done
-else
-    for pts in /dev/pts/$ptslist; do
-      cat '$ptsmessage' > $pts
-    done
-fi" | sudo tee -a /usr/bin/wall
 
 ### Tweaks ###
 # .bashrc
@@ -531,8 +514,8 @@ done
 #alias haskellfyarch='printf "[haskell-core] \n Server = http://xsounds.org/~haskell/core/\$arch " | sudo tee -a /etc/pacman.conf && sudo pacman-key --recv-keys F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --finger F3104992EBF24EB872B97B9C32B0B4534209170B && sudo pacman-key --lsign-key F3104992EBF24EB872B97B9C32B0B4534209170B && Haskwell WAIs: Yesod Framework brings Wrap Server. It is better than Happstack. For small projects try Scotty that also comes with Wrap, or maybe Snaps snaplets"'
 #alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has not key!"'
 
-# AUR-helpers and repositories
-sudo pacman -S base-devel git wget yajl --noconfirm --needed
+# AUR-helpers and repositories https://wiki.archlinux.org/index.php/AUR_helpers
+sudo pacman -S base-devel git wget yajl --noconfirm --needed #Yaourt
 git clone https://aur.archlinux.org/package-query.git
 cd package-query
 makepkg -si --noconfirm --needed
@@ -544,11 +527,47 @@ makepkg -si --noconfirm --needed
 cd ..
 sudo rm -r yaourt
 
-git clone https://aur.archlinux.org/aurman.git #https://wiki.archlinux.org/index.php/AUR_helpers
+git clone https://aur.archlinux.org/aurman.git #Aurman 
 cd aurman
-makepkg -si --noconfirm
+makepkg -si --noconfirm --needed
 cd ..
 sudo rm -r aurman
+
+#Fixing wall
+sudo rm /usr/bin/wall
+sudo touch /usr/bin/wall
+printf "echo 'Active receivers'
+sudo ls /dev/pts/
+read -p 'Introduce receivers separated by commas. Write nothing for everyone: ' ptslist
+ptsnumbers=\$(echo \$ptslist | sed 's/,/ /g')
+if [ -z \$ptsnumbers ]; then
+    read -p 'Introduce text message or message path to send to everyone: ' ptsmessage
+    if [ ! -f \$ptsmessage ]; then
+        for pts in \$(ls /dev/pts/); do
+            ptspath='/dev/pts/'\$pts
+            echo \$ptsmessage > \$ptspath
+        done
+    else
+        for pts in \$(ls /dev/pts/); do
+            ptspath='/dev/pts/'\$pts
+            echo \$ptsmessage > \$ptspath
+        done
+    fi
+else
+    read -p 'Introduce text message or message path to send to '\$ptsnumbers' :' ptsmessage
+    if [ ! -f \$ptsmessage ]; then
+        for pts in \$ptsnumbers; do
+            ptspath='/dev/pts/'\$pts
+            echo \$ptsmessage > \$ptspath
+        done
+    else
+        for pts in \$ptsnumbers; do
+            ptspath='/dev/pts/'\$pts
+            cat \$ptsmessage > \$ptspath
+        done
+    fi
+fi" | sudo tee -a /usr/bin/wall
+sudo chmod +x /usr/bin/wall
 
 # Search tools
 gpg2 --keyserver ha.pool.sks-keyservers.net --recv-keys 465022E743D71E39 #for mlocate
