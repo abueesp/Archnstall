@@ -794,8 +794,6 @@ cd
 git clone https://github.com/maralla/completor.vim $PATHOGENFOLDER/completor
 sudo -H pip install jedi #completor for python
 echo "let g:completor_python_binary = '/usr/lib/python*/site-packages/jedi'" | tee -a $VIMRC
-cargo install racer #completor for rust
-echo "let g:completor_racer_binary = '/usr/bin/racer'" | tee -a $VIMRC
 git clone https://github.com/ternjs/tern_for_vim $PATHOGENFOLDER/tern_for_vim
 echo "let g:completor_node_binary = '/usr/bin/node'" | tee -a $VIMRC
 echo "let g:completor_clang_binary = '/usr/bin/clang'" | tee -a $VIMRC #c++
