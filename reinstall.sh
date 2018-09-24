@@ -240,20 +240,26 @@ sudo pacman -S bubblewrap --noconfirm --needed
 sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 
 # Bluetooth
-sudo vim /etc/bluetooth/main.conf -c ':%s.#Autoenable=False.Autoenable=False.g' -c ':wq'
+sudo vim -c ':%s.#Autoenable=False.Autoenable=False.g' -c ':wq' /etc/bluetooth/main.conf 
 sudo rfkill block bluetooth
 printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
-echo "enable-lfe-remixing = yes" | sudo tee -a /etc/pulse/default.pa 
-
-sudo vim -c "%s,#load-module module-switch-on-connect,load-module module-switch-on-connect,g" -c ":wq" /etc/pulse/default.pa
-sudo vim -c "%s,load-module module-suspend-on-idle,\#load-module module-suspend-on-idle,g" -c ":wq" /etc/pulse/default.pa
+sudo vim -c ':%s.; enable-lfe-remixing = no.enable-lfe-remixing = yes.g' -c ':wq' /etc/pulse/daemon.conf
+sudo vim -c "%s,\#load-module module-switch-on-connect,load-module module-switch-on-connect,g" -c ":wq" /etc/pulse/default.pa
+sudo vim -c "%s,\#load-module module-suspend-on-idle,load-module module-suspend-on-idle,g" -c ":wq" /etc/pulse/default.pa
 sudo vim -c 's,    /usr/bin/pactl load-module module-x11-xsmp “display=$DISPLAY session_manager=$SESSION_MANAGER” > /dev/null,
 \n    /usr/bin/pactl load-module module-x11-xsmp "display=$DISPLAY session_manager=$SESSION_MANAGER" > /dev/null
 \n    /usr/bin/pactl load-module module-bluetooth-policy
 \n    /usr/bin/pactl load-module module-bluetooth-discover,g' -c "wq" /usr/bin/start-pulseaudio-x11 #automatic pavucontrol recognition
+echo "load-module module-bluetooth-discover" | sudo tee -a "/etc/pulse/system.pa"
+echo "load-module module-bluetooth-policy" | sudo tee -a "/etc/pulse/system.pa"
+printf "[phonesim]
+Driver=phonesim
+Address=1.1.1.1
+Port=12345" | sudo tee -a /etc/ofono
+sudo useradd -g bluetooth pulse
 pulseaudio -k
-pulseaudio --start
+pulseaudio --start --daemon
 sudo systemctl stop bluetooth.service
 sudo pkill -9 /usr/lib/bluetooth/obexd
 sudo pkill -9 /usr/lib/bluetooth/bluetoothd
