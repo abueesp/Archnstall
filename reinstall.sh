@@ -1361,6 +1361,11 @@ sudo pacman -S icecat --noconfirm --needed
 #Elinks terminal browser
 sudo pacman -S elinks --noconfirm --needed
 
+#Tor-browser
+LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
+aurman -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
+
+
 ### Python ###
 sudo pacman -S python python3 --noconfirm --needed
 sudo pacman -S python-pip python2-pip --noconfirm --needed
@@ -1483,9 +1488,9 @@ sudo vim -c ":%s.which ypcat.which ypcat 2>/dev/null.g" -c ":wq" /usr/share/tige
 sudo vim -c ":%s.which niscat.which niscat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
 sudo tiger
 
-#Tor-browser
-LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
-aurman -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
+#PKGs Audit
+sudo pacman -S arch-audit --noconfirm --needed
+sudo arch-audit
 
 ### Autoremove and Snapshot ###
 sudo pacman -Rns "$(pacman -Qtdq)" --noconfirm
