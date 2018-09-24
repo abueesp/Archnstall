@@ -885,15 +885,15 @@ creategitkey="${creategitkey=N}"
 case "$creategitkey" in
     [yY][eE][sS]|[yY]) 
         gpg2 --full-gen-key --expert
-	gpg --list-secret-keys
+	gpg2 --list-secret-keys
         ;;
     *)
         echo "So you already created a key"
-	gpg --list-secret-keys
+	gpg2 --list-secret-keys
         ;;
 esac
 read -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
-gpg --export -a "$keyusername"
+gpg2 --export -a "$keyusername"
 git config --global user.signingkey "$keyusername"
 git config --global commit.gpgsign true
 git config --list
@@ -1342,18 +1342,20 @@ chromium https://chrome.google.com/webstore/detail/m-i-m/jlppachnphenhdidmmpnbdj
 chromium https://chrome.google.com/webstore/detail/librarian-for-arxiv-ferma/ddoflfjcbemgfgpgbnlmaedfkpkfffbm
 chromium https://chrome.google.com/webstore/detail/noiszy/immakaidhkcddagdjmedphlnamlcdcbg
 chromium https://chrome.google.com/webstore/detail/ciiva-search/fkmanbkfjcpkhonmmdopjmjopbclegel
-chromium https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk 
+chromium https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk
+chromium https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg
 chromium https://blockchain-dns.info/files/BDNS-1.0.8.crx
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/lovely-forks/ialbpcipalajnakfondkflpkagbkdoib
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octotree/bkhaagjahfmjljalopjnoealnfndnagc
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octolinker/jlmafbaeoofdegohdhinkhilhclaklkp
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/gitsense/fgnjcebdincofoebkahonlphjoiinglo
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/where-is-it/cdgnplmebagbialenimejpokfcodlkdm
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octoedit/ecnglinljpjkbgmdpeiglonddahpbkeb
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octo-preview/elomekmlfonmdhmpmdfldcjgdoacjcba
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octo-mate/baggcehellihkglakjnmnhpnjmkbmpkf
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/codeflower/mnlengnbfpfgcfdgfpkjekoaeophmmeh
-$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/github-show-email/pndebicblkfcinlcedagfhjfkkkecibn
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/lovely-forks/ialbpcipalajnakfondkflpkagbkdoib
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octotree/bkhaagjahfmjljalopjnoealnfndnagc
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octolinker/jlmafbaeoofdegohdhinkhilhclaklkp
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/gitsense/fgnjcebdincofoebkahonlphjoiinglo
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/where-is-it/cdgnplmebagbialenimejpokfcodlkdm
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octoedit/ecnglinljpjkbgmdpeiglonddahpbkeb
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octo-preview/elomekmlfonmdhmpmdfldcjgdoacjcba
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octo-mate/baggcehellihkglakjnmnhpnjmkbmpkf
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/codeflower/mnlengnbfpfgcfdgfpkjekoaeophmmeh
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/github-show-email/pndebicblkfcinlcedagfhjfkkkecibn
+#$IRONFOLDER/./chrome  https://chrome.google.com/webstore/detail/restlet-client-rest-api-t/aejoelaoggembcahagimdiliamlcdmfm?hl=pt-PT
 
 #Icecat
 sudo pacman -S icecat --noconfirm --needed
@@ -1361,34 +1363,9 @@ sudo pacman -S icecat --noconfirm --needed
 #Elinks terminal browser
 sudo pacman -S elinks --noconfirm --needed
 
-
-### Calc Tools ###
-cd Documents
-mkdir bctools
-cd bctools
-wget http://phodd.net/gnu-bc/code/array.bc
-wget http://phodd.net/gnu-bc/code/collatz.bc    
-wget http://phodd.net/gnu-bc/code/digits.bc    
-wget http://phodd.net/gnu-bc/code/funcs.bc   
-wget http://phodd.net/gnu-bc/code/interest.bc      
-wget http://phodd.net/gnu-bc/code/melancholy.bc      
-wget http://phodd.net/gnu-bc/code/primes.bc      
-wget http://phodd.net/gnu-bc/code/thermometer.bc      
-wget http://phodd.net/gnu-bc/code/cf.bc       
-wget http://phodd.net/gnu-bc/code/complex.bc     
-wget http://phodd.net/gnu-bc/code/factorial.bc      
-wget http://phodd.net/gnu-bc/code/intdiff.bc      
-wget http://phodd.net/gnu-bc/code/logic.bc      
-wget http://phodd.net/gnu-bc/code/output_formatting.bc      
-wget https://raw.githubusercontent.com/sevo/Calc/master/bc/rand.bc
-cd ..
-cd ..
-
-
 ### Python ###
 sudo pacman -S python python3 --noconfirm --needed
 sudo pacman -S python-pip python2-pip --noconfirm --needed
-sudo pacman -S sniper sniper2 --noconfirm --needed
 sudo pacman -S python-pylint python2-pylint --noconfirm --needed
 
 #Some Python tools
@@ -1397,10 +1374,10 @@ sudo -H pip install shyaml csvkit #yaml csv
 
 #Spyder/iPython/Jupyter
 sudo pacman -S spyder spyder3 --noconfirm --needed && sudo -H pip install psutil python-dateutil pygments #includes ipython with magics (http://ipython.readthedocs.io/en/stable/interactive/magics.html) and jupyter with qtconsole
-sudo -H install matplotlib numpy numba Cython #extras
-#ipython profile create myprofile #profiles
-IPYTHONPD=/home/nudo/.ipython/profile_default
-cp -R /home/nudo/.ipython/profile_default /home/nudo/.ipython/profile_original
+sudo -H pip3 install matplotlib numpy numba Cython #extras
+ipython profile create #default profile creation
+IPYTHONPD=/home/$USER/.ipython/profile_default
+cp -R $IPYTHONPD ${IPYTHONPD::-7}original
 PYTHONSTARTUP=$IPYTHONPD/pythonstartup #startup imports
 touch $PYTHONSTARTUP
 printf "import matplotlib.pyplot as plt \n
@@ -1430,7 +1407,9 @@ sudo -H pip install saltpack
 sudo pacman -S weechat hexchat --noconfirm --needed
 
 #Intranet
+gpg2 --keyserver pgp.mit.edu --recv-key B92A5F04EC949121
 yaourt -S beebeep --noconfirm --needed
+gpg2 --delete-secret-and-public-keys --batch --yes B92A5F04EC949121
 
 #P2P Videocalls and messaging
 sudo pacman -S libringclient ring-daemon ring-gnome --noconfirm --needed
@@ -1515,18 +1494,18 @@ sudo pacman -Rns "$(pacman -Qtdq)" --noconfirm
 sudo pacman -Qq | sudo paccheck --sha256sum --quiet
 #snapper -c initial create --description initial #Make snapshot initial (no chsnap for ext4)
 
-
-### Frugalware Stable ISO
+### Extras ###
+#Frugalware Stable ISO
 #wget http://www13.frugalware.org/pub/frugalware/frugalware-stable-iso/fvbe-2.1-gnome-x86_64.iso
 
-### Security Onion
+#Security Onion
 #wget https://github.com/Security-Onion-Solutions/security-onion/raw/master/sigs/securityonion-14.04.5.11.iso.sig
 #wget https://github.com/Security-Onion-Solutions/security-onion/releases/download/v14.04.5.11_20180328/securityonion-14.04.5.11.iso
 
-### Tails
+#Tails
 #wget https://tails.braingap.uk/tails/stable/tails-amd64-3.6.2/tails-amd64-3.6.2.iso
 #wget https://tails.boum.org/torrents/files/tails-amd64-3.6.2.iso.sig
 
-echo "EOF"
-
 yaourt -S epson-inkjet-printer-escpr --noconfirm --needed
+
+echo "EOF"
