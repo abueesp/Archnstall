@@ -679,22 +679,13 @@ docsthemagic() {
   echo "puedes comprobar los errores con aspell -c 'file' y darle formato con fmt"
 }
 
-updateallbash() {
-sudo rm ~/.bashrc-bu
-sudo rm /etc/.bashrc-bu
-sudo cp ~/.bashrc /etc/.bashrc-bu
-sudo wget https://raw.githubusercontent.com/abueesp/Archnstall/master/.bashrc-d
-sudo cp /etc/.bashrc /etc/.bashrc-bu
-sudo rm /etc/.bashrc
-mv .bashrc-d ~/.bashrc
-sudo cp ~/.bashrc /etc/bash.bashrc
-}
-
 updatebash() {
 sudo cp ~/.bashrc ~/.bashrc-bu
 wget https://raw.githubusercontent.com/abueesp/Archnstall/master/.bashrc -O ~/.bashrc-d
 sudo rm ~/.bashrc
 mv ~/.bashrc-d ~/.bashrc
+source ~/.bashrc
+echo "sudo cp ~/.bashrc /etc/bash.bashrc to apply to all users"
 }
 
 updatetmux() {
