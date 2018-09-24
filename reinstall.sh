@@ -1,15 +1,13 @@
 
-### Questions ### https://www.archlinux.org/feeds/news/ https://wiki.archlinux.org/index.php/IRC_channel (add to weechat) https://www.archlinux.org/feeds/  https://security.archlinux.org/
+### On development: ### GUIDES:: https://www.archlinux.org/feeds/news/ https://wiki.archlinux.org/index.php/IRC_channel (add to weechat) https://www.archlinux.org/feeds/  https://security.archlinux.org/
 #DNS (unbound resolv.conf dnssec dyndns) and Firewall
-#Awesome Linux
-#create encfs alias
+#emacs https://melpa.org/
+#create encfs alias and add gui
 #gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
 # https://kernelnewbies.org/KernelGlossary https://0xax.gitbooks.io/linux-insides/content/Booting/
 #next4 snapper? 
-#different results on listpkgsbysize? 
 #create pkgbuild from deb ^https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
 #customizerom
-#Script music (ready) media (ready) sec (ready) --- upload :)
 
 ### Restoring Windows on Grub2 ###
 sudo os-prober
@@ -1495,17 +1493,14 @@ sudo pacman -Qq | sudo paccheck --sha256sum --quiet
 #snapper -c initial create --description initial #Make snapshot initial (no chsnap for ext4)
 
 ### Extras ###
-#Frugalware Stable ISO
-#wget http://www13.frugalware.org/pub/frugalware/frugalware-stable-iso/fvbe-2.1-gnome-x86_64.iso
+#Firmware
+yaourt -S epson-inkjet-printer-escpr wd719x-firmware --noconfirm --needed
 
-#Security Onion
-#wget https://github.com/Security-Onion-Solutions/security-onion/raw/master/sigs/securityonion-14.04.5.11.iso.sig
-#wget https://github.com/Security-Onion-Solutions/security-onion/releases/download/v14.04.5.11_20180328/securityonion-14.04.5.11.iso
+#Frugalware
+#wget http://www13.frugalware.org/pub/frugalware/frugalware-stable-iso/fvbe-2.1-gnome-x86_64.iso
 
 #Tails
 #wget https://tails.braingap.uk/tails/stable/tails-amd64-3.6.2/tails-amd64-3.6.2.iso
 #wget https://tails.boum.org/torrents/files/tails-amd64-3.6.2.iso.sig
-
-yaourt -S epson-inkjet-printer-escpr --noconfirm --needed
 
 echo "EOF"
