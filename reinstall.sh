@@ -1494,7 +1494,8 @@ sudo pacman -Qq | sudo paccheck --sha256sum --quiet
 
 ### Extras ###
 #Firmware
-yaourt -S epson-inkjet-printer-escpr wd719x-firmware --noconfirm --needed
+yaourt -S epson-inkjet-printer-escpr --noconfirm --needed
+#yaourt -S wd719x-firmware aic94xx --noconfirm --needed
 
 #Frugalware
 #wget http://www13.frugalware.org/pub/frugalware/frugalware-stable-iso/fvbe-2.1-gnome-x86_64.iso
