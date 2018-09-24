@@ -1364,11 +1364,10 @@ if [ "$(ls -A /mnt/$sdjoh)" ]; then
      echo "¡Cuidado! ¡La celda /mnt/$sdjoh no está vacía! Contiene los siguientes archivos todavía:"
      cd /mnt/$sdjoh
      sudo ls /mnt/$sdjoh
-     sudo findmnt
 else
     sudo rm -r /mnt/$sdjoh
     echo "Borrando celda..."
-    sudo findmnt
+    ls /mnt
 fi
 sudo blockdev --setro /dev/$sdjoh
 }
@@ -1382,6 +1381,8 @@ if [ ! -e /etc/udev/rules.d/80-readonly-removables.rules ]; then
 else
    echo "USB unit not blocked"
 fi
+ls /sys/block/
+ls /sys/class/block/
 sudo lsblk
 sudo fdisk -l 
 read -p "Introduce el disco a montar (sda5, sdb1...): " sdjah
