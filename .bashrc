@@ -792,6 +792,7 @@ alias lssh="ls -al ~/.ssh"
 alias verifykey="gpg --keyid-format long --import"
 alias verifyfile="gpg --keyid-format long --verify"
 alias dt='date "+%F %T"'
+alias pdf='evince'
 alias pdf2txt='ls * | sudo xargs -n1 pdftotext'
 alias hardlinks="sudo find / -links +2 -type f -exec ls -li {} \ "
 alias softlinks="sudo find /etc -type l -exec ls -li {} \ "
