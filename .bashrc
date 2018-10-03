@@ -1628,10 +1628,11 @@ done
 }
 
 graphvalues(){
-read "Introduce 2D coordenates separated by spaces" values
-read "Introduce a graph label" glabel
-read "Introduce X axis label" xlabel
-read "Introduce Y axis label" ylabel
+sudo pacman -S plotutils --noconfirm --needed
+read -p "Introduce 2D coordenates separated by spaces: " values
+read -p  "Introduce a graph label: " glabel
+read -p  "Introduce X axis label: " xlabel
+read -p  "Introduce Y axis label: " ylabel
 echo $values | graph -T svg -l x -L $glabel -X $xlabel -Y $ylabel  > plot.svg
 firefox -new-tab plot.svg
 }
