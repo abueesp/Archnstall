@@ -285,14 +285,14 @@ sudo udevadm trigger
 sudo udevadm control --reload
 
 # Log out virtual /dev/tty consoles out after 10s inactivity and prevent sudo from X11
-echo "export TMOUT=\"\$(( 60*10 ))\"; #to exclude X11 from this rule, delete export word
-[ -z \"\$DISPLAY\" ] && export TMOUT;
-case \$( /usr/bin/tty ) in
-	/dev/tty[0-9]*) export TMOUT;;
-esac" | sudo tee -a /etc/profile.d/shell-timeout.sh
-echo 'Section "ServerFlags"
-    Option "DontVTSwitch" "True"
-EndSection' | sudo tee -a /usr/share/X11/xorg.conf.d/50-notsudo.conf
+#echo "export TMOUT=\"\$(( 60*10 ))\"; #to exclude X11 from this rule, delete export word
+#[ -z \"\$DISPLAY\" ] && export TMOUT;
+#case \$( /usr/bin/tty ) in
+#	/dev/tty[0-9]*) export TMOUT;;
+#esac" | sudo tee -a /etc/profile.d/shell-timeout.sh
+#echo 'Section "ServerFlags"
+#    Option "DontVTSwitch" "True"
+#EndSection' | sudo tee -a /usr/share/X11/xorg.conf.d/50-notsudo.conf
 
 # Extra recommendations
 echo ">>> Do not use rlogin, rsh, and telnet <<<"
