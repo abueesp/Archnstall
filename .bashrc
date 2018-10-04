@@ -876,7 +876,7 @@ alias rnoiseg='sudo cat /dev/urandom | aplay -f dat'
 alias rbitmapg='mx=320;my=256;head -c "$((3*mx*my))" /dev/urandom | display -depth 8 -size "${mx}x${my}" RGB:-'
 alias rimageg=rbitmapg
 alias diskusage="df -h && sudo baobab"
-alias whoiswithme="ifconfig -a; read -p 'Introduce interface with whom are you sharing the local network: ' INTER; sudo arp-scan -R --interface="$INTER" --localnet"
+alias whoiswithme="ifconfig -a; read -p 'Introduce interface with whom are you sharing the local network: ' INTER; sudo arp-scan -R --interface=$INTER --localnet"
 alias qrthis="read -p 'What do you want to QR?: ' QRSTRING; printf '$QRSTRING' | curl -F-=\<- qrenco.de"
 alias emacstex="\usepackage[utf8]{inputenc}"
 alias vimsubs="echo '
