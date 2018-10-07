@@ -263,6 +263,8 @@ sudo pkill -9 /usr/lib/bluetooth/obexd
 sudo pkill -9 /usr/lib/bluetooth/bluetoothd
 sudo systemctl start bluetooth.service
 
+#UDF DVDs
+echo "/dev/sr0 /media/cdrom0 udf,iso9660 user,noauto,exec,utf8 0 0" | sudo tee -a /etc/fstab
 
 # USBGuard and USB readonly (previous checker -noexec and --rw included on alias monta)
 #git clone https://aur.archlinux.org/usbguard.git
