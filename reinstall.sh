@@ -6,7 +6,7 @@
 #gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
 # https://kernelnewbies.org/KernelGlossary https://0xax.gitbooks.io/linux-insides/content/Booting/
 #next4 snapper? 
-#create pkgbuild from deb ^https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
+#https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
 #customizerom
 
 ### Restoring Windows on Grub2 ###
@@ -538,6 +538,19 @@ cd aurman
 makepkg -si --noconfirm --needed
 cd ..
 sudo rm -r aurman
+
+#Deb packages
+wget https://raw.githubusercontent.com/helixarch/debtap/master/debtap
+echo "d9d40c88a401a33239880280ec9ec11e737cbbdc66e7830143c3b363fa8527fa8168ad708fba87bba0664fdda281a786fdf5a66e9f1e15be29ebb4d8bb157352  debtap" > debtap.txt
+sha512sum -c debtap.txt 2>&1 | grep 'OK\|coincide'
+if [ $? -eq 0 ] then
+	echo "GOOD SHA 512"
+	sudo chmod +x debtap
+	sudo mv debtap /bin/debtap
+else
+	echo "BAD SHA 512"
+	exit
+fi
 
 #Fixing wall
 sudo rm /usr/bin/wall
