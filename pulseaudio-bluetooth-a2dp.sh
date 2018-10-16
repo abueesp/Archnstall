@@ -1,6 +1,6 @@
 #!/bin/bash
-#2018 version
-#Fix Arch Automatic A2DP Audio Bluetooth System with Pulseaudio
+### Version 2.0 
+### Fix Arch Automatic A2DP Audio Bluetooth System with Pulseaudio
 ### Must be run as non-root user
 
 if [ "$SUDO_USER" ]; then
