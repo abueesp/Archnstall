@@ -3,24 +3,27 @@
 #Fix Arch Automatic A2DP Audio Bluetooth System with Pulseaudio
 ### Must be run as non-root user
 
-if [ $SUDO_USER ]; then echo "Must be run as non-root user";exit ; else user=`whoami`; fi
-currentDir=$(
-  cd $(dirname "$0")
+if [ "$SUDO_USER" ]; then
+	echo "Must be run as non-root user";
+	exit
+fi
+
+currentDir=$(cd $(dirname "$0")
   pwd
-) 
-echo "Welcome! This script will help you to fix Arch automatic A2DP audio bluetooth system with Pulseaudio.
+)
+echo "Welcome! This script will help you to fix Arch automatic A2DP audio bluetooth system with Pulseaudio."
 
 AUTOCONNECT="AUTOCONNECT"
 while [ $AUTOCONNECT != "y" ] && [ $AUTOCONNECT != "n" ];
 do
-	read -p "When a bluetooth device connects do you want move audio output to the bluetooth device? (y/n) : " AUTOCONNECT
+	read -p "When a bluetooth device connects do you want move audio output to the bluetooth device? y/n : " AUTOCONNECT
 done
 AUTOENABLE="AUTOENABLE"
 while [ $AUTOENABLE != "y" ] && [ $AUTOENABLE != "n" ];
 do
-	read -p "Do you want the bluetooth device to power on the bluetooth signal automatically? (y/n) : " AUTOENABLE
+	read -p "Do you want the bluetooth device to power on the bluetooth signal automatically? y/n : " AUTOENABLE
 done
-START_PATH=$currentDir 
+START_PATH=$currentDir
 cd $START_PATH
 export START_PATH
 #--------------------------------------------------------------------
@@ -29,51 +32,49 @@ function tst {
     if ! $*; then
         echo "Exiting script due to error from: $*"
         exit 1
-    fi	
+    fi
 }
 #--------------------------------------------------------------------
 
 # Install Pulseaudio & Bluez
-tst sudo pacman -Rc bluez pulseaudio pulseaudio-bluetooth --noconfirm
-tst sudo pacman -S bluez pulseaudio pulseaudio-bluetooth --noconfirm
+tst sudo pacman -S bluez pulseaudio pulseaudio-bluetooth --noconfirm --force
 
 # Install dbus for python
-tst sudo pacman -Rc python-dbus --noconfirm
-tst sudo pacman -S python-dbus --noconfirm
+tst sudo pacman -S python-dbus --noconfirm --needed
 
 # Create users and priviliges for Bluez-Pulse Audio interaction - most should already exist
 #	tst sudo groupadd --system pulse
 
-ISUSER=$(id -u pulse)
-if [ -z "ISUSER" ]
-then 
+ISUSER=$USER
+if [ -z "$ISUSER" ]
+then
         tst sudo userdel pulse
 	tst sudo groupdel pulse-access
 	tst sudo groupadd --system pulse-access
         tst sudo useradd --system --gid pulse-access pulse
 fi
-if [ $ISUSER =~ ^-?[0-9]+$ ]
-then 
+if [[ "$ISUSER" =~ ^-?[0-9]+$ ]]
+then
 	tst sudo groupadd --system pulse-access
         tst sudo useradd --system --gid pulse-access pulse
 fi
 
-if [ $ISUSER =~ ^-?[0-9]+$ ]
-then 
+if [[ "$ISUSER" =~ ^-?[0-9]+$ ]]
+then
         tst sudo useradd root
 fi
 
-if [ $ISUSER =~ ^-?[0-9]+$ ]
-then 
+if [[ "$ISUSER" =~ ^-?[0-9]+$ ]]
+then
         tst sudo useradd lp
 fi
 
-if [ -z "ISUSER" ]
-then 
+if [[ -z "$ISUSER" ]]
+then
         tst sudo useradd pulse-access
 fi
-if [ $ISUSER =~ ^-?[0-9]+$ ]
-then 
+if [[ "$ISUSER" =~ ^-?[0-9]+$ ]]
+then
         tst sudo userdel pulse-access
         tst sudo useradd pulse-access
 fi
@@ -87,7 +88,7 @@ Description=Sound Service
 # while it is possible to use the service without the socket, it is not clear
 # why it would be desirable.
 #
-# A user installing pulseaudio and doing `systemctl --user start pulseaudio`
+# A user installing pulseaudio and doing systemctl --user start pulseaudio
 # will not get the socket started, which might be confusing and problematic if
 # the server is to be restarted later on, as the client autospawn feature
 # might kick in. Also, a start of the socket unit will fail, adding to the
@@ -144,13 +145,13 @@ if [ $AUTOCONNECT = "y" ]; then
         if ! $*; then
             echo "Exiting script due to error from: $*"
             exit 1
-        fi	
+        fi
     }
     #--------------------------------------------------------------------
-    
+
     if [ -f /etc/udev/rules.d/99-com.rules ]; then
-    
-    printf 'SUBSYSTEM=="input", GROUP="input", MODE="0660"
+
+	printf 'SUBSYSTEM=="input", GROUP="input", MODE="0660"
     + KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluez-udev"' | sudo tee -a /etc/udev/rules.d/99-com.rules
 
     else
@@ -161,7 +162,7 @@ if [ $AUTOCONNECT = "y" ]; then
     + KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluez-udev"' | sudo tee -a /etc/udev/rules.d/99-com.rules
     fi
 
-    tst sudo cp usr/local/bin/bluez-udev /usr/local/bin/bluez-udev
+    sudo cp usr/local/bin/bluez-udev /usr/local/bin/bluez-udev
     sudo chmod +x /usr/local/bin/bluez-udev
 
 fi
@@ -191,10 +192,11 @@ sudo pactl set-card-profile $CARD_NUMBER a2dp_sink
 
 sudo touch /etc/udev/rules.d/20-bt-auto-enable-a2dp.rules
 echo 'SUBSYSTEM=="bluetooth", ACTION=="add", RUN+="/home/$USER/.config/bt-auto-enable-a2dp.sh"' | sudo tee -a /etc/udev/rules.d/20-bt-auto-enable-a2dp.rules
+rm /home/$USER/.config/bt-auto-enable-a2dp.sh
 touch /home/$USER/.config/bt-auto-enable-a2dp.sh
 printf '#!/bin/sh
 # From: https://gist.github.com/hxss/a3eadb0cc52e58ce7743dff71b92b297
-# Dependencies: 
+# Dependencies:
 # * bluez-tools
 # * expect
 # * perl
@@ -230,7 +232,7 @@ function search_headsets() {
 }
 logger -p info "${BASH_SOURCE[0]}"
 # get script owner name
-user=`stat -c %U $0`
+user=`stat -c \%U $0`
 if [ "$user" == `whoami` ]; then
 	# if script runned by owner - start main function
 	search_headsets
@@ -239,9 +241,8 @@ elif [ "`w -hs $user`" ]; then
 	machinectl shell --uid=$user .host ${BASH_SOURCE[0]}
 fi' | sudo tee -a bt-auto-enable-a2dp.sh
 echo "Installing some tools"
-tst sudo pacman -Rc blueman alsa-utils pavucontrol --noconfirm
-tst sudo pacman -S blueman alsa-utils pavucontrol --noconfirm 
+tst sudo pacman -S blueman alsa-utils pavucontrol --noconfirm --needed
 echo ""
-echo "No errors were found" 
+echo "No errors were found"
 echo ""
 echo "Please reboot your system and  use pavucontrol and blueman-manager to control the audio and bluetooth devices"
