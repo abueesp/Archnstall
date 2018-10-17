@@ -943,6 +943,7 @@ cd ..
 #Network tools
 sudo pacman -S traceroute nmap arp-scan conntrack-tools --noconfirm --needed
 yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --needed
+sudo pacman -S hcxtools hcxdumptool hashcat --noconfirm --needed
 sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' /usr/sbin/dumpcap #wireshark permissions
 sudo  gpasswd -a $USER wireshark
 yaourt -S slurm nethogs --noconfirm #tops
