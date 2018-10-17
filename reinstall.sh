@@ -875,7 +875,7 @@ echo "vim-surround: Surrounding completion (:help surround cs\"\' -changes surro
 }
 echo vimfunctions >> $PATHOGENFOLDER/README
 
-##Github
+##Git
 sudo pacman -S git --noconfirm --needed
 git config --global credential.helper cache
 # Set git to use the credential memory cache
@@ -893,25 +893,27 @@ git config --global core.editor "$giteditor"
 read -p "Please set your gitdiff (by default vimdiff): " gitdiff
 gitdiff="${gitdiff=vimdiff}"
 git config --global merge.tool "$gitdiff"
+read -p "Do you prefer to user gpg or gpg2? (by default gpg2): " $gpgg
+gpgg="${gpgg=gpg2}"
 read -p "Do you want to create a new gpg key for git?: " creategitkey
 creategitkey="${creategitkey=N}"
 case "$creategitkey" in
     [yY][eE][sS]|[yY]) 
-        gpg2 --full-gen-key --expert
-	gpg2 --list-secret-keys
+        $gpgg --full-gen-key --expert
+	$gpgg --list-keys
         ;;
     *)
         echo "So you already created a key"
-	gpg2 --list-secret-keys
+	$gpgg --list-keys
         ;;
 esac
-read -p "Introduce the key username (and open https://github.com/settings/keys): " keyusername
-gpg2 --export -a "$keyusername"
-git config --global user.signingkey "$keyusername"
+read -p "Introduce the key id number (and open https://github.com/settings/keys or your personal server alternative): " keyusername
+git config --global user.signingkey $keyusername
 git config --global commit.gpgsign true
+git config --global gpg.program $gpgg
 git config --list
-time 10
-echo "Here you are an excellent Github cheatsheet https://raw.githubusercontent.com/hbons/git-cheat-sheet/master/preview.png You can also access as gitsheet"
+time 5
+echo "Here you are an excellent Git cheatsheet https://raw.githubusercontent.com/hbons/git-cheat-sheet/master/preview.png You can also access as gitsheet"
 echo "If you get stuck, run ‘git branch -a’ and it will show you exactly what’s going on with your branches. You can see which are remotes and which are local."
 echo "Do not forget to add a newsshkey or clipboard your mysshkey or mylastsshkey (if you switchsshkey before) and paste it on Settings -> New SSH key and paste it there." 
 
