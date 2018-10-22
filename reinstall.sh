@@ -62,7 +62,7 @@ then
     sudo touch /etc/tor/torsocks.conf
     echo "TorPort $TORPORT" | sudo tee -a /etc/tor/torsocks.conf 
 else
-    sudo /etc/tor/torsocks.conf -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" 
+    sudo vim /etc/tor/torsocks.conf -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" 
 
 fi               
 
@@ -108,7 +108,10 @@ sudo cp /etc/host.conf       $TORCHROOT/etc/host.conf
 sudo cp -r /etc/localtime       $TORCHROOT/etc/localtime
 sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf 
 sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf 
-sudo cp -r /etc/tor/            $TORCHROOT/etc/tor/
+sudo cp -r /etc/tor            $TORCHROOT/etc/tor #which contains torrc (and torsocks.conf despite not needed)
+sudo mkdir $TORCHROOT/root
+sudo mkdir $TORCHROOT/root/tor
+sudo chown -R tor:tor $TORCHROOT/root/tor
 sudo cp -r /usr/bin/tor         $TORCHROOT/usr/bin/tor
 sudo cp -r /lib/libnss* /lib/libnsl* /lib/ld-linux-*.so* /lib/libresolv* /lib/libgcc_s.so* $TORCHROOT/usr/lib/
 for F in $(ldd  -r /usr/bin/tor | awk '{print $3}'|grep --color=never "^/" | sed 's/^.*\(\/lib[0-9]*\/[a-z]*\).*/\/usr\1*/g'); do   sudo cp -R -f ${F}  $TORCHROOT/${F%/*}/.  ;  done
