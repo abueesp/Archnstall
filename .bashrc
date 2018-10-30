@@ -776,7 +776,8 @@ alias flightmodeoff="nmcli networking on"
 alias netoff=flightmodeoff
 alias voip="firefox -new-tab https://www.appear.in"
 alias anotherskype="skype --dbpath=~/.Skype2 &"
-alias projectessence="firefox --new-tab http://sematacc.herokuapp.com"
+alias projectessence="firefox --new-tab http://sematacc.herokuapp.com --new-tab https://en.wikipedia.org/wiki/Software_requirements_specification#Structure"
+alias businessproject=projectessence
 alias Trash="cd .local/share/Trash/files"
 alias closesudo="read -p 'Write down the path/route/file to access: ' APP && sudo chown root:root $APP && sudo chmod 700 $APP"
 alias opensudo="read -p 'Write down the path/route/file to open permissions: ' APP; sudo chmod ugo+rwx -R $APP && echo 'try also with sudo -i ' $APP" 
