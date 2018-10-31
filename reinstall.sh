@@ -138,7 +138,7 @@ sudo cp /etc/pacmantor.conf $TORCHROOT/etc/pacman.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
-SRVCONTAINERS=/srv/
+SRVCONTAINERS=/srv/container/
 VARCONTAINERS=/var/lib/container/
 sudo mkdir $SRVCONTAINERS/$TORCONTAINER
 sudo pacstrap -i -c -d $SRVCONTAINERS/$TORCONTAINER base tor arm --noconfirm --needed
