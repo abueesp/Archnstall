@@ -138,7 +138,7 @@ sudo cp /etc/pacmantor.conf $TORCHROOT/etc/pacman.conf
 
 # Running Tor in a systemd-nspawn container with a virtual network interface [which is more secure than chroot]
 TORCONTAINER=tor-exit #creating container and systemd service
-SRVCONTAINERS=/srv/container/
+SRVCONTAINERS=/srv/container
 VARCONTAINERS=/var/lib/container/
 sudo mkdir $SRVCONTAINERS/$TORCONTAINER
 sudo pacstrap -i -c -d $SRVCONTAINERS/$TORCONTAINER base tor arm --noconfirm --needed
@@ -146,10 +146,12 @@ sudo mkdir $VARCONTAINERS
 sudo ln -s $SRVCONTAINERS/$TORCONTAINER $VARCONTAINERS/$TORCONTAINER
 sudo mkdir /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d
 sudo ifconfig #adding container ad-hoc vlan
-read -p "Write network interface to create VLAN (wlp1s0 by default): " INTERFACE
+read -p "Choose your host network interface for creating a new VLAN (wlp1s0 by default): " INTERFACE
 INTERFACE="${INTERFACE:=wlp1s0}"
 VLANINTERFACE="${INTERFACE:0:2}.tor"
 sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%4094)+1))
+sudo ip addr add 10.10.10.1/24 brd 10.10.10.255 dev $VLANINTERFACE
+sudo sudo ip link set $VLANINTERFACE up
 networkctl
 printf "[Service] 
 ExecStart=
@@ -172,17 +174,18 @@ echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 sudo cp -R $SRVCONTAINERS/$TORCONTAINER/var/lib/tor /var/lib/tor
 sudo chown -R root:root $SRVCONTAINERS/$TORCONTAINER/var/lib/tor
 sudo cp -R /etc/tor/ $SRVCONTAINERS/$TORCONTAINER/etc/tor/
-sudo cp /etc/dnsmasq.conf $SRVCONTAINERS/$TORCONTAINER/etc/dnsmasq
+sudo cp /etc/dnsmasq.conf $SRVCONTAINERS/$TORCONTAINER/etc/dnsmasq.conf
 sudo cp /etc/dhcpcd.conf $SRVCONTAINERS/$TORCONTAINER/etc/dhcpcd.conf
 sudo cp /etc/pacmantor.conf $SRVCONTAINERS/$TORCONTAINER/etc/pacman.conf
 sudo systemctl daemon-reload
 sudo systemd-nspawn --boot --directory=$SRVCONTAINERS/$TORCONTAINER
-systemctl list-machines
+sudo systemctl list-machines
 systemctl start systemd-nspawn@$TORCONTAINER.service
 machinectl -a
-machinectl login $TORCONTAINER #ctrl shift ]
+echo "Login root without password. Set passwd. Bring VLAN up with ip link set mv-$VLANINTERFACE up. Add a user with useradd. Login user and set passwd. Use ctrl+shift+] to exit"
+machinectl login $TORCONTAINER
 networkctl
-machine enable $TORCONTAINER #enable at boot
+#machine enable $TORCONTAINER #enable at boot otherwise you need to start it every time
 
 ### Shadowsocks & GPG ###
 sudo pacman -S shadowsocks-qt5 shadowsocks --noconfirm --needed
