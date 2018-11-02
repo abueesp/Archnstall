@@ -150,7 +150,7 @@ read -p "Choose your host network interface for creating a new VLAN (wlp1s0 by d
 INTERFACE="${INTERFACE:=wlp1s0}"
 VLANINTERFACE="${INTERFACE:0:2}.tor"
 sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%4094)+1))
-sudo ip addr add 10.10.10.1/24 brd 10.10.10.255 dev $VLANINTERFACE
+sudo ip addr add 10.0.0.1/24 brd 10.0.0.255 dev $VLANINTERFACE
 sudo sudo ip link set $VLANINTERFACE up
 networkctl
 printf "[Service] 
@@ -340,34 +340,104 @@ sudo update-ca-trust
 gpg2 --keyserver ha.pool.sks-keyservers.net --recv-keys 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
 git clone https://aur.archlinux.org/suricata.git
 cd suricata
-makepkg -si --noconfirm
+makepkg -si --noconfirm # --enable-profiling-locks
 cd ..
 sudo rm -r suricata
 gpg2 --delete-secret-and-public-keys --batch --yes 801C7171DAC74A6D3A61ED81F7F9B0A300C1B70D
-#sudo vim -c ":%s,HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\",HOME_NET: \"[$myip]\",g" -c ":wq" /etc/suricata/suricata.yaml
-sudo vim -c ":%s,# -,-,g" -c ":wq" /etc/suricata/suricata.yaml #activate rules
-suricatasslrule(){ #blacklistsslcertificates
+#basic conf
+sudo rm /etc/suricata/suricata.yaml #delete conf file by default to create a new one
+if [ ! -f /etc/suricata/suricata.yaml ]; then
+	sudo touch /etc/suricata/suricata.yaml #using echo instead of printf by reason of %
+	echo '%YAML 1.1
+---
+# - dyre_sslipblacklist_aggressive.rules    # available in suricata sources under rules dir
+default-log-dir: /var/log/suricata/     # where you want to store log files
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
+HOME-NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,127.0.0.1/8]"                # HOME_NET is deprecated
+magic-file: /usr/share/file/misc/magic.mgc
+stats:
+  enabled: yes
+  interval: 10
+  filename: stats.log
+  totals: yes       # stats for all threads merged together
+  threads: yes       # per thread stats
+  null-values: yes  # print counters that have value 0
+host-mode: auto #If set to auto, the variable is internally switch to router in IPS mode and sniffer-only in IDS mode.
+outputs:
+fast:
+  enabled: yes
+  filename: fast.log
+  append: yes
+  filetype: regular   #regular, unix_stream or unix_dgram
+eve-log:
+  enabled: no
+alert-debug:
+  enabled: yes
+  filename: alert-debug.log
+  append: yes
+  filetype: regular   #regular, unix_stream or unix_dgram
+drop:
+  enabled: yes
+  filename: drop.log
+  append: yes
+  filetype: regular   #regular, unix_stream or unix_dgram
+  alerts: yes      # log alerts that caused drops      
+  flows: all       # start or all: 'start' logs only a single drop
+logging:
+  default-log-level: debug
+coredump:
+  max-dump: unlimited
+  host-mode: auto
+  runmode: workers
+  default-packet-size: 9014
+legacy:
+  uricontent: enabled
+engine-analysis:  # enables printing reports for fast-pattern for every rule.
+  rules-fast-pattern: yes # enables printing reports for each rule
+  rules: yes #recursion and match limits for PCRE where supported
+pcre:
+  match-limit: 3500
+  match-limit-recursion: 1500
+vlan:
+  use-for-tracking: true
+#reputation-categories-file: /usr/local/etc/suricata/iprep/categories.txt
+  #default-reputation-path: /usr/local/etc/suricata/iprep
+default-rule-path: /etc/suricata/rules/' | sudo tee -a /etc/suricata/suricata.yaml #continue below activating rules
+else
+	sudo vim -c ":%s,# -,-,g" -c ":wq" /etc/suricata/suricata.yaml #when file exists
+fi
+#activating rules
+suricatasslrule(){
 url=$SSLRULES".rules"
 agurl=$SSLRULES"_aggressive.rules"
 wget "https://sslbl.abuse.ch/blacklist/$url"	
 sudo mv "$url" "/etc/suricata/rules/$url"
 wget "https://sslbl.abuse.ch/blacklist/$agurl"
 sudo mv "$agurl" "/etc/suricata/rules/$agurl"
-echo " - $url   # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl blacklist rules
-echo "# - $agurl    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
-#notice that aggresive rules are not activated
+echo "		- $url   # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl blacklist rules
+echo "#		- $agurl    # available in suricata sources under rules dir" | sudo tee /etc/suricata/suricata.yaml #activate ssl aggressive blacklist
 }
+SSLRULES=sslblacklist
+suricatasslrule
+SSLRULES=dyre_sslipblacklist
+suricatasslrule
+#other confs
+wget https://raw.githubusercontent.com/OISF/suricata/master/suricata.yaml.in
+echo "## FULL EXPLANATION https://redmine.openinfosecfoundation.org/projects/suricata/wiki/Suricatayaml ##" | tee -a suricata.yaml.in
+sudo mv suricata.yaml.in /etc/suricata/suricata-defaultOISFexample.yaml
+wget https://redmine.openinfosecfoundation.org/attachments/download/1340/suricata.yaml
+vim -c "%s/  - drop:/  - drop:\r      alerts: yes      # log alerts that caused drops\r      flows: all       # start or all: 'start' logs only a single drop\n/g" -c ":wq" suricata.yaml #using /r instead of /n in vim because /n is null
+sudo mv suricata.yaml /etc/suricata/suricata-specificNOSERVexample.yaml
+#restarting suricata
 if [ ! -f /var/run/suricata.pid ];
 then
 	sudo pkill -9 suricata
 	sudo killall suricata
 	sudo rm /var/run/suricata.pid
 fi
-SSLRULES=sslblacklist
-suricatasslrule
-SSLRULES=dyre_sslipblacklist
-suricatasslrule
-sudo suricata -c /etc/suricata/suricata.yaml -s signatures.rules -i $INTERFACE -D #start suricata and enable interfaces
+sudo suricata -c /etc/suricata/suricata.yaml -i $INTERFACE -D #start suricata and enable interfaces, the -s allows specific rules
+#enable at boot
 echo "[Unit]
 Description=Suricata Intrusion Detection Service listening on '%I'
 After=network.target
@@ -380,7 +450,6 @@ ExecReload=/bin/kill -HUP \$MAINPID
 [Install]
 WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/suricata@$INTERFACE.service
 sudo systemctl enable --now suricata@$INTERFACE.service
-
 echo "[Unit]
 Description=Suricata Intrusion Detection Service listening on '%I'
 After=network.target
