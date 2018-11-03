@@ -1644,6 +1644,7 @@ done
 }
 
 graphvalues(){
+echo "You may want to go to http://fooplot.com"
 sudo pacman -S plotutils --noconfirm --needed
 read -p "Introduce 2D coordenates separated by spaces: " values
 read -p  "Introduce a graph label: " glabel
