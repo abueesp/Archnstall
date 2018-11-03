@@ -238,11 +238,6 @@ sudo pacman -S linux-hardened --needed --noconfirm
 echo "kernel.dmesg_restrict = 1" | sudo tee -a /etc/sysctl.d/50-dmesg-restrict.conf #Restricting access to kernel logs
 echo "kernel.kptr_restrict = 1" | sudo tee -a /etc/sysctl.d/50-kptr-restrict.conf #Restricting access to kernel pointers in the proc filesystem
 
-# Sandbox tools
-sudo pacman -S firejail --noconfirm --needed
-sudo pacman -S bubblewrap --noconfirm --needed
-sudo pacman -S lxc arch-install-scripts --noconfirm --needed
-
 # Bluetooth
 sudo vim -c ':%s.#Autoenable=False.Autoenable=False.g' -c ':wq' /etc/bluetooth/main.conf 
 sudo rfkill block bluetooth
@@ -706,7 +701,7 @@ amixer cset numid=11,iface=MIXER,name='Capture Switch' off
 # Fixing bugs
 sudo pacman -S deepin-api --noconfirm -needed
 
-### Virtualbox ###
+# Virtualization tools
 sudo pacman -S qemu --noconfirm --needed #opensource alternative
 pacman -Si linux
 sudo pacman -S linux-headers --noconfirm --needed
@@ -737,6 +732,13 @@ echo "To insert iso additions, install a vm named 'myvm' and move the .iso to yo
 virtualbox
 vboxmanage storageattach myvm --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/usr/share/VBoxGuestAdditions_$var1.iso"
 
+# Sandbox tools
+sudo pacman -S firejail --noconfirm --needed
+sudo pacman -S bubblewrap --noconfirm --needed
+wget https://raw.githubusercontent.com/projectatomic/bubblewrap/master/demos/bubblewrap-shell.sh
+sudo chmod +x bubblewrap-shell.sh 
+sudo mv bubblewrap-shell.sh bubblebash
+sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 
 ### Emacs ###
 sudo pacman -S emacs --noconfirm --needed
@@ -1041,10 +1043,14 @@ sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
 yaourt -S bashblog-git --noconfirm #blog
 #yaourt -S ganttproject --noconfirm #gantt
+wget http://staruml.io/download/releases/StarUML-3.0.2-x86_64.AppImage #uml
+sudo chmod +x StarUML*.AppImage
+sudo mv StarUML*.AppImage /bin/staruml
 
 #Other tools
-sudo pacman -S brasero qemu archiso --noconfirm --needed
-sudo pacman -S terminator tilix shellcheck rlwrap --noconfirm --needed
+sudo pacman -S brasero archiso --noconfirm --needed
+sudo pacman -S terminator tilix --noconfirm --needed
+sudo pacman -S shellcheck rlwrap --noconfirm --needed
 sudo pacman -S d-feet htop autojump iotop task atop vnstat at nemo ncdu tree recordmydesktop --noconfirm --needed
 touch ~/.local/share/nemo/actions/compress.nemo_action
 printf "[Nemo Action]
