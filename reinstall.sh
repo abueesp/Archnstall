@@ -1524,6 +1524,7 @@ gpg2 --delete-secret-and-public-keys --batch --yes B92A5F04EC949121
 
 #P2P Videocalls and messaging
 sudo pacman -S libringclient ring-daemon ring-gnome --noconfirm --needed
+yaourt -S pybitmessage --noconfirm --needed
 #yaourt -S jitsi --noconfirm --needed
 #yaourt -S qtox --noconfirm --needed
 
