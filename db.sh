@@ -14,6 +14,7 @@ echo "Edit and add echo "socket=/run/mysqld/mysqld.sock" >>$config at the make_c
 echo "Execute mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql"
 echo "Execute mysql -u $USERDB -p"
 echo "See db and tables with show databases; and show tables;"
+echo "Start mysql-workbench and press Ctrl+R"
 su - mysql
 
 #Document stores, also called document-oriented database systems, are characterized by their schema-free organization of data. (https://db-engines.com/en/article/Document+Stores)
