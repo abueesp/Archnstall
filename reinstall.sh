@@ -722,12 +722,12 @@ sudo mv bubblewrap-shell.sh bwrapsh
 #Kubernetes
 #ZeroVM is a scalable and portable container based on Google Native Client useful when you are having massive and parallel data inputs that need to be statically verified to be "safe" before used.
 sudo pacman -S lxc arch-install-scripts --noconfirm --needed #LXC is an operating-system-level virtualization method for running multiple isolated Linux systems (containers) on a single control host (LXC host). It does not provide a virtual machine, but rather provides a virtual environment that has its own CPU, memory, block I/O, network, etc. space and the resource control mechanism. This is provided by namespaces and cgroups features in Linux kernel on LXC host. It is similar to a chroot, but offers much more isolation. 
-#Clear containers. Intel. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker.
+#Clear containers. It uses Intel VT-x. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker with VT if using VMCS shadowing as a technology that accelerates nested virtualization of VMMs.
 
 # Emulation tools: Enables one host computer system to behave like another guest computer system
 sudo pacman -S qemu qemu-arch-extra --noconfirm --needed
 
-# Virtualization tools: governed by a hypervisor, enforce data isolation in hardware, more secure, slower, less portable
+# Virtualization tools: governed by a hypervisor, enforce data isolation in hardware HVM, most secure, slower, less portable
 #VMWare is KVM from Dell. Fully closed source and does not allow OSX outside Mac.
 #KVM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
 
