@@ -697,12 +697,37 @@ dconf write /com/deepin/dde/sound-effect/suspend-resume "false"
 aurman -S indicator-sound-switcher --noconfirm --needed --noedit
 amixer sset Master unmute
 amixer cset numid=11,iface=MIXER,name='Capture Switch' off
+alsactl store
 
 # Fixing bugs
-sudo pacman -S deepin-api --noconfirm -needed
+# sudo pacman -S deepin-api --noconfirm -needed
 
-# Virtualization tools
-sudo pacman -S qemu --noconfirm --needed #opensource alternative
+
+# Sandbox tools
+# Namespace tools
+sudo pacman -S firejail --noconfirm --needed #Firejail is a SUID program that restricts the running environment of applications using Linux namespaces and seccomp-bpf.
+sudo pacman -S bubblewrap --noconfirm --needed #bubblewrap works by creating a new, completely empty, mount namespace where the root is on a tmpfs that is invisible from the host, and will be automatically cleaned up when the last process exits.
+wget https://raw.githubusercontent.com/projectatomic/bubblewrap/master/demos/bubblewrap-shell.sh
+sudo chmod +x bubblewrap-shell.sh 
+sudo mv bubblewrap-shell.sh bwrapbash
+
+
+# Containerization tools: less secure as they share kernel and hardware (not a real virtual machine), faster, more portable
+#BSD Jails
+#Chroot/Proot
+#Spawn
+#Docker
+#Kubernetes
+#ZeroVM is a scalable and portable container based on Google Native Client useful when you are having massive and parallel data inputs that need to be statically verified to be "safe" before used.
+sudo pacman -S lxc arch-install-scripts --noconfirm --needed #LXC is an operating-system-level virtualization method for running multiple isolated Linux systems (containers) on a single control host (LXC host). It does not provide a virtual machine, but rather provides a virtual environment that has its own CPU, memory, block I/O, network, etc. space and the resource control mechanism. This is provided by namespaces and cgroups features in Linux kernel on LXC host. It is similar to a chroot, but offers much more isolation. 
+#Clear containers. Intel. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker.
+
+# Virtualization tools: governed by a hypervisor, enforce data isolation in hardware, more secure, slower, less portable
+#Clear containers. Intel. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker.
+#KVM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
+#Qemu: Fastest.
+sudo pacman -S qemu qemu-arch-extra --noconfirm --needed
+#Virtualbox + Vagrant: Most compatible. It's from Oracle and has closed USB drivers (VMWare is from Dell but it is fully closed source and does not allow OSX outside Macs).
 pacman -Si linux
 sudo pacman -S linux-headers --noconfirm --needed
 sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox virtualbox-guest-iso --noconfirm --needed
@@ -732,13 +757,6 @@ echo "To insert iso additions, install a vm named 'myvm' and move the .iso to yo
 virtualbox
 vboxmanage storageattach myvm --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/usr/share/VBoxGuestAdditions_$var1.iso"
 
-# Sandbox tools
-sudo pacman -S firejail --noconfirm --needed
-sudo pacman -S bubblewrap --noconfirm --needed
-wget https://raw.githubusercontent.com/projectatomic/bubblewrap/master/demos/bubblewrap-shell.sh
-sudo chmod +x bubblewrap-shell.sh 
-sudo mv bubblewrap-shell.sh bubblebash
-sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 
 ### Emacs ###
 sudo pacman -S emacs --noconfirm --needed
