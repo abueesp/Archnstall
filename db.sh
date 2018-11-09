@@ -1,4 +1,4 @@
-#Relational database management systems (RDBMS) support the relational table-oriented data model (https://db-engines.com/en/article/relational+dbms)
+#Relational database management systems (RDBMS) support the traditional relational table-oriented data model (https://db-engines.com/en/article/relational+dbms)
 sudo pacman -S mariadb --noconfirm --needed #prefered over oracle, microsoft sql, microsoft access, IBM DB2, SAP Adaptative Server, SAP Hana, microsoft azure, google bigquery, amazon redshift, amazon aurora, 
 sudo pacman -S mysql-workbench --noconfirm --needed #prefered over phpmyadmin, heidisql, dbeaver freemium. Adminer is lighter option.
 read -p "Write an user for the database (mysql by default):" USERDB
@@ -15,7 +15,6 @@ echo "Execute mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/my
 echo "Execute mysql -u $USERDB -p"
 echo "See db and tables with show databases; and show tables;"
 su - mysql
-
 
 #Document stores, also called document-oriented database systems, are characterized by their schema-free organization of data. (https://db-engines.com/en/article/Document+Stores)
 
