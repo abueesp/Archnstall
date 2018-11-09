@@ -703,14 +703,16 @@ alsactl store
 # sudo pacman -S deepin-api --noconfirm -needed
 
 
-# Sandbox tools
-# Namespace tools
+# Sandboxing tools
+
+# Namespaces tools: It limits what the app can see using pid, net, mnt, uts, ipc and user spaces. (alike cgroups, which limits how much can use, using memory, cpu, network, i/o, and other resources)
+#Firejail
 sudo pacman -S firejail --noconfirm --needed #Firejail is a SUID program that restricts the running environment of applications using Linux namespaces and seccomp-bpf.
+#Bubblewrap
 sudo pacman -S bubblewrap --noconfirm --needed #bubblewrap works by creating a new, completely empty, mount namespace where the root is on a tmpfs that is invisible from the host, and will be automatically cleaned up when the last process exits.
 wget https://raw.githubusercontent.com/projectatomic/bubblewrap/master/demos/bubblewrap-shell.sh
 sudo chmod +x bubblewrap-shell.sh 
-sudo mv bubblewrap-shell.sh bwrapbash
-
+sudo mv bubblewrap-shell.sh bwrapsh
 
 # Containerization tools: less secure as they share kernel and hardware (not a real virtual machine), faster, more portable
 #BSD Jails
@@ -722,12 +724,14 @@ sudo mv bubblewrap-shell.sh bwrapbash
 sudo pacman -S lxc arch-install-scripts --noconfirm --needed #LXC is an operating-system-level virtualization method for running multiple isolated Linux systems (containers) on a single control host (LXC host). It does not provide a virtual machine, but rather provides a virtual environment that has its own CPU, memory, block I/O, network, etc. space and the resource control mechanism. This is provided by namespaces and cgroups features in Linux kernel on LXC host. It is similar to a chroot, but offers much more isolation. 
 #Clear containers. Intel. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker.
 
-# Virtualization tools: governed by a hypervisor, enforce data isolation in hardware, more secure, slower, less portable
-#Clear containers. Intel. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker.
-#KVM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
-#Qemu: Fastest.
+# Emulation tools: Enables one host computer system to behave like another guest computer system
 sudo pacman -S qemu qemu-arch-extra --noconfirm --needed
-#Virtualbox + Vagrant: Most compatible. It's from Oracle and has closed USB drivers (VMWare is from Dell but it is fully closed source and does not allow OSX outside Macs).
+
+# Virtualization tools: governed by a hypervisor, enforce data isolation in hardware, more secure, slower, less portable
+#VMWare is KVM from Dell. Fully closed source and does not allow OSX outside Mac.
+#KVM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
+
+#Virtualbox + Vagrant: Most compatible (except for Xen, which allows paravirtualization). It's from Oracle and has closed USB drivers.
 pacman -Si linux
 sudo pacman -S linux-headers --noconfirm --needed
 sudo pacman -S virtualbox-host-modules-arch qt4 virtualbox virtualbox-guest-iso --noconfirm --needed
