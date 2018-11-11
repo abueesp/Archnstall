@@ -953,7 +953,6 @@ alias chm=securechrome
 alias iron="/opt/iron/./chrome"
 alias offline="firejail --net=none"
 alias icecat="firejail /bin/./icecat --profile /opt/icecat/profiles"
-alias qemubsd="qemu-system-x86_64 -drive format=raw,media=cdrom,readonly,file="
 
 ### Conversion Aliases ###
 asciibin () {
@@ -3048,6 +3047,7 @@ sudo vim -c ":%s|-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT|
 }
 
 #Archs
+alias kvm="qemu-system-x86_64 -enable-kvm -drive format=raw,media=cdrom,readonly,file="
 alias torch="sudo chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"
 alias tormch="echo '[CONF FILE] torrc, [OS] tails, [MAC] changemymac, [BROWSER] tor-browser, [VM] machinectl login tor-exit, [BLOCK PING] disableremoteping, [BLOCK OUT] iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid, [EXCEPTION OUT] iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT "
 alias ipkg='sudo pacman -S'
