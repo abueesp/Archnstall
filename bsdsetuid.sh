@@ -10,3 +10,7 @@ do
     done
   done
 done
+
+echo 'Notes'
+echo '/usr/include/bits/posix_opt.h'
+echo 'xinput'
