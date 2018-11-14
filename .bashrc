@@ -1587,6 +1587,7 @@ killmycam() {
   fi
 }
 
+
 autostart(){
 read -p "Introduce some one-word name for the autostart: " APP
 read -p "Introduce the command you want to include on init.d: " commandito
@@ -1604,18 +1605,22 @@ printf"
 10) On window manager startup (fluxbox, openbox, awesome)"
 read -p "So when? " number
     case $number in
-        [1]* ) read -p "Do you have (A) init.d or (B) systemd? Choose A or B " letter
+        [1]* ) read -p "Do you have (A) init.d or (B) systemd? Choose A or B: " letter; 
 		case $letter in
-			[A]* ) 	sudo sh -c "echo '$commandito' >> /etc/init.d/$APP"
-				sudo ls /etc/init.d | grep $APP
-				sudo cat /etc/init.d/$APP
-			[B]* ) touch ~/.config/autostart/$APP
-				prinf'
+			[A]* ) 	sudo sh -c "echo '$commandito' >> /etc/init.d/$APP";
+				sudo ls /etc/init.d | grep $APP;
+				sudo cat /etc/init.d/$APP;
+				break;;
+			[B]* ) touch ~/.config/autostart/$APP;
+				printf"
 				[Desktop Entry]
 				Name=$APP
 				Comment=Autostarting $APP
 				Type=Application
-				Exec="$comandito"' | tee -a ~/.config/autostart/$APP && echo 'modify the app parameters in ~/.config/autostart/$APP'
+				Exec='$comandito'" | tee -a ~/.config/autostart/$APP && echo "modify the app parameters in ~/.config/autostart/$APP";
+				break;;
+        		* ) echo "Select some option or press Ctrl+C to exit";break;;
+		esac; break;;
         [2]* ) echo "Proceso mantenido";break;;
         [3]* ) echo "Proceso mantenido";break;;
         [4]* ) echo "Proceso mantenido";break;;
@@ -1625,10 +1630,9 @@ read -p "So when? " number
 	[8]* ) echo "Proceso mantenido";break;;
 	[9]* ) echo "Proceso mantenido";break;;
 	[10]* ) echo "Proceso mantenido";break;;
-        * ) echo "Por favor, responda y (sí) o n (no)";;
-    esac
+        * ) echo "Select some option or press Ctrl+C to exit"; break;;
+   esac
 }
-
 
 #anota algo en algún lado
 anota(){
