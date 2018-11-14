@@ -3000,25 +3000,15 @@ alias changeircpass='read -p "User: " IRCUSER && weechat -r "/msg NickServ SENDP
 rotate(){
 if [ -z "$1" ]; then
   echo "Missing orientation."
-  echo "Usage: $0 [normal|inverted|left|right] [revert_seconds]"
+  echo "Usage: [normal|inverted|left|right] [backtonormal_seconds]"
   return
-fi
-
-function do_rotate
-{
-  xrandr --output $1 --rotate $2
-
-}
-
-XDISPLAY='xrandr --current | grep primary | sed -e 's/ .*//g''
-XROT="xrandr --current --verbose | grep primary | egrep -o ' (normal|left|inverted|right) '"
-
-do_rotate $XDISPLAY $1
-
-if [ ! -z "$2" ]; then
-  sleep $2
-  do_rotate $XDISPLAY $XROT
-  return
+else
+  xrandr --orientation $1 
+  if [ -n "$2" ]; then
+   seconds=$2+4 #interval screen takes to rotate
+   sleep $2
+   xrandr --orientation normal
+  fi
 fi
 }
 rotatescreen=rotate
