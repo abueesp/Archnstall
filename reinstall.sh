@@ -702,12 +702,15 @@ alsactl store
 # Fixing bugs
 # sudo pacman -S deepin-api --noconfirm -needed
 
-
 # Sandboxing tools
-
 # Namespaces tools: It limits what the app can see using pid, net, mnt, uts, ipc and user spaces. (alike cgroups, which limits how much can use, using memory, cpu, network, i/o, and other resources)
 #Firejail
 sudo pacman -S firejail --noconfirm --needed #Firejail is a SUID program that restricts the running environment of applications using Linux namespaces and seccomp-bpf.
+sudo pacman -S xorg-server-xephyr--noconfirm --needed #Nested X11
+sudo vim -c ":%s/\# force-nonewprivs no/force-nonewprivs yes/g" -c ":wq" /etc/firejail/firejail.config #no setuid
+RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
+sudo vim -c ":%s/\# xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev/xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev -resizeable -audit 5 -screen $RESOLUTION/g" -c ":wq" /etc/firejail/firejail.config #xephyr siz
+
 #Bubblewrap
 sudo pacman -S bubblewrap --noconfirm --needed #bubblewrap works by creating a new, completely empty, mount namespace where the root is on a tmpfs that is invisible from the host, and will be automatically cleaned up when the last process exits.
 wget https://raw.githubusercontent.com/projectatomic/bubblewrap/master/demos/bubblewrap-shell.sh
@@ -730,7 +733,7 @@ sudo pacman -S qemu qemu-arch-extra --noconfirm --needed
 # Virtualization tools: governed by a hypervisor, enforce data isolation in hardware HVM, most secure, slower, less portable
 #VMWare is KVM from Dell. Fully closed source and does not allow OSX outside Mac.
 #KVM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
-
+echo "Use kvm to virtualize"
 #Virtualbox + Vagrant: Most compatible (except for Xen, which allows paravirtualization). It's from Oracle and has closed USB drivers.
 pacman -Si linux
 sudo pacman -S linux-headers --noconfirm --needed
