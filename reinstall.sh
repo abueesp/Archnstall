@@ -706,7 +706,7 @@ alsactl store
 # Namespaces tools: It limits what the app can see using pid, net, mnt, uts, ipc and user spaces. (alike cgroups, which limits how much can use, using memory, cpu, network, i/o, and other resources)
 #Firejail
 sudo pacman -S firejail --noconfirm --needed #Firejail is a SUID program that restricts the running environment of applications using Linux namespaces and seccomp-bpf.
-sudo pacman -S xorg-server-xephyr--noconfirm --needed #Nested X11 better than Xnest
+sudo pacman -S xorg-server-xephyr --noconfirm --needed #Nested X11 better than Xnest
 sudo vim -c ":%s/\# force-nonewprivs no/force-nonewprivs yes/g" -c ":wq" /etc/firejail/firejail.config #no setuid
 RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 sudo vim -c ":%s/\# xephyr-screen 640x480/xephyr-screen $RESOLUTION/g" -c ":wq" /etc/firejail/firejail.config #size
