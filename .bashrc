@@ -3209,3 +3209,14 @@ lpinfo -m | grep -i $MODEL
 read -p "Introduce the PDD path:" PATH
 sudo lpadmin -p newq -v file:/dev/null -E -m $PATH
 }
+
+#Clipboard to firejail
+inx(){
+X2=$(firemon --x11 | awk 'FNR==2{print $0}' | awk '{print $2}')
+xclip -selection clip -o display :0 | xclip -selection clip -i -display "$X2"
+}
+
+oux(){
+X2=$(firemon --x11 | awk 'FNR==2{print $0}' | awk '{print $2}')
+xclip -selection clip -o display "$X2" | xclip -selection clip -i -display :0
+}
