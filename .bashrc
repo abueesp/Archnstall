@@ -947,7 +947,7 @@ echo $(echo $RANDOM | sha512sum)
 }
 
 RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
-alias xv="startx -- /usr/bin/Xephyr -keybd ephyr,,,xkbmodel=evdev/xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev -resizeable -audit 5 -screen $RESOLUTION"
+alias xnamespace="startx -- /usr/bin/Xephyr -keybd ephyr,,,xkbmodel=evdev/xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev -resizeable -audit 5 -screen $RESOLUTION"
 
 ### Browser aliases ###
 alias securefirefox="firejail --x11=xephyr --private --dns=8.8.8.8 --dns=8.8.4.4 firefox -no-remote"
@@ -3068,7 +3068,9 @@ sudo vim -c ":%s|-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT|
 }
 
 #Archs
-alias kvm="qemu-system-x86_64 -enable-kvm -drive format=raw,media=cdrom,readonly,file="
+alias kvmiso="read -p 'Introduce path of iso: ' KVMISOPATH; qemu-system-x86_64 -enable-kvm -drive format=raw,media=cdrom,readonly,file='$KVMISOPATH'"
+alias kvmimg="read -p 'Introduce path of iso: ' KVMIMGPATH; qemu-system-x86_64 -enable-kvm -boot d -drive file='$KVMIMGPATH'"
+alias kvmnewimg="read -p 'Introduce name of new img (by default /home/$USER/newimage.img): ' KVMNEWIMG; KVMNEWIMG='${KVMNEWIMG:=/home/$USER/newimage.img}'; read -p 'Introduce how much space (by default 5G): ' KVMNEWSPACE; KVMNEWSPACE='${KVMNEWSPACE:=5G}'; qemu-img create -f qcow2 '$KVMNEWIMG' '$KVMNEWSPACE'"
 alias torch="sudo chroot --userspec=tor:tor /opt/torchroot /usr/bin/tor"
 alias tormch="echo '[CONF FILE] torrc, [OS] tails, [MAC] changemymac, [BROWSER] tor-browser, [VM] machinectl login tor-exit, [BLOCK PING] disableremoteping, [BLOCK OUT] iptables -t filter -I OUTPUT 1 -m state --state NEW -j LOG --log-level warning --log-prefix 'Attempted to initiate a connection from a local process' --log-uid, [EXCEPTION OUT] iptables -t filter -I OUTPUT 1 -p udp -m multiport --ports 80,443 -j ACCEPT "
 alias ipkg='sudo pacman -S'
