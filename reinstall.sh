@@ -711,6 +711,14 @@ sudo vim -c ":%s/\# force-nonewprivs no/force-nonewprivs yes/g" -c ":wq" /etc/fi
 RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 sudo vim -c ":%s/\# xephyr-screen 640x480/xephyr-screen $RESOLUTION/g" -c ":wq" /etc/firejail/firejail.config #size
 sudo vim -c ":%s/\# xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev/xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev -resizeable -audit 5/g" -c ":wq" /etc/firejail/firejail.config #ephyr keyboard audit
+sudo pacman -S xclip xbindkeys --noconfirm --needed
+xbindkeys --defaults > ~/.xbindkeysrc
+echo "#xclip input" | tee -a ~/.xbindkeysrc
+echo "ix" | tee -a ~/.xbindkeysrc
+echo "    alt + i" | tee -a ~/.xbindkeysrc
+echo "#xclip output" | tee -a ~/.xbindkeysrc
+echo "ox" | tee -a ~/.xbindkeysrc
+echo "    alt + o" | tee -a ~/.xbindkeysrc
 
 #Bubblewrap
 sudo pacman -S bubblewrap --noconfirm --needed #bubblewrap works by creating a new, completely empty, mount namespace where the root is on a tmpfs that is invisible from the host, and will be automatically cleaned up when the last process exits.
