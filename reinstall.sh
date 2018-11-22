@@ -727,22 +727,31 @@ sudo chmod +x bubblewrap-shell.sh
 sudo mv bubblewrap-shell.sh bwrapsh
 
 # Containerization tools: less secure as they share kernel and hardware (not a real virtual machine), faster, more portable
-#BSD Jails
-#Chroot/Proot
-#Spawn
-#Docker
-#Kubernetes
+#Chroot/Proot/Fakeroot: A chroot is an operation that changes the apparent root directory for the current running process and their children. A program that is run in such a modified environment cannot access files and commands outside that environmental directory tree. This modified environment is called a chroot jail.  Proot may be used to change the apparent root directory (all files are owned by the user on the host) and use mount --bind without root privileges (used for running programs built for a different CPU architecture). Fakeroot can be used to simulate a chroot as a regular user. 
+sudo pacman -S fakeroot --noconfirm --needed
+#Spawn: systemd-nspawn is like the chroot command, but it is a chroot on steroids: it fully virtualizes the file system hierarchy, the process tree, various IPC subsystems and the host and domain name. systemd-nspawn limits access to various kernel interfaces in the container to read-only, such as /sys, /proc/sys or /sys/fs/selinux.
 #ZeroVM is a scalable and portable container based on Google Native Client useful when you are having massive and parallel data inputs that need to be statically verified to be "safe" before used.
-sudo pacman -S lxc arch-install-scripts --noconfirm --needed #LXC is an operating-system-level virtualization method for running multiple isolated Linux systems (containers) on a single control host (LXC host). It does not provide a virtual machine, but rather provides a virtual environment that has its own CPU, memory, block I/O, network, etc. space and the resource control mechanism. This is provided by namespaces and cgroups features in Linux kernel on LXC host. It is similar to a chroot, but offers much more isolation. 
+#LXC unpriviledged containerization provides kernel namespaces that has its own CPU, memory, block I/O, network, etc. under the resource control mechanism of kernel (cgroups). Seccomp included, apparmor and SElinux compatible.
+sudo pacman -S lxc arch-install-scripts --noconfirm --needed 
+#LXD, a container system making use of LXC containers made by Canonical and specialized in deploying Linux distros.
+#Docker a container system making written in Go that use LXC containers (among others) by Docker Inc (but the Community Version may be fully open source) and specialized in deploying apps (one in each container, including the one with the distro base image). It adds syntatic sugar, enabling image management, and providing deployment services, specially through third party apps. It also has  tools to set up virtual container hosts (Machine), orchestrate multiple services in containers linked together in a single stack (Compose yaml file), and orchestate your containers|tasks as a cluster (Swarm).
+yaourt docker https://docs.docker.com/engine/security/ https://wiki.archlinux.org/index.php/docker
+#Kubernetes is a container orchestration system for Docker (containers are called services here, aggruped in nodes) made by Google but today managed by the Linux Foundation (but may be fully open source) that is more extensible than Docker Swarm. It uses pods, which have 1 or more containers, and uses Elasticsearch/Kibana (ELK) for logs within the container, Heapster/Grafana/Influx for monitoring in the container and Sysdig cloud integration.
+yaourt -S kubernetes --noconfirm --needed
+#FreeBSD Jails (only with Pacbsd but discontinued 2017). FreeBSD's LXC with zfs compatibility, network isolation, daemon included in the kernel, and better default policies.
 #Clear containers. It uses Intel VT-x. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker with VT if using VMCS shadowing as a technology that accelerates nested virtualization of VMMs.
+#Linux-VServer. It is a VPS implementation  by adding virtualization capabilities to the Linux kernel (host).
+https://wiki.archlinux.org/index.php/Arch_Linux_VPS
+#UML UserMode Linux (only for Linux)
+https://wiki.archlinux.org/index.php/User-mode_Linux
 
 # Emulation tools: Enables one host computer system to behave like another guest computer system
 sudo pacman -S qemu qemu-arch-extra --noconfirm --needed
 
 # Virtualization tools: governed by a hypervisor, enforce data isolation in hardware HVM, most secure, slower, less portable
-#VMWare is KVM from Dell. Fully closed source and does not allow OSX outside Mac.
-#KVM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
-echo "Use kvm to virtualize"
+#VMWare is the VM from Dell. Fully closed source and does not allow OSX outside Mac.
+#Lguest: Linux kernel paravirtualization hypervisor. Lguest32 was introduced in kernel version 2.6.23 in 2007 and removed in kernel version 4.14 in 2017). 10x faster than basic qemu, and 100x faster than a real boot. Lguest64 was introduced on 2007 https://lwn.net/Articles/248189/ but most advanced still https://github.com/psomas/lguest64
+#Xen: #Full and paravirtualization
 #Virtualbox + Vagrant: Most compatible (except for Xen, which allows paravirtualization). It's from Oracle and has closed USB drivers.
 pacman -Si linux
 sudo pacman -S linux-headers --noconfirm --needed
@@ -772,7 +781,8 @@ sudo mv VBoxGuestAdditions_$var1.iso /usr/share/VBoxGuestAdditions_$var1.iso
 echo "To insert iso additions, install a vm named 'myvm' and move the .iso to your user folder"
 virtualbox
 vboxmanage storageattach myvm --storagectl IDE --port 0 --device 0 --type dvddrive --medium "/usr/share/VBoxGuestAdditions_$var1.iso"
-
+#KVM, Qemu Kernel VM. Most secure. Mandatory Access Control and SELinux. It requires that the processor support Intel-VT or AMD-VT extensions, and that those extensions are enabled in the BIOS.
+echo "Enable kvm to virtualize"
 
 ### Emacs ###
 sudo pacman -S emacs --noconfirm --needed
