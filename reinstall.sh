@@ -239,7 +239,7 @@ echo "kernel.dmesg_restrict = 1" | sudo tee -a /etc/sysctl.d/50-dmesg-restrict.c
 echo "kernel.kptr_restrict = 1" | sudo tee -a /etc/sysctl.d/50-kptr-restrict.conf #Restricting access to kernel pointers in the proc filesystem
 
 # Bluetooth
-sudo vim -c ':%s.#Autoenable=False.Autoenable=False.g' -c ':wq' /etc/bluetooth/main.conf 
+sudo vim -c ':%s,\#Autoenable=False,Autoenable=False,g' -c ':wq' /etc/bluetooth/main.conf 
 sudo rfkill block bluetooth
 printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
@@ -402,7 +402,7 @@ default-rule-path: /etc/suricata/rules/' | sudo tee -a /etc/suricata/suricata.ya
 else
 	sudo vim -c ":%s,# -,-,g" -c ":wq" /etc/suricata/suricata.yaml #when file exists
 fi
-#activating rules
+#Activating rules
 suricatasslrule(){
 url=$SSLRULES".rules"
 agurl=$SSLRULES"_aggressive.rules"
@@ -1075,8 +1075,9 @@ yaourt -S slurm nethogs --noconfirm #tops
 sudo pacman -S duplicity deja-dup borg --noconfirm --needed 
 
 #Disk tools
-sudo pacman -S gparted hdparm -y
+sudo pacman -S gparted hdparm --noconfirm --needed
 yaourt deskcon filecast obexfs --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
+sudo pacman -S baobab ncdu --noconfirm --needed #prefered over QDirStat which is prefered over gdmap
 
 #Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
@@ -1127,7 +1128,6 @@ wget https://gist.githubusercontent.com/Westacular/5996271/raw/147384089e72f4009
 sudo mv birthday_second_counter.py /bin/timealive
 sudo chmod +x /bin/timealive
 sudo pacman -S colordiff kompare --noconfirm --needed
-
 
 ### Browsers ###
 #Flash
@@ -1517,7 +1517,6 @@ sudo pacman -S elinks --noconfirm --needed
 LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
 aurman -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
 
-
 ### Python ###
 sudo pacman -S python python3 --noconfirm --needed
 sudo pacman -S python-pip python2-pip --noconfirm --needed
@@ -1566,15 +1565,18 @@ gpg2 --keyserver pgp.mit.edu --recv-key B92A5F04EC949121
 yaourt -S beebeep --noconfirm --needed
 gpg2 --delete-secret-and-public-keys --batch --yes B92A5F04EC949121
 
-#P2P Videocalls and messaging
+#Videocalls
 sudo pacman -S libringclient ring-daemon ring-gnome --noconfirm --needed
-yaourt -S pybitmessage --noconfirm --needed
+
+#Messaging
+sudo pacman -S keybase keybase-gui --noconfirm --needed
+rm ~/.config/autostart/keybase_autostart.desktop #no autostart
 #yaourt -S jitsi --noconfirm --needed
 #yaourt -S qtox --noconfirm --needed
+#yaourt -S pybitmessage --noconfirm --needed
 
 #All-in-a-box
 yaourt -S rambox-bin --noconfirm --needed
-
 
 ### Rootkit checking and Audits ###
 #Unhide
