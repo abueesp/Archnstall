@@ -959,6 +959,7 @@ alias chm=securechrome
 alias iron="/opt/iron/./chrome"
 alias firejail-offline="firejail --x11=xephyr --net=none"
 alias icecat="firejail --x11=xephyr /bin/./icecat --profile /opt/icecat/profiles"
+alias pastebin="echo '[text] https://www.privatebin.net [image] https://www.unsee.cc [files] try transfer'"
 
 ### Conversion Aliases ###
 asciibin () {
