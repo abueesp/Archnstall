@@ -1127,13 +1127,16 @@ wget https://github.com/repeats/Repeat/releases/download/v$REPEATVERSION/Repeat_
 sudo mv Repeat_$REPEATVER.jar /usr/src/repeat.jar
 sudo pacman -S jdk8-openjdk --noconfirm --needed
 #echo 'alias repeatmouse="java -jar /usr/src/repeat.jar"' | tee -a ~/.bashrc
-#Blindlector: Orca
+echo 'If the user blind consider to install a blindlector such as orca'
 sudo pacman -S units dateutils --noconfirm --needed
 sudo -H pip install when-changed #run a command (alert) when file is changed
 wget https://gist.githubusercontent.com/Westacular/5996271/raw/147384089e72f4009f177cd2d5c089bb2d8e5934/birthday_second_counter.py
 sudo mv birthday_second_counter.py /bin/timealive
 sudo chmod +x /bin/timealive
 sudo pacman -S colordiff kompare --noconfirm --needed
+sudo pacman -S perl-image-exiftool --noconfirm --needed #image metadata
+#echo 'alias repeatmouse="java -jar /usr/src/repeat.jar"' | tee -a ~/.bashrc
+#echo 'alias matimg="exiftool -exif:all="' | tee -a ~/.bashrc
 
 ### Browsers ###
 #Flash
