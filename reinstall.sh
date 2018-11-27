@@ -1464,6 +1464,9 @@ echo 'user_pref("extensions.formautofill.section.enabled", false);' | tee -a ~/.
 
 ### END FIREFOX PREFERENCES ###
 
+#Icecat
+yaourt -S icecat-bin --noconfirm --needed
+
 #Opera
 sudo pacman -S opera opera-developer --noconfirm --needed
 
@@ -1508,14 +1511,14 @@ chromium https://blockchain-dns.info/files/BDNS-1.0.8.crx
 #$IRONFOLDER/./chrome  https://chrome.google.com/webstore/detail/restlet-client-rest-api-t/aejoelaoggembcahagimdiliamlcdmfm?hl=pt-PT
 
 #Icecat
-sudo pacman -S icecat --noconfirm --needed
+sudo yaourt -S icecat-bin --noconfirm --needed
 
 #Elinks terminal browser
 sudo pacman -S elinks --noconfirm --needed
 
 #Tor-browser
 LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
-aurman -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
+yaourt -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
 
 ### Python ###
 sudo pacman -S python python3 --noconfirm --needed
