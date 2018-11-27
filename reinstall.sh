@@ -9,6 +9,8 @@
 # http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html 
 # https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
 # https://kernelnewbies.org/KernelGlossary https://0xax.gitbooks.io/linux-insides/content/Booting/
+# PEDA vs Radare2 https://github.com/longld/peda
+# http://160592857366.free.fr/joe/ebooks/ShareData/Design%20of%20the%20Unix%20Operating%20System%20By%20Maurice%20Bach.pdf
 #next4 snapper? 
 #https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
 #customizerom
