@@ -645,6 +645,8 @@ docsthemagic() {
   echo "puedes comprobar los errores con aspell -c 'file' y darle formato con fmt"
 }
 
+alias matimg="exiftool -exif:all="
+
 updatebash() {
 sudo cp ~/.bashrc ~/.bashrc-bu
 wget https://raw.githubusercontent.com/abueesp/Archnstall/master/.bashrc -O ~/.bashrc-d
