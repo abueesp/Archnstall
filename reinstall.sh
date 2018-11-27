@@ -3,7 +3,11 @@
 #DNS (unbound resolv.conf dnssec dyndns) and Firewall
 #emacs https://melpa.org/
 #create encfs alias and add gui
-#gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
+#gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace 
+# http://www.brendangregg.com/overview.html
+# http://www.brendangregg.com/perf.html
+# http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html 
+# https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
 # https://kernelnewbies.org/KernelGlossary https://0xax.gitbooks.io/linux-insides/content/Booting/
 #next4 snapper? 
 #https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
