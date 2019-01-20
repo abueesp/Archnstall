@@ -1291,11 +1291,10 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 commit() {
-	echo "USAGE" commit 1 2 3
-	echo "1. Folder (. for this one)
-	      2. Commit Message (between \")
-	      3. Branch (generally master)"
-  git add $1 && git commit -m $2 && git push origin $3
+	echo "USAGE" commit 1 2 
+	echo "1. Commit message (between '') 
+        2. Branch (generally master)"
+  git add --all  && git commit -m "$2" && git push 
 }
 
 function cl(){ cd "$@" && la; }
