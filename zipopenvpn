@@ -1,0 +1,36 @@
+read -p "Introduce user" USER
+mv $USER.key key.key
+mv $USER.crt crt.crt
+sudo chmod 700 key.key ca.crt crt.crt ta.key
+
+echo "check that it is not tls-auth but tls-crypt"
+read -p "Introduce additional pass" PASS
+echo $PASS | sudo tee -a $VPNFOLDER/pass
+sudo chmod 700 $VPNFILE
+
+
+ 
+#--use-prediction-resistance ? --learn-address  ?
+#--syslog 
+#--engine [engine-name]
+
+#if no proto is specified use --replay-window n [t]  --proto tcp
+# --management socket-name unix [pw-file]      (recommended) --management IP port [pw-file]   BEWARE of enabling the management interface over TCP.  In  these cases you should ALWAYS  make  use  of  pw-file to password protect the management interface.  Any user who can connect to this TCP IP:port will be able to manage and control  (and interfere  with)  the OpenVPN process.  It is also strongly recommended to set IP     to 127.0.0.1 (localhost) to restrict accessibility of the  management  server  to local clients. For   detailed  documentation  on  the  management  interface,  see  the  management-notes.txt file in the management folder of the OpenVPN source distribution.  --management-client --management-query-passwords --management-query-proxy --management-query-remote --management-external-key --management-external-cert certificate-hint https://openvpn.net/community-resources/management-interface/
+# --log $VPNFOLDER/last-session.log or  --log-append instead of log
+# --dev tunX | tapX | null #tun (OSI Layer 3)  or  tap  (OSI  Layer  2) (can be omitted for a dynamic device)
+
+# --sndbuf size Set the TCP/UDP socket send buffer size. Default the os net.core.rmem_max = 212992 (sysctl), and max 999999. Don't setsockopt SO_SNDBUF or SO_RCVBUF by default on TCP/UDP socket in light of reports that this action can have undesirable global side effects on the MTU settings of other adapters. 
+# --rcvbuf size Set  the  TCP/UDP  socket  receive  buffer  size. Default the os net.core.rmem_max = 212992 and net.core.rmem_default=262144 (sysctl), and max 999999. Don't setsockopt SO_SNDBUF or SO_RCVBUF by default on TCP/UDP socket in light of reports that this action can have undesirable global side effects on the MTU settings of other adapters. 
+#-- openvpn plugins?
+
+
+#create your own cacerts: openssl req -nodes -new -x509 -keyout ca.key -out ca.crt and use --capath dir instead of --ca file | and add --dh
+#--pkcs12 file: Specify a PKCS #12 file containing local private key, local certificate, and root CA certificate. Used instead  of  --ca,  --cert,  and --key.
+#--verify-x509-name  is  a useful replacement for the --tls-verify option to verify the remote host, because --verify-x509-name works in a --chroot environment without any dependencies. --verify-x509-name 'C=KG, ST=NA, L=Bishkek, CN=Server-1' or you could use --verify-x509-name  Server- if you want a client to only accept connections to "Server-1", "Server-2", etc. To verify clients you can use               --x509-username-field emailAddress    --x509-username-field ext:subjectAltName
+#iptables -A INPUT -p udp -s 1.2.3.4 –dport 1194 -j ACCEPT : This will allow incoming packets on UDP port 1194 (OpenVPN’s default UDP port) from an OpenVPN peer at 1.2.3.4.
+#iptables -A INPUT -p udp –dport 1194 -j ACCEPT If you are using HMAC-based packet authentication (the default in any of OpenVPN’s secure modes)
+#The next rules are secure if you use packet authentication, since no incoming packets will arrive on a TUN or TAP virtual device unless they first pass an HMAC authentication test. 
+#iptables -A INPUT -i tun+ -j ACCEPT : to allow input packets from tun devices,
+iptables -A FORWARD -i tun+ -j ACCEPT : to allow input packets from tun devices to be forwarded to other hosts on the local network,
+iptables -A INPUT -i tap+ -j ACCEPT : to allow input packets from tap devices, and
+iptables -A FORWARD -i tap+ -j ACCEPT : to allow input packets from tap devices to be forwarded to other hosts on the local network.
