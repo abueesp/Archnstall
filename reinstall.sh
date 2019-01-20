@@ -1,17 +1,20 @@
+sudo pacman -S slim --noconfirm --needed
+sudo mv /etc/systemd/system/display-manager.service /etc/systemd/system/display-manager.service.bak
+sudo systemctl enable slim.service
 
 ### On development: ### GUIDES:: https://www.archlinux.org/feeds/news/ https://wiki.archlinux.org/index.php/IRC_channel (add to weechat) https://www.archlinux.org/feeds/  https://security.archlinux.org/
 #DNS (unbound resolv.conf dnssec dyndns) and Firewall
 #emacs https://melpa.org/
 #create encfs alias and add gui
-#gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace 
+#gdb vs strace vs perf trace vs reptyr vs sysdig vs dtrace
 # http://www.brendangregg.com/overview.html
 # http://www.brendangregg.com/perf.html
-# http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html 
+# http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html
 # https://www.slideshare.net/brendangregg/velocity-2015-linux-perf-tools/105
 # https://kernelnewbies.org/KernelGlossary https://0xax.gitbooks.io/linux-insides/content/Booting/
 # PEDA vs Radare2 https://github.com/longld/peda
 # http://160592857366.free.fr/joe/ebooks/ShareData/Design%20of%20the%20Unix%20Operating%20System%20By%20Maurice%20Bach.pdf
-#next4 snapper? 
+#next4 snapper?
 #https://wiki.archlinux.org/index.php/Trusted_Users#How_do_I_become_a_TU.3F
 #customizerom
 
@@ -25,7 +28,7 @@ if [ -n "$GRUBPROBER" ]
                         echo "No Windows installed"
 fi
 
-### MAC ### 
+### MAC ###
 echo "Randomize MAC"
 echo ''
 echo '[connection-mac-randomization]' | sudo tee -a /etc/NetworkManager/NetworkManager.conf
@@ -66,16 +69,16 @@ echo "ExcludeNodes {us},{uk},{ca},{se},{fr},{pt},{de},{dk},{es},{nl},{kr},{ee}" 
 if [ ! -f /etc/tor/torsocks.conf ];
 then
     sudo touch /etc/tor/torsocks.conf
-    echo "TorPort $TORPORT" | sudo tee -a /etc/tor/torsocks.conf 
+    echo "TorPort $TORPORT" | sudo tee -a /etc/tor/torsocks.conf
 else
-    sudo vim /etc/tor/torsocks.conf -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq" 
+    sudo vim /etc/tor/torsocks.conf -c ":%s/#TorPort 9050/TorPort $TORPORT/g" -c ":wq"
 
-fi               
+fi
 
 # All DNS queries to Tor
 export TORDNSPORT=$(shuf -i 2000-65000 -n 1)
-echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc 
-echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc 
+echo "DNSPort $TORDNSPORT"  | sudo tee -a /etc/tor/torrc
+echo "AutomapHostsOnResolve 1" | sudo tee -a /etc/tor/torrc
 echo "AutomapHostsSuffixes .exit,.onion" | sudo tee -a /etc/tor/torrc
 sudo pacman -S dnsmasq --noconfirm --needed
 sudo vim -c ":%s,#port=,port=$TORDNSPORT ,g" -c ":wq" /etc/dnsmasq.conf
@@ -87,8 +90,8 @@ sudo vim -c ":%s,#listen-address=,listen-address=127.0.0.1,g" -c ":wq" /etc/dnsm
 sudo vim -c ":%s,#nohook resolv.conf,nohook resolv.conf,g" -c ":wq" /etc/dhcpcd.conf
 
 # Pacman over Tor/
-sudo cp /etc/pacman.conf /etc/pacmantor.conf 
-sudo vim -c ':%s.#XferCommand = /usr/bin/curl.#XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacmantor.conf 
+sudo cp /etc/pacman.conf /etc/pacmantor.conf
+sudo vim -c ':%s.#XferCommand = /usr/bin/curl.#XferCommand = /usr/bin/curl --socks5-hostname localhost:$TORPORT -C - -f %u > %o" \n#XferCommand = /usr/bin/curl.g' -c ':wq' /etc/pacmantor.conf
 
 #Create user
 export TORUSER="tor"
@@ -112,8 +115,8 @@ sudo ln -s /usr/lib  $TORCHROOT/lib
 sudo cp -r /etc/hosts           $TORCHROOT/etc/hosts
 sudo cp /etc/host.conf       $TORCHROOT/etc/host.conf
 sudo cp -r /etc/localtime       $TORCHROOT/etc/localtime
-sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf 
-sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf 
+sudo cp /etc/nsswitch.conf   $TORCHROOT/etc/nsswitch.conf
+sudo cp /etc/resolv.conf     $TORCHROOT/etc/resolv.conf
 sudo cp -r /etc/tor            $TORCHROOT/etc/tor #which contains torrc (and torsocks.conf despite not needed)
 sudo mkdir $TORCHROOT/root
 sudo mkdir $TORCHROOT/root/tor
@@ -159,21 +162,21 @@ sudo ip link add link $INTERFACE name $VLANINTERFACE type vlan id $(((RANDOM%409
 sudo ip addr add 10.0.0.1/24 brd 10.0.0.255 dev $VLANINTERFACE
 sudo sudo ip link set $VLANINTERFACE up
 networkctl
-printf "[Service] 
+printf "[Service]
 ExecStart=
 ExecStart=/usr/bin/systemd-nspawn --quiet --boot --keep-unit --link-journal=guest --network-macvlan=$VLANINTERFACE --private-network --directory=$VARCONTAINERS/$TORCONTAINER LimitNOFILE=32768" | sudo tee -a /etc/systemd/system/systemd-nspawn@$TORCONTAINER.service.d/$TORCONTAINER.conf #config file [yes, first empty ExecStart is required]. You can use --ephemeral instead of --keep-unit --link-journal=guest and then you can delete the machine
 sudo systemctl daemon-reload
 TERMINAL=$(tty)
 TERM="${TERMINAL:5:4}0"
-echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}1"
-echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}2"
-echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}3"
 echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}4"
-echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty 
+echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 TERM="${TERMINAL:5:4}5"
 echo "$TERM" | sudo tee -a $SRVCONTAINERS/$TORCONTAINER/etc/securetty
 # Checking conf
@@ -199,11 +202,11 @@ sudo pacman -S gnupg gnupg2 --noconfirm --needed
 
 ### Security ###
 # Password management
-#sudo authconfig --passalgo=sha512 --update #pass sha512 $6 by default 
+#sudo authconfig --passalgo=sha512 --update #pass sha512 $6 by default
 #sudo chage -d 0 tiwary #To force new password in next login, but unnecessary as we are going to renew it now
 sudo pacman -S libpwquality --noconfirm --needed
 ##########Activate password requirements (Activate password required pam_cracklib.so retry=2 minlen=10 difok=6 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1 and password required pam_unix.so use_authtok sha512 shadow and deactivate password required pam_unix.so sha512 shadow nullok)
-#sudo vim -c ":%1,2s/#password/password" -c ":wq" /etc/pam.d/passwd 
+#sudo vim -c ":%1,2s/#password/password" -c ":wq" /etc/pam.d/passwd
 #sudo vim -c ":%3s/password/#password" -c ":wq" /etc/pam.d/passwd
 echo "auth optional pam_faildelay.so delay=1" | sudo tee -a /etc/pam.d/system-login #Increase delay in case of failed password (in this case, decreased, time in ms)
 echo "auth required pam_tally2.so deny=3 unlock_time=5 root_unlock_time=15 onerr=succeed" | sudo tee -a /etc/pam.d/system-login #Lockout user after three failed login attempts (pam_tally is deprecated and superseded by pam_tally2, time in ms
@@ -217,7 +220,7 @@ sudo chage -W 90 "$USER" #Warning days for password changing
 pwmake 512 #Create a secure 512 bits password
 chage -l "$USER" #Change password
 #BIOS lock down
-echo " >>>>>> Please lock down your BIOS <<<<< " 
+echo " >>>>>> Please lock down your BIOS <<<<< "
 
 # Avoid fork bombs
 sudo vim -c ":%s/#@faculty        soft    nproc           20/@faculty        soft    nproc           1000/g" -c ":wq" /etc/security/limits.conf
@@ -226,7 +229,7 @@ sudo vim -c ":%s/#@faculty        hard    nproc           50/@faculty        har
 #Disable ICMP
 echo "Check function disableremoteping"
 
-# Prevent sudo from SFTP: 
+# Prevent sudo from SFTP:
 echo "auth   required   /lib/security/pam_listfile.so   item=user sense=deny file=/etc/vsftpd.ftpusers onerr=succeed" | sudo tee -a /etc/pam.d/vsftpd
 #Similar line can be added to the PAM configuration files, such as /etc/pam.d/pop and /etc/pam.d/imap for mail clients, or /etc/pam.d/sshd for SSH clients.
 
@@ -245,7 +248,7 @@ echo "kernel.dmesg_restrict = 1" | sudo tee -a /etc/sysctl.d/50-dmesg-restrict.c
 echo "kernel.kptr_restrict = 1" | sudo tee -a /etc/sysctl.d/50-kptr-restrict.conf #Restricting access to kernel pointers in the proc filesystem
 
 # Bluetooth
-sudo vim -c ':%s,\#Autoenable=False,Autoenable=False,g' -c ':wq' /etc/bluetooth/main.conf 
+sudo vim -c ':%s,\#Autoenable=False,Autoenable=False,g' -c ':wq' /etc/bluetooth/main.conf
 sudo rfkill block bluetooth
 printf "[General]
 Enable=Socket" | sudo tee -a /etc/bluetooth/audio.conf #A2DP
@@ -319,21 +322,21 @@ then
 else
     sudo vim /etc/ssh/sshd_config -c ':%s/PermitRootLogin without password/PermitRootLogin no/g' -c ':wq'
     sudo vim /etc/ssh/sshd_config -c ':%s/Protocol 2,1/Protocol 2/g' -c ':wq'
-    sudo vim /etc/ssh/sshd_config -c ":%s/MaxAuthTries 6/MaxAuthTries 3/g" -c ":wq" 
+    sudo vim /etc/ssh/sshd_config -c ":%s/MaxAuthTries 6/MaxAuthTries 3/g" -c ":wq"
 
 fi
 
 # SSHguard (prefered over Fail2ban)
 sudo pacman -S sshguard --noconfirm --needed
 sudo vim -c ":%s,BLACKLIST_FILE=120:/var/db/sshguard/blacklist.db,BLACKLIST_FILE=50:/var/db/sshguard/blacklist.db,g" -c ":wq" /etc/sshguard.conf #Danger level: 5 failed logins -> banned
-sudo vim -c ":%s,THRESHOLD=30,THRESHOLD=10,g" -c ":wq"  /etc/sshguard.conf 
+sudo vim -c ":%s,THRESHOLD=30,THRESHOLD=10,g" -c ":wq"  /etc/sshguard.conf
 sudo systemctl enable --now sshguard.service
 
 # OpenSSL and NSS
 sudo pacman -S openssl nss --noconfirm --needed
 cat "$(locate ca-certificates)" #check all certificates
 #blacklist ssl symanteccertificate
-wget https://crt.sh/?d=19538258 
+wget https://crt.sh/?d=19538258
 sudo mv index.html?d=19538258 /etc/ca-certificates/trust-source/blacklist/19538258-Symantec.crt  #Blacklist Symantec SSL Cert
 sudo update-ca-trust
 
@@ -383,7 +386,7 @@ drop:
   filename: drop.log
   append: yes
   filetype: regular   #regular, unix_stream or unix_dgram
-  alerts: yes      # log alerts that caused drops      
+  alerts: yes      # log alerts that caused drops
   flows: all       # start or all: 'start' logs only a single drop
 logging:
   default-log-level: debug
@@ -412,7 +415,7 @@ fi
 suricatasslrule(){
 url=$SSLRULES".rules"
 agurl=$SSLRULES"_aggressive.rules"
-wget "https://sslbl.abuse.ch/blacklist/$url"	
+wget "https://sslbl.abuse.ch/blacklist/$url"
 sudo mv "$url" "/etc/suricata/rules/$url"
 wget "https://sslbl.abuse.ch/blacklist/$agurl"
 sudo mv "$agurl" "/etc/suricata/rules/$agurl"
@@ -442,7 +445,7 @@ sudo suricata -c /etc/suricata/suricata.yaml -i $INTERFACE -D #start suricata an
 echo "[Unit]
 Description=Suricata Intrusion Detection Service listening on '%I'
 After=network.target
- 
+
 [Service]
 Type=forking
 ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.yaml -i %i -D
@@ -459,7 +462,7 @@ After=network.target
 Type=forking
 ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.yaml -i %i -D
 ExecReload=/bin/kill -HUP \$MAINPID
- 
+
 [Install]
 WantedBy=multi-user.target" | sudo tee -a /usr/lib/systemd/system/suricata@$VLANINTERFACE.service
 sudo systemctl enable --now suricata@$VLANINTERFACE.service
@@ -571,9 +574,10 @@ sudo pacman -S onboard --noconfirm --needed #Virtual keyboard
 #sudo rm -r snap-pac-grub
 
 # Pacman tools
-sudo pacman -S arch-audit pacgraph pacutils --noconfirm --needed #personal aliases prefered over pacman-contrib 
+sudo pacman -S arch-audit pacgraph pacutils --noconfirm --needed #personal aliases prefered over pacman-contrib
 
 # PKGtools
+sudo pacman -S pkgdiff --noconfirm --needed
 git clone https://github.com/graysky2/lostfiles #Script that identifies files not owned and not created by any Arch Linux package.
 cd lostfiles
 make && sudo make install
@@ -584,7 +588,7 @@ cd pkgtools/scripts/pip2arch
 wget https://raw.githubusercontent.com/lclarkmichalek/pip2arch/master/pip2arch.py
 cd ..
 cd ..
-sudo make install 
+sudo make install
 cd ..
 sudo rm -r pkgtools
 bupkgs(){
@@ -597,19 +601,7 @@ done
 #alias rubifyarch='printf "[quarry] \n Server = https://pkgbuild.com/~anatolik/quarry/x86_64/ " | sudo tee -a /etc/pacman.conf && echo "This repo has not key!"'
 
 # AUR-helpers and repositories https://wiki.archlinux.org/index.php/AUR_helpers
-sudo pacman -S base-devel git wget yajl --noconfirm --needed #Yaourt
-git clone https://aur.archlinux.org/package-query.git
-cd package-query
-makepkg -si --noconfirm --needed
-cd ..
-sudo rm -r package-query
-git clone https://aur.archlinux.org/yaourt.git
-cd yaourt
-makepkg -si --noconfirm --needed
-cd ..
-sudo rm -r yaourt
-
-git clone https://aur.archlinux.org/aurman.git #Aurman 
+git clone https://aur.archlinux.org/aurman.git #Aurman
 cd aurman
 makepkg -si --noconfirm --needed
 cd ..
@@ -667,8 +659,8 @@ sudo chmod +x /usr/bin/wall
 # Search tools
 gpg2 --keyserver ha.pool.sks-keyservers.net --recv-keys 465022E743D71E39 #for mlocate
 sudo pacman -S mlocate recoll the_silver_searcher --noconfirm --needed #find locate
-yaourt -S tag-ag --noconfirm 
-printf 'tag() { 
+aurman -S tag-ag --noconfirm
+printf 'tag() {
 command tag "$@"
 source /tmp/tag_aliases}
 alias ag=tag' | tee -a ~/.bashrc
@@ -717,6 +709,27 @@ sudo vim -c ":%s/\# force-nonewprivs no/force-nonewprivs yes/g" -c ":wq" /etc/fi
 RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 sudo vim -c ":%s/\# xephyr-screen 640x480/xephyr-screen $RESOLUTION/g" -c ":wq" /etc/firejail/firejail.config #size
 sudo vim -c ":%s/\# xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev/xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev -resizeable -audit 5/g" -c ":wq" /etc/firejail/firejail.config #ephyr keyboard audit
+
+echo "if [ -z '$1' ]"| tee -a ix
+echo "	then"| tee -a ix
+echo "	ljail=2"| tee -a ix
+echo "else"| tee -a ix
+echo "	ljail=$(echo '2*$1' | bc)"| tee -a ix
+echo "fi"| tee -a ix
+echo "X2=$(firemon --x11 | awk -v ljail=$ljail 'FNR==$ljail{print \$0}' | awk '{print \$2}')" | tee -a ix
+echo 'xclip -selection clip -o -display :0 | xclip -selection clip -i -display "$X2"' | tee -a ix
+sudo chmod +x ix
+sudo mv ix /bin/ix
+echo "if [ -z '$1' ]"| tee -a ox
+echo "	then"| tee -a ox
+echo "	ljail=2"| tee -a ox
+echo "else"| tee -a ox
+echo "	ljail=$(echo '2*$1' | bc)"| tee -a ox
+echo "fi"| tee -a ox
+echo "X2=$(firemon --x11 | awk -v ljail=$ljail 'FNR==$ljail{print \$0}' | awk '{print \$2}')" | tee -a ox
+echo 'xclip -selection clip -o -display "$X2" | xclip -selection clip -i -display :0' | tee -a ox
+sudo chmod +x ox
+sudo mv ox /bin/ox
 sudo pacman -S xclip xbindkeys --noconfirm --needed
 xbindkeys --defaults > ~/.xbindkeysrc
 vim -c ":%s/\# set directly keycode (here control + f with my keyboard)/\# xclip input/g" -c ":wq" ~/.xbindkeysrc #introducing ix over xterm
@@ -726,24 +739,25 @@ vim -c ":%s/\# specify a mouse button/\# xclip output/g" -c ":wq" ~/.xbindkeysrc
 vim -c ":49,51s/xterm/ox/" -c ":wq" ~/.xbindkeysrc
 vim -c ":%s/control + b:2/alt + o/g" -c ":wq" ~/.xbindkeysrc
 
+
 #Bubblewrap
 sudo pacman -S bubblewrap --noconfirm --needed #bubblewrap works by creating a new, completely empty, mount namespace where the root is on a tmpfs that is invisible from the host, and will be automatically cleaned up when the last process exits.
 wget https://raw.githubusercontent.com/projectatomic/bubblewrap/master/demos/bubblewrap-shell.sh
-sudo chmod +x bubblewrap-shell.sh 
+sudo chmod +x bubblewrap-shell.sh
 sudo mv bubblewrap-shell.sh bwrapsh
 
 # Containerization tools: less secure as they share kernel and hardware (not a real virtual machine), faster, more portable
-#Chroot/Proot/Fakeroot: A chroot is an operation that changes the apparent root directory for the current running process and their children. A program that is run in such a modified environment cannot access files and commands outside that environmental directory tree. This modified environment is called a chroot jail.  Proot may be used to change the apparent root directory (all files are owned by the user on the host) and use mount --bind without root privileges (used for running programs built for a different CPU architecture). Fakeroot can be used to simulate a chroot as a regular user. 
+#Chroot/Proot/Fakeroot: A chroot is an operation that changes the apparent root directory for the current running process and their children. A program that is run in such a modified environment cannot access files and commands outside that environmental directory tree. This modified environment is called a chroot jail.  Proot may be used to change the apparent root directory (all files are owned by the user on the host) and use mount --bind without root privileges (used for running programs built for a different CPU architecture). Fakeroot can be used to simulate a chroot as a regular user.
 sudo pacman -S fakeroot --noconfirm --needed
 #Spawn: systemd-nspawn is like the chroot command, but it is a chroot on steroids: it fully virtualizes the file system hierarchy, the process tree, various IPC subsystems and the host and domain name. systemd-nspawn limits access to various kernel interfaces in the container to read-only, such as /sys, /proc/sys or /sys/fs/selinux.
 #ZeroVM is a scalable and portable container based on Google Native Client useful when you are having massive and parallel data inputs that need to be statically verified to be "safe" before used.
 #LXC unpriviledged containerization provides kernel namespaces that has its own CPU, memory, block I/O, network, etc. under the resource control mechanism of kernel (cgroups). Seccomp included, apparmor and SElinux compatible.
-sudo pacman -S lxc arch-install-scripts --noconfirm --needed 
+sudo pacman -S lxc arch-install-scripts --noconfirm --needed
 #LXD, a container system making use of LXC containers made by Canonical and specialized in deploying Linux distros.
 #Docker a container system making written in Go that use LXC containers (among others) by Docker Inc (but the Community Version may be fully open source) and specialized in deploying apps (one in each container, including the one with the distro base image). It adds syntatic sugar, enabling image management, and providing deployment services, specially through third party apps. It also has  tools to set up virtual container hosts (Machine), orchestrate multiple services in containers linked together in a single stack (Compose yaml file), and orchestate your containers|tasks as a cluster (Swarm).
-yaourt docker https://docs.docker.com/engine/security/ https://wiki.archlinux.org/index.php/docker
+aurman docker https://docs.docker.com/engine/security/ https://wiki.archlinux.org/index.php/docker
 #Kubernetes is a container orchestration system for Docker (containers are called services here, aggruped in nodes) made by Google but today managed by the Linux Foundation (but may be fully open source) that is more extensible than Docker Swarm. It uses pods, which have 1 or more containers, and uses Elasticsearch/Kibana (ELK) for logs within the container, Heapster/Grafana/Influx for monitoring in the container and Sysdig cloud integration.
-yaourt -S kubernetes --noconfirm --needed
+aurman -S kubernetes --noconfirm --needed
 #FreeBSD Jails (only with Pacbsd but discontinued 2017). FreeBSD's LXC with zfs compatibility, network isolation, daemon included in the kernel, and better default policies.
 #Clear containers. It uses Intel VT-x. One container per Clear Linux VM wrapped with a specially-optimized copy of the Linux OS. Compatible with KVM and Docker with VT if using VMCS shadowing as a technology that accelerates nested virtualization of VMMs.
 #Linux-VServer. It is a VPS implementation  by adding virtualization capabilities to the Linux kernel (host).
@@ -817,59 +831,60 @@ if [ -e "/home/$USER/.vim_runtime/vimrcs/basic.vim" ];
 fi
 echo "VIMRC=$VIMRC" | tee -a ~/.bashrc
 
-echo ' ' | tee -a $VIMRC
-echo '\" => Commands' | tee -a $VIMRC
-echo ":command! Vb exe \"norm! \\<C-V>" | tee -a $VIMRC #Visual column
-echo "nnoremap <C-UP> :<c-u>execute 'move -1-'. v:count1<cr>" | tee -a $VIMRC  #Quickly move current line up
-echo "nnoremap <C-DOWN> :<c-u>execute 'move +'. v:count1<cr>" | tee -a $VIMRC #Quickly move current line down
-echo "nnoremap <C-space> :<c-u>put =repeat(nr2char(10), v:count1)<cr>" | tee -a $VIMRC #Quickly add blank line, better than ":nnoremap <C-O> o<Esc>" 
-echo "nnoremap <C-q> :<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>" | tee -a $VIMRC #Quickly edit macro
-echo "nnoremap <C-a> :%y+" | tee -a $VIMRC #Quickly select all, better than "nnoremap <C-a> gg"+yG" 
-echo "set autoindent" | tee -a $VIMRC
-echo "set paste" | tee -a $VIMRC
-echo "set mouse=a" | tee -a $VIMRC
-echo "set undofile" | tee -a $VIMRC
+echo ' ' | tee -a "$VIMRC"
+echo '\" => Commands' | tee -a "$VIMRC"
+echo ":command! Vb exe \"norm! \\<C-V>" | tee -a "$VIMRC" #Visual column
+echo "nnoremap <C-UP> :<c-u>execute 'move -1-'. v:count1<cr>" | tee -a "$VIMRC"  #Quickly move current line up
+echo "nnoremap <C-DOWN> :<c-u>execute 'move +'. v:count1<cr>" | tee -a "$VIMRC" #Quickly move current line down
+echo "nnoremap <C-space> :<c-u>put =repeat(nr2char(10), v:count1)<cr>" | tee -a "$VIMRC" #Quickly add blank line, better than ":nnoremap <C-O> o<Esc>"
+echo "nnoremap <C-q> :<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>" | tee -a "$VIMRC" #Quickly edit macro
+echo "nnoremap <C-a> :%y+" | tee -a "$VIMRC" #Quickly select all, better than "nnoremap <C-a> gg"+yG"
+echo "set autoindent" | tee -a "$VIMRC"
+echo "set paste" | tee -a "$VIMRC"
+echo "set mouse=a" | tee -a "$VIMRC"
+echo "set undofile" | tee -a "$VIMRC"
+echo "set clipboard=unnamedplus" | tee -a "$VIMRC"
 
-echo ' ' | tee -a $VIMRC
-echo '\" => Reticle' | tee -a $VIMRC
-echo ":set cursorcolumn" | tee -a $VIMRC
-echo ":set cursorline" | tee -a $VIMRC
-echo ":set relativenumber" | tee -a $VIMRC
+echo ' ' | tee -a "$VIMRC"
+echo '\" => Reticle' | tee -a "$VIMRC"
+echo ":set cursorcolumn" | tee -a "$VIMRC"
+echo ":set cursorline" | tee -a "$VIMRC"
+echo ":set relativenumber" | tee -a "$VIMRC"
 
-echo ' ' | tee -a $VIMRC
-echo '\" => Ctags' | tee -a $VIMRC
-echo "set tags+=~/.vim/ctags/c"  | tee -a $VIMRC
-echo "set tags+=~/.vim/ctags/c++"  | tee -a $VIMRC
+echo ' ' | tee -a "$VIMRC"
+echo '\" => Ctags' | tee -a "$VIMRC"
+echo "set tags+=~/.vim/ctags/c"  | tee -a "$VIMRC"
+echo "set tags+=~/.vim/ctags/c++"  | tee -a "$VIMRC"
 
-echo ' ' | tee -a $VIMRC
-echo '\" => Arrow keys' | tee -a $VIMRC
-echo "nnoremap <silent> <ESC>OA <UP>" | tee -a $VIMRC
-echo "nnoremap <silent> <ESC>OB <DOWN>" | tee -a $VIMRC
-echo "nnoremap <silent> <ESC>OC <RIGHT>" | tee -a $VIMRC
-echo "nnoremap <silent> <ESC>OD <LEFT>" | tee -a $VIMRC
-echo "inoremap <silent> <ESC>OA <UP>" | tee -a $VIMRC
-echo "inoremap <silent> <ESC>OB <DOWN>" | tee -a $VIMRC
-echo "inoremap <silent> <ESC>OC <RIGHT>" | tee -a $VIMRC
-echo "inoremap <silent> <ESC>OD <LEFT>" | tee -a $VIMRC
+echo ' ' | tee -a "$VIMRC"
+echo '\" => Arrow keys' | tee -a "$VIMRC"
+echo "nnoremap <silent> <ESC>OA <UP>" | tee -a "$VIMRC"
+echo "nnoremap <silent> <ESC>OB <DOWN>" | tee -a "$VIMRC"
+echo "nnoremap <silent> <ESC>OC <RIGHT>" | tee -a "$VIMRC"
+echo "nnoremap <silent> <ESC>OD <LEFT>" | tee -a "$VIMRC"
+echo "inoremap <silent> <ESC>OA <UP>" | tee -a "$VIMRC"
+echo "inoremap <silent> <ESC>OB <DOWN>" | tee -a "$VIMRC"
+echo "inoremap <silent> <ESC>OC <RIGHT>" | tee -a "$VIMRC"
+echo "inoremap <silent> <ESC>OD <LEFT>" | tee -a "$VIMRC"
 
-echo ' ' | tee -a $VIMRC
-echo '\" => Ctrl+Shift+c/p to copy/paste outside vim' | tee -a $VIMRC
-echo "nnoremap <C-S-c> +y" | tee -a $VIMRC
-echo "vnoremap <C-S-c> +y" | tee -a $VIMRC
-echo "nnoremap <C-S-p> +gP" | tee -a $VIMRC
-echo "vnoremap <C-S-p> +gP" | tee -a $VIMRC
+echo ' ' | tee -a "$VIMRC"
+echo '\" => Ctrl+Shift+c/p to copy/paste outside vim' | tee -a "$VIMRC"
+echo "nnoremap <C-S-c> +y" | tee -a "$VIMRC"
+echo "vnoremap <C-S-c> +y" | tee -a "$VIMRC"
+echo "nnoremap <C-S-p> +gP" | tee -a "$VIMRC"
+echo "vnoremap <C-S-p> +gP" | tee -a "$VIMRC"
 
-echo ' ' | tee -a $VIMRC
-echo '\" => Macros' | tee -a $VIMRC
+echo ' ' | tee -a "$VIMRC"
+echo '\" => Macros' | tee -a "$VIMRC"
 function sendtovimrc(){
-echo "let @$key='$VIMINSTRUCTION'" | tee -a $VIMRC
+echo "let @$key='$VIMINSTRUCTION'" | tee -a "$VIMRC"
 #please note the double set of quotes
 }
 key="p"
 VIMINSTRUCTION="isudo pacman -S  --noconfirm --needed\<esc>4bhi"
 sendtovimrc
 key="y"
-VIMINSTRUCTION="iyaourt -S  --noconfirm --needed\<esc>4bhi"
+VIMINSTRUCTION="iaurman -S  --noconfirm --needed\<esc>4bhi"
 sendtovimrc
 key="a"
 VIMINSTRUCTION="iaurman -S  --noconfirm --needed\<esc>4bhi"
@@ -879,44 +894,62 @@ sendtovimrc
 printf "if executable('ag')
   let g:ackprg = 'ag --vimgrep'
   :cnoreabbrev ag Ack
-endif"  | tee -a $VIMRC
+endif"  | tee -a "$VIMRC"
 
 #PATHOGENFOLDER="~/.vim/build"
-#mkdir $PATHOGENFOLDER
-PATHOGENFOLDER="~/.vim_runtime/sources_forked"
+if [ -e "/home/$USER/.vim_runtime/sources_forked" ];
+	then
+		PATHOGENFOLDER="~/.vim_runtime/sources_forked"
+elif [ -e "/home/$USER/.vim/sources_forked" ];
+	else
+		PATHOGENFOLDER="~/.vim/sources_forked"
+else
+	echo "No pathogen folder found"
+fi
 echo "PATHOGENFOLDER=$PATHOGENFOLDER" | tee -a ~/.bashrc
-echo 'alias pathogen="read -p \"Name of the plugin: \" PLUGINNAME && read -p \"Plugin Git link: \" PLUGINGIT && git clone $PLUGINGIT $PATHOGENFOLDER/$PLUGINNAME"' | tee -a ~/.bashrc
-echo 'alias installvimplugin="pathogen"' | tee -a ~/.bashrc
+echo "alias pathogen=\"read -p 'Name of the plugin:' PLUGINNAME && read -p 'Plugin Git link:' PLUGINGIT && git clone $PLUGINGIT $PATHOGENFOLDER/$PLUGINNAME\"" | tee -a ~/.bashrc
+echo 'alias viminstallplugin="pathogen"' | tee -a ~/.bashrc
 
-git clone https://github.com/tpope/vim-sensible $PATHOGENFOLDER/vim-sensible
-git clone https://github.com/ocaml/merlin $PATHOGENFOLDER/merlin
-git clone https://github.com/OmniSharp/omnisharp-vim $PATHOGENFOLDER/omnisharp-vim && cd $PATHOGENFOLDER/omnisharp-vim && git submodule update --init --recursive && cd server && xbuild && cd
-#git clone https://github.com/rhysd/vim-crystal/ $PATHOGENFOLDER/vim-crystal
-#git clone https://github.com/venantius/vim-eastwood.git $PATHOGENFOLDER/vim-eastwood
-git clone https://github.com/rust-lang/rust.vim $PATHOGENFOLDER/rust
-git clone https://github.com/kballard/vim-swift.git $PATHOGENFOLDER/swift
-git clone --recursive https://github.com/python-mode/python-mode $PATHOGENFOLDER/python-mode
-git clone https://github.com/eagletmt/ghcmod-vim $PATHOGENFOLDER/ghcmod-vim
-git clone https://github.com/eagletmt/neco-ghc $PATHOGENFOLDER/neco-ghc
-git clone https://github.com/ahw/vim-hooks $PATHOGENFOLDER/vim-hooks
+wget http://cscope.sourceforge.net/cscope_maps.vim
+echo "set timeoutlen=4000" | tee -a cscope_maps.vim
+echo "set ttimeout" | tee -a cscope_maps.vim
+echo "#sudo find / -type f -print | grep -E '\.c(pp)?|h)$' > cscope.files && cscope -bq" | tee -a cscope_maps.vim
+git clone https://github.com/tpope/vim-sensible "$PATHOGENFOLDER"/vim-sensible
+git clone https://github.com/ocaml/merlin "$PATHOGENFOLDER"/merlin
+git clone https://github.com/OmniSharp/omnisharp-vim $PATHOGENFOLDER/omnisharp-vim && cd "$PATHOGENFOLDER"/omnisharp-vim && git submodule update --init --recursive && cd server && xbuild && cd
+#git clone https://github.com/rhysd/vim-crystal/ "$PATHOGENFOLDER"/vim-crystal
+#git clone https://github.com/venantius/vim-eastwood.git "$PATHOGENFOLDER"/vim-eastwood
+git clone https://github.com/rust-lang/rust.vim "$PATHOGENFOLDER"/rust
+git clone https://github.com/kballard/vim-swift.git "$PATHOGENFOLDER"/swift
+git clone --recursive https://github.com/python-mode/python-mode "$PATHOGENFOLDER"/python-mode
+git clone https://github.com/eagletmt/ghcmod-vim "$PATHOGENFOLDER"/ghcmod-vim
+git clone https://github.com/eagletmt/neco-ghc "$PATHOGENFOLDER"/neco-ghc
+git clone https://github.com/ahw/vim-hooks "$PATHOGENFOLDER"/vim-hooks
 echo ":nnoremap gh :StartExecutingHooks<cr>:ExecuteHookFiles BufWritePost<cr>:StopExecutingHooks<cr>" | sudo tee -a /usr/share/vim/vimrc
 echo ":noremap ghl :StartExecutingHooks<cr>:ExecuteHookFiles VimLeave<cr>:StopExecutingHooks<cr>" | sudo tee -a /usr/share/vim/vimrc
-git clone https://github.com/sheerun/vim-polyglot $PATHOGENFOLDER/vim-polyglot
+git clone https://github.com/sheerun/vim-polyglot "$PATHOGENFOLDER"/vim-polyglot
 echo "syntax on" | sudo tee -a /usr/share/vim/vimrc
-git clone https://github.com/scrooloose/nerdcommenter $PATHOGENFOLDER/nerdcommenter
-git clone https://github.com/sjl/gundo.vim $PATHOGENFOLDER/gundo
-echo " " | tee -a $VIMRC
-echo "nnoremap <F5> :GundoToggle<CR>" | tee -a $VIMRC
-git clone https://github.com/Shougo/neocomplcache.vim $PATHOGENFOLDER/neocomplcache
-echo "let g:neocomplcache_enable_at_startup = 1" | tee -a $VIMRC
-git clone https://github.com/easymotion/vim-easymotion $PATHOGENFOLDER/vim-easymotion
-git clone https://github.com/spf13/PIV $PATHOGENFOLDER/PIV
-git clone https://github.com/tpope/vim-surround $PATHOGENFOLDER/vim-surround
-wget https://raw.githubusercontent.com/xuhdev/vim-latex-live-preview/master/plugin/latexlivepreview.vim -O $PATHOGENFOLDER/latexlivepreview.vim
-git clone https://github.com/vim-latex/vim-latex $PATHOGENFOLDER/vim-latex
+git clone https://github.com/scrooloose/nerdcommenter "$PATHOGENFOLDER"/nerdcommenter
+git clone https://github.com/sjl/gundo.vim "$PATHOGENFOLDER"/gundo
+echo " " | tee -a "$VIMRC"
+echo "nnoremap <F5> :GundoToggle<CR>" | tee -a "$VIMRC"
+git clone https://github.com/Shougo/neocomplcache.vim "$PATHOGENFOLDER"/neocomplcache
+echo "let g:neocomplcache_enable_at_startup = 1" | tee -a "$VIMRC"
+git clone https://github.com/easymotion/vim-easymotion "$PATHOGENFOLDER"/vim-easymotion
+git clone https://github.com/spf13/PIV "$PATHOGENFOLDER"/PIV
+git clone https://github.com/tpope/vim-surround "$PATHOGENFOLDER"/vim-surround
+wget https://raw.githubusercontent.com/xuhdev/vim-latex-live-preview/master/plugin/latexlivepreview.vim -O "$PATHOGENFOLDER"/latexlivepreview.vim
+git clone https://github.com/vim-latex/vim-latex "$PATHOGENFOLDER"/vim-latex
 
-mkdir -p $PATHOGENFOLDER/vim-snippets/snippets
-cd $PATHOGENFOLDER/vim-snippets/snippets
+git clone https://github.com/tomtom/tlib_vim.git "$PATHOGENFOLDER"/tlib_vim
+git clone https://github.com/MarcWeber/vim-addon-mw-utils.git "$PATHOGENFOLDER"/vim-addon-mw-utils
+git clone https://github.com/garbas/vim-snipmate.git "$PATHOGENFOLDER"/vim-snipmate
+git clone https://github.com/honza/vim-snippets.git "$PATHOGENFOLDER"/vim-snippets
+echo " " | tee -a "$VIMRC"
+echo "nnoremap <C-R><C-T> <Plug>snipMateTrigger" | tee -a "$VIMRC"
+echo "nnoremap <C-R><C-G> <Plug>snipMateNextOrTrigger" | tee -a "$VIMRC"
+mkdir -p "$PATHOGENFOLDER"/vim-snippets/snippets
+cd "$PATHOGENFOLDER"/vim-snippets/snippets
 git clone https://github.com/Chalarangelo/30-seconds-of-code/
 mv 30-seconds-of-code/test 30secJavaScript
 sudo rm -r 30-seconds-of-code
@@ -931,29 +964,30 @@ find . -iname "*py*" -exec rename .py .snippet '{}' \;
 cd ..
 cd
 
-git clone https://github.com/maralla/completor.vim $PATHOGENFOLDER/completor
+git clone https://github.com/maralla/completor.vim "$PATHOGENFOLDER"/completor
 sudo -H pip install jedi #completor for python
-echo "let g:completor_python_binary = '/usr/lib/python*/site-packages/jedi'" | tee -a $VIMRC
-git clone https://github.com/ternjs/tern_for_vim $PATHOGENFOLDER/tern_for_vim
-echo "let g:completor_node_binary = '/usr/bin/node'" | tee -a $VIMRC
-echo "let g:completor_clang_binary = '/usr/bin/clang'" | tee -a $VIMRC #c++
-git clone https://github.com/nsf/gocode $PATHOGENFOLDER/completor #go
-echo "let g:completor_gocode_binary = ' $PATHOGENFOLDER/gocode'"
-git clone https://github.com/maralla/completor-swift $PATHOGENFOLDER/completor-swift #swift
-cd $PATHOGENFOLDER/completor-swift
+echo "let g:completor_python_binary = '/usr/lib/python*/site-packages/jedi'" | tee -a "$VIMRC"
+git clone https://github.com/ternjs/tern_for_vim "$PATHOGENFOLDER"/tern_for_vim
+echo "let g:completor_node_binary = '/usr/bin/node'" | tee -a "$VIMRC"
+echo "let g:completor_clang_binary = '/usr/bin/clang'" | tee -a "$VIMRC" #c++
+git clone https://github.com/nsf/gocode "$PATHOGENFOLDER"/completor #go
+echo "let g:completor_gocode_binary = '$PATHOGENFOLDER/gocode'"
+git clone https://github.com/maralla/completor-swift "$PATHOGENFOLDER"/completor-swift #swift
+cd "$PATHOGENFOLDER"/completor-swift
 make
 cd
-echo "let g:completor_swift_binary = '$PATHOGENFOLDER/completor-swift'" | tee -a $VIMRC
+echo "let g:completor_swift_binary = '$PATHOGENFOLDER/completor-swift'" | tee -a "$VIMRC"
 
 #Vim portability for ssh (sshrc)
 wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc && sudo chmod -R 600 sshrc && chmod +x sshrc && sudo mv sshrc /usr/local/bin
 
 vimfunctions(){
-echo "### Tools ###"    
+echo "### Tools ###"
+echo "cscope: Browsing tool similar to ctags, Ctrl+\ "
 echo "ack: Search tool, :grep=:ack=:ag :grepadd=:ackadd, :lgrep=LAck, and :lgrepadd=:LAckAdd (see all options with :ack ?)"
 echo "bufexplorer: See and manage the current buffers(,o)"
 echo "mru: Recently open files (,f)"
-echo "ctrlp: Find file or a buffer(,j or c-f)" 
+echo "ctrlp: Find file or a buffer(,j or c-f)"
 echo "Nerdtree and openfile under cursor: Treemaps (,nn toggle and ,nb bookmark and ,nf find, gf go open file under cursor)"
 echo "Goyo.vim and vim-zenroom2: Removes all the distractions (,z)"
 echo ":w (,w)"
@@ -977,7 +1011,7 @@ echo "### Syntax ###"
 echo "vim-polyglot: (you can deactivate some using echo \"let g:polyglot_disabled = ['css']\"| sudo tee -a /usr/share/vim/vimrc) syntax, indent, ftplugin and other tools for ansible apiblueprint applescript arduino asciidoc blade c++11 c/c++ caddyfile cjsx clojure coffee-script cql cryptol crystal css cucumber dart dockerfile elixir elm emberscript emblem erlang fish git glsl gnuplot go graphql groovy haml handlebars haskell haxe html5 i3 jasmine javascript json  jst jsx julia kotlin  latex  less  liquid  livescript  lua  mako  markdown  mathematica nginx  nim  nix  objc ocaml octave opencl perl pgsql php plantuml powershell protobuf pug puppet purescript python-compiler python  qml  r-lang racket  ragel raml rspec ruby rust sbt scala scss slim solidity stylus swift sxhkd systemd terraform textile thrift tmux tomdoc toml twig typescript vala vbnet vcl vm vue xls yaml yard"
 echo ""
 echo "### Snippets ###"
-echo "snipmate: Alternative to ultisnips for snippets depending the filetype (TAB for example)" 
+echo "Ultisnips: The ultimate snippet solution for Vim (needs Python, alike snipmate): :helptags ~/.vim/ultisnips_rep/doc :help UltiSnips"
 echo "30 seconds of X: Javascript and Python3 snippets"
 echo ""
 echo "### Syntastics and linters ###"
@@ -1000,7 +1034,7 @@ echo "vim-hooks: (:ListVimHooks :ExecuteHookFiles :StopExecutingHooks :StartExec
 echo "neocomplcache: Completion from cache (:NeoComplCacheEnable :NeoComplCacheDisable)"
 echo "vim-surround: Surrounding completion (:help surround cs\"\' -changes surrounding \" for \'- ds -delete surronding- cst<html> -surrounds with html tag- yss) -add parenthesis whole line-)"
 }
-echo vimfunctions >> $PATHOGENFOLDER/README
+echo vimfunctions >> "$PATHOGENFOLDER"/README
 
 ##Git
 sudo pacman -S git --noconfirm --needed
@@ -1025,7 +1059,7 @@ gpgg="${gpgg=gpg2}"
 read -p "Do you want to create a new gpg key for git?: " creategitkey
 creategitkey="${creategitkey=N}"
 case "$creategitkey" in
-    [yY][eE][sS]|[yY]) 
+    [yY][eE][sS]|[yY])
         $gpgg --full-gen-key --expert
 	$gpgg --list-keys
         ;;
@@ -1042,7 +1076,7 @@ git config --list
 time 5
 echo "Here you are an excellent Git cheatsheet https://raw.githubusercontent.com/hbons/git-cheat-sheet/master/preview.png You can also access as gitsheet"
 echo "If you get stuck, run ‘git branch -a’ and it will show you exactly what’s going on with your branches. You can see which are remotes and which are local."
-echo "Do not forget to add a newsshkey or clipboard your mysshkey or mylastsshkey (if you switchsshkey before) and paste it on Settings -> New SSH key and paste it there." 
+echo "Do not forget to add a newsshkey or clipboard your mysshkey or mylastsshkey (if you switchsshkey before) and paste it on Settings -> New SSH key and paste it there."
 
 ### Tmux ###
 sudo pacman -S tmux  --noconfirm --needed
@@ -1071,32 +1105,33 @@ cd ..
 ### Tools ###
 #Network tools
 sudo pacman -S traceroute nmap arp-scan conntrack-tools --noconfirm --needed
-yaourt -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --needed
+aurman -S wireshark-cli wireshark-common wireshark-qt ostinato --noconfirm --needed
 sudo pacman -S hcxtools hcxdumptool hashcat --noconfirm --needed
 sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' /usr/sbin/dumpcap #wireshark permissions
 sudo  gpasswd -a $USER wireshark
-yaourt -S slurm nethogs --noconfirm #tops
+aurman -S slurm nethogs --noconfirm #tops
 
 #Backups
-sudo pacman -S duplicity deja-dup borg --noconfirm --needed 
+sudo pacman -S duplicity deja-dup borg --noconfirm --needed
 
 #Disk tools
 sudo pacman -S gparted hdparm --noconfirm --needed
-yaourt deskcon filecast obexfs --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
+aurman deskcon filecast obexfs --noconfirm --needed #filesharing: wifiserver with apk, qrwifi, bluetooth
 sudo pacman -S baobab ncdu --noconfirm --needed #prefered over QDirStat which is prefered over gdmap
 
 #Office
 wget https://raw.githubusercontent.com/abueesp/Scriptnstall/master/.bc #My programmable calc
 sudo pacman -S libreoffice grc unoconv detox pandoc hunspell plotutils --noconfirm --needed #Text tools
-yaourt -S evince-no-gnome --noconfirm --needed
+aurman -S evince-no-gnome --noconfirm --needed
 sudo pacman -S xmlstarlet jq datamash bc gawk mawk --noconfirm --needed #XML and jquery #wc join paste cut sort uniq
 sudo pacman -S blender --noconfirm --needed
 sudo pacman -S krita --noconfirm --needed
-yaourt -S bashblog-git --noconfirm #blog
-#yaourt -S ganttproject --noconfirm #gantt
+aurman -S bashblog-git --noconfirm #blog
+#aurman -S ganttproject --noconfirm #gantt
 wget http://staruml.io/download/releases/StarUML-3.0.2-x86_64.AppImage #uml
 sudo chmod +x StarUML*.AppImage
 sudo mv StarUML*.AppImage /bin/staruml
+sudo pacman -S gucharmap --noconfirm --needed #+200B
 
 #Other tools
 sudo pacman -S brasero archiso --noconfirm --needed
@@ -1137,11 +1172,18 @@ sudo pacman -S colordiff kompare --noconfirm --needed
 sudo pacman -S perl-image-exiftool --noconfirm --needed #image metadata
 #echo 'alias repeatmouse="java -jar /usr/src/repeat.jar"' | tee -a ~/.bashrc
 #echo 'alias matimg="exiftool -exif:all="' | tee -a ~/.bashrc
+alias icecat="firejail --x11=xephyr /bin/./icecat --profile /opt/icecat/profiles"
 
 ### Browsers ###
 #Flash
 sudo pacman -Rc flashplugin pepper-flash --noconfirm
-yaourt -S lightspark-git --noconfirm --needed
+aurman -S lightspark-git --noconfirm --needed
+
+#Qutebrowser
+sudo pacman -S qutebrowser --noconfirm --needed #Better than luakit or lariza
+mkdir -p ~/.local/share/qutebrowser/
+mkdir -p ~/.local/share/qutebrowser/monkeyscripts/
+wget https://github.com/ParticleCore/Iridium/raw/master/src/Userscript/Iridium.user.js -O ~/.local/share/qutebrowser/monkeyscripts/Iridium.user.js
 
 #Firefox
 sudo pacman -S firefox --noconfirm --needed
@@ -1150,6 +1192,7 @@ mkdir -p extensions
 cd extensions
 mkdir tools
 cd tools
+wget https://tridactyl.cmcaine.co.uk/betas/tridactyl-latest.xpi -O tridactyl.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/910464/tab_session_manager-3.1.0-an+fx-linux.xpi -O TabSessionManager.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/355192/addon-355192-latest.xpi -O MindTheTime.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/1843/addon-1843-latest.xpi -O Firebug.xpi
@@ -1171,7 +1214,7 @@ wget https://addons.mozilla.org/firefox/downloads/file/839942/startpagecom_priva
 wget https://addons.mozilla.org/firefox/downloads/file/706680/google_redirects_fixer_tracking_remover-3.0.0-an+fx.xpi GoogleRedirectFixer.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/727843/skip_redirect-2.2.1-fx.xpi -O SkipRedirect.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/1003544/user_agent_switcher-1.2.1-an+fx.xpi -O UserAgentSwitcher.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/808841/addon-808841-latest.xpi -O AdblockPlus.xpi 
+wget https://addons.mozilla.org/firefox/downloads/file/808841/addon-808841-latest.xpi -O AdblockPlus.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/497366/addon-497366-latest.xpi -O DisableWebRTC.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/92079/addon-92079-latest.xpi -O CookieManager.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/383235/addon-383235-latest.xpi -O FlashDisable.xpi
@@ -1213,7 +1256,8 @@ wget https://addons.mozilla.org/firefox/downloads/latest/5791/addon-5791-latest.
 wget https://addons.mozilla.org/en-US/firefox/downloads/latest/2109/addon-2109-latest.xpi -O FEBEBackups.xpi
 #wget https://addons.mozilla.org/firefox/downloads/latest/363974/addon-363974-latest.xpi -O Lightbeam.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/tabletools2/addon-296783-latest.xpi -O TableTools2.xpi
-wget https://addons.mozilla.org/firefox/downloads/latest/748/addon-748-latest.xpi -O Greasemonkey.xpi
+wget https://addons.mozilla.org/firefox/downloads/file/1166965/violentmonkey-2.10.0-an+fx.xpi -O Violentmonkey.xpi
+wget https://github.com/ParticleCore/Iridium/raw/master/src/Userscript/Iridium.user.js
 wget https://addons.mozilla.org/firefox/downloads/latest/7447/addon-7447-latest.xpi -O NetVideoHunter.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/1237/addon-1237-latest.xpi -O QuickJava.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/502726/colorfultabs-31.0.8-fx+sm.xpi -O ColorfulTabs.xpi
@@ -1229,7 +1273,7 @@ wget https://addons.mozilla.org/firefox/downloads/latest/390151/addon-390151-lat
 wget https://addons.mozilla.org/firefox/downloads/latest/3456/addon-3456-latest.xpi -O WOT.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/140447/cryptofox-2.2-fx.xpi -O CryptoFox.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/copy-as-plain-text/addon-344925-latest.xpi -O CopyasPlainText.xpi
-wget https://addons.mozilla.org/firefox/downloads/file/229626/sql_inject_me-0.4.7-fx.xpi 
+wget https://addons.mozilla.org/firefox/downloads/file/229626/sql_inject_me-0.4.7-fx.xpi
 wget https://addons.mozilla.org/firefox/downloads/file/215802/rightclickxss-0.2.1-fx.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/3899/addon-3899-latest.xpi -O HackBar.xpi
 wget https://addons.mozilla.org/firefox/downloads/latest/wappalyzer/addon-10229-latest.xpi -O Wappanalyzer.xpi
@@ -1253,7 +1297,7 @@ rm -r ~/.mozilla/firefox/*.default/datareporting/*
 rm -r ~/.mozilla/firefox/*.default/saved-telemetry-pings/
 rm ~/.mozilla/firefox/*.default/SiteSecurityServiceState.txt
 echo 'user_pref("privacy.popups.disable_from_plugins", 3);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
-#vim -c ':%s/user_pref("browser.search.countryCode".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js 
+#vim -c ':%s/user_pref("browser.search.countryCode".*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
 #vim -c ':%s/user_pref("browser.search.region.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js #timezone
 echo 'user_pref("privacy.resistFingerprinting", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("privacy.resistFingerprinting.block_mozAddonManager", true);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #deactivates caching in memory areas of the working memory
@@ -1413,8 +1457,8 @@ echo 'user_pref("urlclassifier.disallow_completions", true);' | tee -a ~/.mozill
 echo 'user_pref("urlclassifier.gethashnoise", 9);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("urlclassifier.gethash.timeout_ms", 3);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("urlclassifier.max-complete-age", 3600);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
-echo 'user_pref("dom.storage.default_quota", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #DOM Storage and issues a warning if more than 1 Kb is to be saved 
-echo 'user_pref("offline-apps.quota.warn", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js 
+echo 'user_pref("dom.storage.default_quota", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #DOM Storage and issues a warning if more than 1 Kb is to be saved
+echo 'user_pref("offline-apps.quota.warn", 1);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 echo 'user_pref("browser.cache.memory.enable", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js #deactivates caching in memory areas of the working memory
 echo 'user_pref("extensions.getAddons.showPane", false);' | tee -a ~/.mozilla/firefox/*.default/prefs.js
 vim -c ':%s/user_pref("extensions.getAddons.cache.lastUpdate.*;//g' -c ":wq" ~/.mozilla/firefox/*.default/prefs.js
@@ -1474,7 +1518,7 @@ echo 'user_pref("extensions.formautofill.section.enabled", false);' | tee -a ~/.
 ### END FIREFOX PREFERENCES ###
 
 #Icecat
-yaourt -S icecat-bin --noconfirm --needed
+aurman -S icecat-bin --noconfirm --needed
 
 #Opera
 sudo pacman -S opera opera-developer --noconfirm --needed
@@ -1492,13 +1536,14 @@ sudo pacman -S chromium --noconfirm --needed
 #HASH=$(echo $CREATEHASH | head -n1 | sed -e 's/\s.*$//')
 #HASHPREF=$(echo $HASH | awk '{print toupper($0)}')
 #vim -c ":%s/"super_mac":".*"}}/"super_mac":"$HASHPREF"}}/g' -c ":wq" ~/.config/chromium/Default/'Secure Preferences'
+chromium https://chrome.google.com/webstore/detail/cvim/ihlenndgcmojhcghmfjfneahoeklbjjh
 chromium https://chrome.google.com/webstore/detail/url-tracking-stripper-red/flnagcobkfofedknnnmofijmmkbgfamf
 chromium https://chrome.google.com/webstore/detail/dont-track-me-google/gdbofhhdmcladcmmfjolgndfkpobecpg
 chromium https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
 chromium https://chrome.google.com/webstore/detail/adblock/gighmmpiobklfepjocnamgkkbiglidom
 chromium https://chrome.google.com/webstore/detail/session-buddy/edacconmaakjimmfgnblocblbcdcpbko
 chromium https://chrome.google.com/webstore/detail/project-naptha/molncoemjfmpgdkbdlbjmhlcgniigdnf
-chromium https://chrome.google.com/webstore/detail/auto-form-filler/cfghpjmgdnienmgcajbmjjemfnnmldlh 
+chromium https://chrome.google.com/webstore/detail/auto-form-filler/cfghpjmgdnienmgcajbmjjemfnnmldlh
 chromium https://chrome.google.com/webstore/detail/autoform/fdedjnkmcijdhgbcmmjdogphnmfdjjik
 chromium https://chrome.google.com/webstore/detail/m-i-m/jlppachnphenhdidmmpnbdjaipfigoic
 chromium https://chrome.google.com/webstore/detail/librarian-for-arxiv-ferma/ddoflfjcbemgfgpgbnlmaedfkpkfffbm
@@ -1507,6 +1552,7 @@ chromium https://chrome.google.com/webstore/detail/ciiva-search/fkmanbkfjcpkhonm
 chromium https://chrome.google.com/webstore/detail/video-downloadhelper/lmjnegcaeklhafolokijcfjliaokphfk
 chromium https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg
 chromium https://blockchain-dns.info/files/BDNS-1.0.8.crx
+#$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/cvim/ihlenndgcmojhcghmfjfneahoeklbjjh
 #$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/lovely-forks/ialbpcipalajnakfondkflpkagbkdoib
 #$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octotree/bkhaagjahfmjljalopjnoealnfndnagc
 #$IRONFOLDER/./chrome https://chrome.google.com/webstore/detail/octolinker/jlmafbaeoofdegohdhinkhilhclaklkp
@@ -1520,14 +1566,14 @@ chromium https://blockchain-dns.info/files/BDNS-1.0.8.crx
 #$IRONFOLDER/./chrome  https://chrome.google.com/webstore/detail/restlet-client-rest-api-t/aejoelaoggembcahagimdiliamlcdmfm?hl=pt-PT
 
 #Icecat
-sudo yaourt -S icecat-bin --noconfirm --needed
+sudo aurman -S icecat-bin --noconfirm --needed
 
 #Elinks terminal browser
 sudo pacman -S elinks --noconfirm --needed
 
 #Tor-browser
 LANGUAGE=$(locale | grep LANG | cut -d'=' -f 2 | cut -d'_' -f 1)
-yaourt -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
+aurman -S "tor-browser-$LANGUAGE" --needed --noconfirm --noedit
 
 ### Python ###
 sudo pacman -S python python3 --noconfirm --needed
@@ -1574,7 +1620,7 @@ sudo pacman -S weechat hexchat --noconfirm --needed
 
 #Intranet
 gpg2 --keyserver pgp.mit.edu --recv-key B92A5F04EC949121
-yaourt -S beebeep --noconfirm --needed
+aurman -S beebeep --noconfirm --needed
 gpg2 --delete-secret-and-public-keys --batch --yes B92A5F04EC949121
 
 #Videocalls
@@ -1583,12 +1629,12 @@ sudo pacman -S libringclient ring-daemon ring-gnome --noconfirm --needed
 #Messaging
 sudo pacman -S keybase keybase-gui --noconfirm --needed
 rm ~/.config/autostart/keybase_autostart.desktop #no autostart
-#yaourt -S jitsi --noconfirm --needed
-#yaourt -S qtox --noconfirm --needed
-#yaourt -S pybitmessage --noconfirm --needed
+#aurman -S jitsi --noconfirm --needed
+#aurman -S qtox --noconfirm --needed
+#aurman -S pybitmessage --noconfirm --needed
 
 #All-in-a-box
-yaourt -S rambox-bin --noconfirm --needed
+aurman -S rambox-bin --noconfirm --needed
 
 ### Rootkit checking and Audits ###
 #Unhide
@@ -1621,8 +1667,8 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 #for mail check https://wiki.archlinux.org/index.php/Systemd/Timers#MAILTO' |  sudo tee /etc/systemd/system/unhide.timer
-sudo chmod u+rwx /etc/systemd/system/unhide.timer 
-sudo chmod go-rwx /etc/systemd/system/unhide.timer 
+sudo chmod u+rwx /etc/systemd/system/unhide.timer
+sudo chmod go-rwx /etc/systemd/system/unhide.timer
 
 #Rkhunter
 echo "Rkhunter — Checks machines for the presence of rootkits and other unwanted tools."
@@ -1649,7 +1695,7 @@ sudo pacman -S lynis --noconfirm --needed
 sudo lynis audit system
 
 #Tiger
-echo "Tiger — Security tool that can be use both as a security audit and intrusion detection system. http://www.nongnu.org/tiger/" 
+echo "Tiger — Security tool that can be use both as a security audit and intrusion detection system. http://www.nongnu.org/tiger/"
 aurman -S tiger --needed --noconfirm --noedit
 sudo vim -c ":%s.which ypcat.which ypcat 2>/dev/null.g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
 sudo vim -c ":%s.which niscat.which niscat 2>/dev/null|g" -c ":wq" /usr/share/tiger/systems/default/gen_passwd_sets #only for dns/ldap servers
@@ -1666,8 +1712,8 @@ sudo pacman -Qq | sudo paccheck --sha256sum --quiet
 
 ### Extras ###
 #Firmware
-yaourt -S epson-inkjet-printer-escpr --noconfirm --needed
-#yaourt -S wd719x-firmware aic94xx --noconfirm --needed
+aurman -S epson-inkjet-printer-escpr --noconfirm --needed
+#aurman -S wd719x-firmware aic94xx --noconfirm --needed
 
 #Frugalware
 #wget http://www13.frugalware.org/pub/frugalware/frugalware-stable-iso/fvbe-2.1-gnome-x86_64.iso

@@ -1,12 +1,12 @@
+#!/usr/bin/env bash
 ### Default Editor ###
-EDITOR=vi
-FCEDIT=vi
+export EDITOR=vim
 stty -ixon #Avoid Software Flow Control (XON/XOFF flow control) or Vim freezed with C-s/C-q
 #stty -ixoff #activate f.i. C-S and C-Q
 
 ###For bc
 #export BC_ENV_ARGS=$HOME/.bc #start it with bc -l ~/.bc
-alias superbc="bc -l $HOME/.bc"
+alias superbc="bc -l ~/.bc"
 alias calc=superbc
 
 ### History ###
@@ -23,28 +23,23 @@ alias shist="history | grep"
 alias savehist="history | cut -c 28- | tee -a hist.sh"
 
 ## Welcome Screen & Colors ###
-color_def="~/.colorrc"
-if [[ -f $color_def ]]; then
-   . $color_def
-else
-   # color definitions
-   black="$(tput setaf 0)"
-   darkgrey="$(tput bold ; tput setaf 0)"
-   lightgrey="$(tput setaf 7)"
-   white="$(tput bold ; tput setaf 7)"
-   red="$(tput bold ; tput setaf 1)"
-   lightred="$(tput setaf 1)"
-   green="$(tput bold ; tput setaf 2)"
-   lightgreen="$( tput setaf 2)"
-   yellow="$(tput setaf 3)"
-   blue="$(tput bold ;tput setaf 4)"
-   lightblue="$(tput setaf 4)"
-   purple="$(tput bold ;tput setaf 5)"
-   pink="$(tput setaf 5)"
-   cyan="$(tput bold ;tput setaf 6)"
-   lightcyan="$(tput setaf 6)"
-   nc="$(tput sgr0)" # no color
-fi
+# color definitions
+black="$(tput setaf 0)"
+darkgrey="$(tput bold ; tput setaf 0)"
+lightgrey="$(tput setaf 7)"
+white="$(tput bold ; tput setaf 7)"
+red="$(tput bold ; tput setaf 1)"
+lightred="$(tput setaf 1)"
+green="$(tput bold ; tput setaf 2)"
+lightgreen="$( tput setaf 2)"
+yellow="$(tput setaf 3)"
+blue="$(tput bold ;tput setaf 4)"
+lightblue="$(tput setaf 4)"
+purple="$(tput bold ;tput setaf 5)"
+pink="$(tput setaf 5)"
+cyan="$(tput bold ;tput setaf 6)"
+lightcyan="$(tput setaf 6)"
+nc="$(tput sgr0)" # no color to stop
 export darkgrey lightgreywhite red lightred green lightgreen yellow blue
 export lightblue purple pink cyan lightcyan nc
 if [[ ! $level_color ]]; then
@@ -387,113 +382,68 @@ fi
  echo " done."
 }
 
-gitupload() {
-  
+gitupload() { 
 ###INTRODUCE EMAIL
-  read -p "Introduce tu email o pulsa ENTER si ya lo hiciste: " _email
-   if [ -z "$_email" ]
-     then
-	_email=$(git config --global user.email)
-##verif
- if [ "$_email" = "" ]; then
- echo "Could not find email, run 'git config --global github.email <email>'"
- invalid_credentials=1
-else
+read -p "Introduce tu email o pulsa ENTER si ya lo hiciste: " _email
+if [ -z "$_email" ]
+  then
+  git config --global user.email $_email
+  _email=$(git config --global user.email)
+fi
 echo "Your current email set is $_email"
- fi
-     else
-	 git config --global user.email $_email
-	_email=$(git config --global user.email)
-##verif
- if [ "$_email" = "" ]; then
- echo "Could not find email, run 'git config --global github.email <email>'"
- invalid_credentials=1
-else
-echo "Your current email set is $_email"
- fi
 
 ####INTRODUCE USERNAME
-fi 
-  read -p "Introduce tu username o pulsa ENTER si ya lo hiciste: " _username
-    if [ -z "$_username" ]
-     then
-	_username=$(git config --global user.name)
-##verif
- if [ "$_username" = "" ]; then
- echo "Could not find username, run 'git config --global github.user <username>'"
- invalid_credentials=1
-else
-echo "Your current username set is $_username"
- fi 
-     else
-	 git config --global user.name $_username
-	_username=$(git config --global user.name)
-##verif
- if [ "$_username" = "" ]; then
- echo "Could not find username, run 'git config --global github.user <username>'"
- invalid_credentials=1
-else
-echo "Your current username set is $_username"
- fi 
+
+read -p "Introduce tu username o pulsa ENTER si ya lo hiciste: " _username
+if [ -z "$_username" ]
+  then
+ _username=$(git config --global user.name)
 fi
+echo "Your current username set is $_username"
 
 ####INTRODUCE TOKEN
-  read -p "Introduce tu token o pulsa ENTER si ya lo hiciste: " _token
-    if [ -z "$_token" ]
-     then
-	_token=$(git config --global user.token)
-##verif
- if [ "$_token" = "" ]; then
- echo "Could not find token, run 'git config --global github.token <token>'"
- invalid_credentials=1
+read -p "Introduce tu token o pulsa ENTER si ya lo hiciste: " _token
+  if [ -z "$_token" ]
+   then
+   _token=$(git config --global user.token)
+   echo "Your current token set is $_token"
 else
-echo "Your current token set is $_token"
- fi 
-     else
-	 git config --global user.token $_token
-	_token=$(git config --global user.token)
-##verif
- if [ "$_token" = "" ]; then
- echo "Could not find token, run 'git config --global github.token <token> and check https://help.github.com/articles/creating-an-access-token-for-command-line-use/'"
- invalid_credentials=1 
-else
-echo "Your current token set is $_token"
- fi 
+   echo "Could not find token, run 'git config --global github.token <token> and check https://help.github.com/articles/creating-an-access-token-for-command-line-use/'"
+fi
+
+####INTRODUCE NOMBRE DEL REPO
+repo_name=$1
+dir_name='basename $(pwd)'
+if [ "$repo_name" = "" ]; then
+  echo "Introduce el nombre del repositorio o pulsa ENTER si quieres llamarlo  '$dir_name' y asegúrate de tener un repositorio creado en Github con el mismo nombre en https://github.com/$_username?tab=repositories"
+  read repo_name
+fi
+if [ "$repo_name" = "" ]; then
+  repo_name=$dir_name
+  echo "El nombre de tu respositorio es '$repo_name'"
 fi
  
- if [ "$invalid_credentials" == "1" ]; then
- echo "There was a credentials error. Please introduce your credentials"
- return
- fi
+##CHOOSE AND UPLOAD FILES
+read -p "Introduce los archivos a subir separados por espacios o escribe ** si son todos los de la carpeta en la que estás: " _files
+git add $_files  #FROM WORKSPACE TO INDEX
+echo "Tus archivos para subir son $_files"
+ 
+##COMMIT COMENTARIO
+read -p "Introduce un título para el commit o pulsa ENTER si quieres que sea 'This is my commit'" titlecommit
+titledefault="This is my commit"
+if [ "$titlecommit" = "" ]; then
+  read -p "Introduce un título para el commit o pulsa ENTER si quieres que sea 'This is my commit'" titlecommit
+fi
+if [ "$titlecommit" = "" ]; then
+  titlecommit=$titledefault
+fi
 
- repo_name=$1
- dir_name='basename $(pwd)'
- if [ "$repo_name" = "" ]; then
- echo "Introduce el nombre del repositorio o pulsa ENTER si quieres llamarlo  '$dir_name' y asegúrate de que tienes un repositorio creado en Github con el mismo nombre en https://github.com/$_username?tab=repositories"
- read repo_name
- fi
- if [ "$repo_name" = "" ]; then
- repo_name=$dir_name
- fi
- 
- ###CHOOSE AND UPLOAD FILES
-  read -p "Introduce los archivos a subir separados por espacios o escribe ** si son todos los de la carpeta en la que estás: " _files
-  git add $_files  #FROM WORKSPACE TO INDEX
- 
-  ##commit title
-   titlecommit=$1
- titledefault="This is my commit"
- if [ "$titlecommit" = "" ]; then
- echo "Introduce un título para el commit o pulsa ENTER si quieres que sea 'This is my commit'"
- read titlecommit
- fi
- if [ "$titlecommit" = "" ]; then
- titlecommit=$titledefault
- fi
- 
-  git commit -m "$titlecommit" $_files #FROM INDEX TO LOCAL REPOSITORY
-  url="https://www.github.com/$_username/$repo_name"
-  git push origin master #FROM LOCAL REPOSITORY TO REMOTE REPOSITORY
+#COMITEANDO DEL INDICE AL REPO LOCAL
+git commit -m "$titlecommit" $_files #FROM INDEX TO LOCAL REPOSITORY
+url="https://www.github.com/$_username/$repo_name"
+
+#PUSHEANDO DEL REPO LOCAL AL REPO REMOTO
+git push origin master
 }
 
 usbro() { 
@@ -724,8 +674,8 @@ echo "monitorizando modificaciones de ruta"
 watch -d -n 60 'sudo ls $ruta -rtlhR | tail'
 }
 alias usermon="ls -l /bin/su; loginctl; sudo dmidecode -s system-serial-number; sudo loginctl; sudo uptime; sudo id; sudo users; sudo cat /etc/sudoers; sudo cat /etc/shadow; sudo groups; sudo cat /etc/group; sudo w; sudo who -a; sudo ipcs -m -c; pwd; sudo chfn; sudo last; read -p 'Do you want to see the processes of some user? Introduce username:' \$regus; ps -LF -u \$regus; echo 'Pure honey. Now all your bases belong to us' | percol 20 > wall"
-alias sysmon="cat /proc/cpuinfo; lspci -nn; echo 'TEMPERATURE: ACPI | Skylake | CPU | Wifi (more info install lm_sensors, and run: sudo sensors-detect; sensors)'; journalctl -p 3 -xb; sudo dmidecode; lsb_release -a; uname -a; id; sudo id; sudo lshw; lscpu; sleep 4; sudo htop; sudo ncdu; watch -n 2 free -m; logname; hostname; ipcs -m -c; sudo logname; sudo ipcs; sudo initctl list; systemctl status; cat /proc/uptime; sudo df -h;  sudo dmesg | less; ipcs -u; sudo service --status-all; sudo atop; sudo iotop; sudo w -i; sudo dmidecode; sudo ps -efH | more; sudo lsof | wc -l; sudo lsof; ps aux | sort -nk +4 | tail; sudo pstree -p -s -S -u -Z -g -h; sudo ss; sudo dpkg -l; sudo dstat -a -f; systemctl --all; systemctl --all --failed; systemctl list-unit-files --all; systemctl list-units | grep service; sudo perf top -F 49 --sort comm,dso" #htop is better than top and glances, but atop is more complete and iotop gives i/o (iftop is for network)
-alias netmon="sudo conntrack -E; ifconfig -a; nmcli dev show; read -p 'Introduce interface to know with whom you are sharing the local network: ' INTER; sudo iftop -i $INTER; sudo arp-scan -R --localnet --interface='$INTER' --localnet; sudo nethogs -a; slurm -i $INTER; rfkill list; nmcli general; nmcli device; nmcli connection; curl ipinfo.io; sudo netstat -tulpn; sudo vnstat; sudo netstat -ie | more -s  -l -d -f; sudo netstat -s | more -s  -l -d -f; sudo netstat -pt | more -s  -l -d -f; sudo tcpstat -i $INTER -l -a; sudo iptables -S; sudo w -i; sudo ipcs -u; sudo tcpdump -i $INTER; sudo iotop; sudo ps; sudo netstat -r; dig google.com; dig duckduckgo.com; echo 'Traceroute google.com'; traceroute google.com; echo 'Traceroute duckduckgo.com'; traceroute duckduckgo.com; echo 'En router ir a Básica -> Estado -> Listado de equipos; nmtui'; sudo ufw status verbose; sudo ls /etc/NetworkManager/system-connections/; avahi-browse -alr; sudo journalctl -afb -p info SYSLOG_FACILITY=4 SYSLOG_FACILITY=10; iwlist $INTER scanning"
+alias sysmon="cat /proc/cpuinfo; lspci -nn; echo 'TEMPERATURE: ACPI | Skylake | CPU | Wifi (more info install lm_sensors, and run: sudo sensors-detect; sensors)'; journalctl -p 3 -xb; sudo dmidecode; lsb_release -a; uname -a; id; sudo id; sudo lshw; lscpu; sleep 4; sudo htop; sudo ncdu; watch -n 2 free -m; logname; hostname; ipcs -m -c; sudo logname; sudo ipcs; sudo initctl list; systemctl status; cat /proc/uptime; sudo df -h;  sudo dmesg | less; ipcs -u; sudo service --status-all; sudo atop; sudo iotop; sudo w -i; sudo dmidecode; sudo ps -efH | more; sudo lsof | wc -l; sudo lsof; ps aux | sort -nk +4 | tail; sudo pstree -p -s -S -u -Z -g -h; sudo ss; sudo dpkg -l; sudo dstat -a -f; systemctl --all; systemctl --all --failed; systemctl list-unit-files --all; systemctl list-units | grep service; sudo perf top -F 49 --sort comm,dso; xlsclients; sudo ps -A --forest; sudo perf record -F 99 -a -g -- sleep 60 && echo 'try -flameit- to see full perf and -journalctl -f- to follow journal'" #htop is better than top and glances, but atop is more complete and iotop gives i/o (iftop is for network)
+alias netmon="sudo sysctl -a --deprecated; sudo conntrack -E; ifconfig -a; nmcli dev show; read -p 'Introduce interface to know with whom you are sharing the local network: ' INTER; sudo iftop -i $INTER; sudo arp-scan -R --localnet --interface='$INTER' --localnet; sudo nethogs -a; slurm -i $INTER; rfkill list; nmcli general; nmcli device; nmcli connection; curl ipinfo.io; sudo netstat -tulpn; sudo vnstat; sudo netstat -ie | more -s  -l -d -f; sudo netstat -s | more -s  -l -d -f; sudo netstat -pt | more -s  -l -d -f; sudo tcpstat -i $INTER -l -a; sudo iptables -S; sudo w -i; sudo ipcs -u; sudo tcpdump -i $INTER; sudo iotop; sudo ps; sudo netstat -r; dig google.com; dig duckduckgo.com; echo 'Traceroute google.com'; traceroute google.com; echo 'Traceroute duckduckgo.com'; traceroute duckduckgo.com; echo 'En router ir a Básica -> Estado -> Listado de equipos; nmtui'; sudo ufw status verbose; sudo ls /etc/NetworkManager/system-connections/; avahi-browse -alr; sudo journalctl -afb -p info SYSLOG_FACILITY=4 SYSLOG_FACILITY=10; iwlist $INTER scanning"
 alias portmon="cat /etc/services; sudo nc -l -6 -4 -u; sudo ss -o state established; sudo ss -l; sudo netstat -avnp -e; sudo netstat -pan -A inet,inet6"
 alias vpnmon="firefox --new-tab https://www.dnsleaktest.com/results.html --new-tab http://www.nothingprivate.ml --new-tab http://ipmagnet.services.cbcdn.com/ --new-tab https://whoer.net/#extended --new-tab https://ipleak.net/ --new-tab https://ipx.ac/run --new-tab https://browserleaks.com --new-tab http://www.useragentstring.com/ --new-tab http://ip-check.info --new-tab https://panopticlick.eff.org"
 alias webmon="firefox --new-tab https://who.is/ && firefox --new-tab https://searchdns.netcraft.com/ && firefox -new-tab https://www.shodan.io/ && firefox -new-tab web.archive.org && firefox -new-tab https://validator.w3.org/ && firefox -new-tab https://geekflare.com/online-scan-website-security-vulnerabilities/"
@@ -735,8 +685,18 @@ alias cleanall="echo 'Cleaning temp, presets, browsers data, memory, cache and s
 alias clenexcept="sudo apt-get install bleachbit -y; bleachbit -list; read -p 'Write the name of what you DO NOT want to clean (f.i. firefox -e chromium.history -e password...)' UNCLEANN; bleachbit --list | grep -E "[a-z]+\.[a-z]+" | grep -v -e UNCLEANN | xargs sudo bleachbit --clean; sudo apt-get purge bleachbit -y"
 alias cleanmem="echo 'Cleaning memory, cache and swap'; sudo sh -c $(which echo) 3 > sudo /proc/sys/vm/drop_caches; sudo free"
 
+flameit(){
+if [ -f perf.svg ]
+	then
+	sudo perf script | stackcollapse-perf > out.perf-folded
+	flamegraph out.perf-folded > perf.svg && rm out.perf-folded
+	 $(cat /home/$USER/.local/share/applications/$(xdg-mime query default $(xdg-mime query filetype 'perf.svg')) | awk 'NR==6' | sed 's/Exec=//g') ./perf.svg && rm ./perf.svg
+fi
+}
+
 ### Aliases ###
-alias handmath="firefox --new-tab http://webdemo.myscript.com/views/math.html"
+alias math="firefox --new-tab http://webdemo.myscript.com/views/math.html"
+alias dateformat="date '+%Y-%m-%d'"
 alias visiblemodeon="sudo hciconfig hci0 piscan"
 alias visiblemodeoff="sudo hciconfig hci0 noscan"
 alias flightmodeon="nmcli networking off"
@@ -812,7 +772,7 @@ alias pdf2txt='ls * | sudo xargs -n1 pdftotext'
 alias hardlinks="sudo find / -links +2 -type f -exec ls -li {} \ "
 alias softlinks="sudo find /etc -type l -exec ls -li {} \ "
 alias bashrc='~./bashrc'
-alias sustituye='echo "puedes usar echo “palabra“ | tr a e para “pelebre“ o iconv -f utf-8 -t <tab> file.txt para input conversion o echo “Σολαρις”| uconv -x Greek-Latin -f utf-8 -t utf-8 que da “Solaris“ o sed o vimsubs'
+alias sustituye='echo "puedes usar echo “palabra“ | tr a e para “pelebre“ o iconv -f utf-8 -t <tab> file.txt para input conversion o echo “Σολαρις"| uconv -x Greek-Latin -f utf-8 -t utf-8 que da “Solaris“ o sed o vimsubs'
 alias protect="read -p 'Which file/directory do you want to protect?' THIS; getfalc -R $THIS > $THIS-prev-permissions.txt; sudo chattr +i $THIS; sudo chmod -R 600 $THIS; sudo chown -R root:root $THIS"
 alias unprotect="read -p 'Which file/directory do you want to unprotect?' THIS; sudo chattr -i $THIS; sudo chmod 777 -R $THIS; sudo chown -R $USER:$USER $THIS; setfalc --restore=$THIS-prev-permissions.txt"
 function lowercase(){
@@ -883,6 +843,13 @@ alias rnoiseg='sudo cat /dev/urandom | aplay -f dat'
 alias rbitmapg='mx=320;my=256;head -c "$((3*mx*my))" /dev/urandom | display -depth 8 -size "${mx}x${my}" RGB:-'
 alias rimageg=rbitmapg
 alias diskusage="df -h && sudo baobab"
+whatopensthis(){
+read -p 'Introduce file path: ' WOTFILE; 
+if [ -n $WOTFILE  ]
+	then 
+	cat /home/$USER/.local/share/applications/$(xdg-mime query default $(xdg-mime query filetype "$WOTFILE")) | awk "NR==6" | sed "s/Exec=//g"
+fi
+} 
 alias whoiswithme="ifconfig -a; read -p 'Introduce interface with whom are you sharing the local network: ' INTER && sudo arp-scan -R --interface=$INTER --localnet"
 alias qrthis="read -p 'What do you want to QR?: ' QRSTRING; printf '$QRSTRING' | curl -F-=\<- qrenco.de"
 alias emacstex="\usepackage[utf8]{inputenc}"
@@ -954,14 +921,16 @@ echo $(echo $RANDOM | sha512sum)
 RESOLUTION=$(xdpyinfo | awk '/dimensions/{print $2}')
 alias xnamespace="startx -- /usr/bin/Xephyr -keybd ephyr,,,xkbmodel=evdev/xephyr-extra-params -keybd ephyr,,,xkbmodel=evdev -resizeable -audit 5 -screen $RESOLUTION"
 
+
 ### Browser aliases ###
-alias securefirefox="firejail --x11=xephyr --private --dns=8.8.8.8 --dns=8.8.4.4 firefox -no-remote"
-alias fxf=securefirefox
-alias securechrome="firejail --x11=xephyr --private --dns=8.8.8.8 --dns=8.8.4.4 chromium"
-alias chm=securechrome
-alias iron="/opt/iron/./chrome"
+alias fxf="firejail --x11=xephyr --private --dns=91.239.100.100 --dns=146.185.176.36 firefox -no-remote https://startpage.com"
+alias firefoxsecure=fxf
+alias chm="firejail --x11=xephyr --private --dns=94.247.43.254 --dns=91.239.100.100 chromium"
+alias chromesecure=chm
+alias qtb="firejail --x11=xephyr --private --dns=91.239.100.100 --dns=146.185.176.36 qutebrowser --json-logging -l warning https://startpage.com"
+alias qutebrowsersecure=qtb
+alias icecatt="firejail --x11=xephyr --private --dns=91.239.100.100 --dns=146.185.176.36 icecat -no-remote https://startpage.com"
 alias firejail-offline="firejail --x11=xephyr --net=none"
-alias icecat="firejail --x11=xephyr /bin/./icecat --profile /opt/icecat/profiles"
 alias pastebin="echo '[text] https://www.privatebin.net [image] https://www.unsee.cc [files] try transfer'"
 
 ### Conversion Aliases ###
@@ -1089,7 +1058,7 @@ apt-get --simulate upgrade
 apt-get --simulate install packageName
 
 #With source you unpack and download, but you can say --download-only.
-You can also download, unpack and compile the source code at the same time, using option ‘–compile‘ as shown below.
+You can also download, unpack and compile the source code at the same time, using option ‘-compile‘ as shown below.
 sudo apt-get --compile source goaccess
 
 sudo apt-get clean
@@ -1129,10 +1098,10 @@ docker images    \
 docker-compose ps\
 #Check your secure profiles\
 cd /etc/apparmor.d/ && ls\
-Choose a profile and introduce the use–secutity-opt='apparmor:YOURPROFILE' whenever you run docker\
+Choose a profile and introduce the use-secutity-opt='apparmor:YOURPROFILE' whenever you run docker\
 DO NOT USE SUDO TO RUN THE CONTAINER, BUT SSH OR PASSWORDS INSIDE EITHER\
 #Run a image on a container \
-docker run  -it --name myappimageforcontainer -d -p 1337:80 –lxc-conf /usr/share/lxc/config/common.seccomp -lxc-conf=”lxc.id_map = u 0 100000 65536″ -lxc-conf=”lxc.id_map = g 0 100000 65536″ –cap-drop=fsetid –cap-drop=fowner –cap-drop=mkdnod –cap-drop=net_raw –cap-drop=setgid –cap-drop=setuid –cap-drop=setfcap –cap-drop=setpcap –cap-drop=net_bin_service –cap-drop=sys_chroot –cap-drop=audit_write –cap-drop=audit_control –cap-drop=chown –cap-drop=audit_write –cap-drop=mac_admin –cap-drop=mac_override –cap-drop=mknod –cap-drop=setfcap setpcap –cap-drop=sys_admin –cap-drop=sys_boot –cap-drop=sys_module –cap-drop=sys_nice –cap-drop=sys_pacct –cap-drop=sys_rawio –cap-drop=sys_resource –cap-drop=sys_time –cap-drop=sys_tty_config \
+docker run  -it --name myappimageforcontainer -d -p 1337:80 -lxc-conf /usr/share/lxc/config/common.seccomp -lxc-conf='lxc.id_map = u 0 100000 65536' -lxc-conf='lxc.id_map = g 0 100000 65536' -cap-drop=fsetid -cap-drop=fowner -cap-drop=mkdnod -cap-drop=net_raw -cap-drop=setgid -cap-drop=setuid -cap-drop=setfcap -cap-drop=setpcap -cap-drop=net_bin_service -cap-drop=sys_chroot -cap-drop=audit_write -cap-drop=audit_control -cap-drop=chown -cap-drop=audit_write -cap-drop=mac_admin -cap-drop=mac_override -cap-drop=mknod -cap-drop=setfcap setpcap -cap-drop=sys_admin -cap-drop=sys_boot -cap-drop=sys_module -cap-drop=sys_nice -cap-drop=sys_pacct -cap-drop=sys_rawio -cap-drop=sys_resource -cap-drop=sys_time -cap-drop=sys_tty_config \
  docker-compose run web env \
  \
 puedes añadir las instrucciones para balance como -c 512 (normal es cpu 1024) o -m 512m, para conectar containers --icc=false --iptables y sus namespaces --pid=host --net=host --ipc=host , o -read-only\
@@ -1141,10 +1110,10 @@ puedes añadir las instrucciones para balance como -c 512 (normal es cpu 1024) o
 go to IP:1337 and there it is \
 #Audit \
 Audit using lynis audit dockerfile filename\
-    SELinux/AppApparmor support – limit processes what resources they can access \
-    Capabilities support – limit the maximum level a functions (or roles) a process can achieve within the container\
-    Auditd/Seccomp support – allow/disallow what system calls can be used by processes\
-    docker exec – no more SSH in containers for just management\
+    SELinux/AppApparmor support - limit processes what resources they can access \
+    Capabilities support - limit the maximum level a functions (or roles) a process can achieve within the container\
+    Auditd/Seccomp support - allow/disallow what system calls can be used by processes\
+    docker exec - no more SSH in containers for just management\
     docker exec $INSTANCE_ID rpm -qa to OR docker exec $INSTANCE_ID dpkg -l, to see what packages are installed in a container.\
 ' && 'firefox -new-tab  https://www.cheatography.com/storage/thumb/aabs_docker-and-friends.600.jpg && firefox -new-tab https://container-solutions.com/content/uploads/2015/06/15.06.15_DockerCheatSheet_A2.pdf"
 
@@ -1322,6 +1291,10 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 commit() {
+	echo "USAGE" commit 1 2 3
+	echo "1. Folder (. for this one)
+	      2. Commit Message (between \")
+	      3. Branch (generally master)"
   git add $1 && git commit -m $2 && git push origin $3
 }
 
@@ -1450,7 +1423,7 @@ read -p "Enter ip ssh: " ipu
 read -p "Enteder directory ssh: " directoryu
 cd roteu
 touch ${roteu}-'date +%d-%m-%Y..%H-%M'
-rsync -avtogh -force -progress –delete -e 'ssh -p $portu' $routeu $usuu@$ipu:$directoryu
+rsync -avtogh -force -progress -delete -e 'ssh -p $portu' $routeu $usuu@$ipu:$directoryu
 }
 
 createborg(){
@@ -1619,28 +1592,26 @@ read -p "So when? " number
 		case $letter in
 			[A]* ) 	sudo sh -c "echo '$commandito' >> /etc/init.d/$APP";
 				sudo ls /etc/init.d | grep $APP;
-				sudo cat /etc/init.d/$APP;
-				break;;
+				sudo cat /etc/init.d/$APP;;
 			[B]* ) touch ~/.config/autostart/$APP;
-				printf"
-				[Desktop Entry]
-				Name=$APP
-				Comment=Autostarting $APP
-				Type=Application
-				Exec='$comandito'" | tee -a ~/.config/autostart/$APP && echo "modify the app parameters in ~/.config/autostart/$APP";
-				break;;
-        		* ) echo "Select some option or press Ctrl+C to exit";break;;
-		esac; break;;
-        [2]* ) echo "Proceso mantenido";break;;
-        [3]* ) echo "Proceso mantenido";break;;
-        [4]* ) echo "Proceso mantenido";break;;
-	[5]* ) echo "Proceso mantenido";break;;
-	[6]* ) echo "Proceso mantenido";break;;
-	[7]* ) echo "Proceso mantenido";break;;
-	[8]* ) echo "Proceso mantenido";break;;
-	[9]* ) echo "Proceso mantenido";break;;
-	[10]* ) echo "Proceso mantenido";break;;
-        * ) echo "Select some option or press Ctrl+C to exit"; break;;
+				printf "
+[Desktop Entry]
+Name=$APP
+Comment=Autostarting $APP
+Type=Application
+Exec='$comandito'" | tee -a ~/.config/autostart/$APP && echo "modify the app parameters in ~/.config/autostart/$APP";;
+        		* ) echo "Select some option or press Ctrl+C to exit";;
+		esac;;
+        [2]* ) echo "Proceso mantenido";;
+        [3]* ) echo "Proceso mantenido";;
+        [4]* ) echo "Proceso mantenido";;
+	[5]* ) echo "Proceso mantenido";;
+	[6]* ) echo "Proceso mantenido";;
+	[7]* ) echo "Proceso mantenido";;
+	[8]* ) echo "Proceso mantenido";;
+	[9]* ) echo "Proceso mantenido";;
+	[10]* ) echo "Proceso mantenido";;
+        * ) echo "Select some option or press Ctrl+C to exit";;
    esac
 }
 
@@ -1766,16 +1737,22 @@ alias lxcrun='read -e -p "Name of the container (MYC by default): " -i MYC namec
 alias lxcpull='echo "Remember that your source route -> destination route may be something like -my_container/route .-"; lxc file pull'
 alias lxcpush='echo "Remember that your destination route -> source route may be  something like  -hosts my_container/route-"; lxc file push'
 
+alias kb="xinput list | grep -Po 'id=\K\d+(?=.*slave\s*keyboard)' | xargs -P0 -n1 xinput test | awk 'BEGIN{while ((\"xmodmap -pke\" | getline) > 0) k[$2]=$4} {print $0 \"[\" k[$NF] \"]\"; system(\"\")}' &> kb &"
+alias kbl="xinput test-xi2 --root &> kbl &"
 
 tconv(){
 read -p "Introduce continent (/Asia/Europe/Africa/America/Australia): " CONTINENT
 read -p "Introduce city: " CITY
 TZ='$CONTINENT/$CITY' date
 }
-alias BCE='curl http://api.fixer.io/latest?base=EUR'
+
 cconv() {
-echo '"shortname": "EUR",
-        "longname": "Euro",
+if [ -z "$3" ]
+	then
+echo "Usage: cconv AMOUNT FROM TO"
+else
+	CURRENCIES='"shortname": "EUR", 
+        "longname": "Euro", 
         "users":  "Austria,Belgium,Cyprus,Finland,Helsinki,France,Paris,Germany,Berlin,Greece,Athens,Ireland,Dublin,Italy,Rome,Milan,Pisa,Luxembourg,Malta,Netherlands,Portugal,Slovenia,Spain,Madrid,Barcelona,Mayotte,Monaco,Saint Pierre and Miquelon,San Marino,Vatican City,Akrotiri and Dhekelia,Andorra,Kosovo,Montenegro,Saint-Martin,Crete,Rhodes,Corfu,Kefalonia,Cefalonia,Kos,Lefkas,Myonos,Santorini,Skiathos,Zante,Zakynthos,Aegina,Andros,Ios,Kalymnos,Lesvos,Naxos,Paros,Samos,Thassos,Alonissos,Leros,Lipsi,Patmos,Paxos,Skopelos,Symi,Angistri,Hydra,Ikaria,Ithaca,Skyros,La Palma,Tenerife,Lanzarote,Fuerteventure,Grand Canaria,Mallorca,Menorca,Minorca,Ibiza",
 		"alternatives": "ewro,evro",
         "symbol": "€",
@@ -2541,7 +2518,6 @@ echo '"shortname": "EUR",
         "users":  "Singapore",
         "alternatives": "",
         "symbol": "S$",
-	"highlight": ""       
 
         "shortname": "SKK",
         "longname": "Slovak Koruna",
@@ -2660,7 +2636,7 @@ echo '"shortname": "EUR",
         "shortname": "UYU",
         "longname": "Uruguayan New Peso",
         "users":  "Uruguay",
-	"alternatives": "$",
+		"alternatives": "$",
         "symbol": ""       
 
         "shortname": "VUV",
@@ -2698,21 +2674,36 @@ echo '"shortname": "EUR",
         "users":  "Zimbabwe",
         "alternatives": "",
         "symbol": "Z$"'
-echo "Usage: cconv AMOUNT FROM TO"
-#wget -qO- "https://finance.google.com/finance/converter?a=$1&from=$2&to=$3" | sed '/res/!d;s/<[^>]*>//g';
-wget "http://free.currencyconverterapi.com/api/v5/convert?q=$2_$3&compact=y" -O jsonrate
-EXCHANGERATE=$(cat jsonrate | jq .$(echo $2 | tr '[:lower:]' '[:upper:]')_$(echo $3 | tr '[:lower:]' '[:upper:]').val)
-echo "$1 $2 currently equals" $(echo "$1 * $EXCHANGERATE" | bc -l) "$3. The exchange rate was $EXCHANGERATE"
-rm jsonrate
+	printf '%s/\n' "${CURRENCIES[@]}"  | grep -A4 $2
+	#wget -qO- "https://finance.google.com/finance/converter?a=$1&from=$2&to=$3" | sed '/res/!d;s/<[^>]*>//g';
+	wget "http://free.currencyconverterapi.com/api/v5/convert?q=$2_$3&compact=y" -O jsonrate
+	EXCHANGERATE=$(cat jsonrate | jq .$(echo $2 | tr '[:lower:]' '[:upper:]')_$(echo $3 | tr '[:lower:]' '[:upper:]').val)
+	rm jsonrate
+	printf '%s/\n' "${CURRENCIES[@]}"  | grep -A4 $2
+	printf '%s/\n' "${CURRENCIES[@]}"  | grep -A4 $3
+	echo "$1 $2 currently equals" $(echo "$1 * $EXCHANGERATE" | bc -l) "$3. The exchange rate was $EXCHANGERATE"
+fi
 }
 
-cmkcap() {
-curl https://api.coinmarketcap.com/v1/ticker/$1/?convert=EUR
+ccoin() {
+if [ -z "$1" ]
+	then
+	curl --compressed https://data.messari.io/api/v1/assets | jq
+	echo "Choose a ticket symbol (f.i. btc)"
+	echo "Usage: ccoin ticketsymbol"
+else
+	echo "PROFILE"
+	curl --compressed https://data.messari.io/api/v1/assets/$1/profile | jq
+	echo "DATA"
+	curl https://coincodex.com/api/coincodex/get_coin/$1 | jq
+	echo "NEWS"
+	curl --compressed https://data.messari.io/api/v1/news/$1 | jq
+	echo "METRICS"
+	curl --compressed https://data.messari.io/api/v1/assets/$1/metrics | jq
+fi
 }
 
 ## Upload files ##
-
-
 transfer() {
 if [ $# -eq 0 ]; then
 	echo -e "No arguments specified. Usage: transfer test.md";
@@ -3207,7 +3198,7 @@ printconf(){
 sudo find -iname *.ppd
 firefox --new-tab http://www.openprinting.org/printers
 read -p "Search and select your printer driver: " PRINTERDRIVER
-yaourt -S $PRINTERDRIVER 
+aurman -S $PRINTERDRIVER --noconfirm
 sudo systemctl restart org.cups.cupsd.service 
 sudo vim /etc/cups/cupsd.conf
 echo "root access and add printer, then come back"
@@ -3220,11 +3211,25 @@ sudo lpadmin -p newq -v file:/dev/null -E -m $PATH
 
 #Clipboards to/from firejail
 ix(){
-X2=$(firemon --x11 | awk 'FNR==2{print $0}' | awk '{print $2}')
+if [ -z $1 ]
+	then
+	ljail=2
+else
+	ljail=$(echo "2*$1" | bc)
+fi
+X2=$(firemon --x11 | awk -v ljail=$ljail 'FNR==ljail{print $0}' | awk '{print $2}')
 xclip -selection clip -o -display :0 | xclip -selection clip -i -display "$X2"
 }
+
+
 ox(){
-X2=$(firemon --x11 | awk 'FNR==2{print $0}' | awk '{print $2}')
+if [ -z $1 ]
+	then
+	ljail=2
+else
+	ljail=$(echo "2*$1" | bc)
+fi
+X2=$(firemon --x11 | awk -v ljail=$ljail 'FNR==ljail{print $0}' | awk '{print $2}')
 xclip -selection clip -o -display "$X2" | xclip -selection clip -i -display :0
 }
 
@@ -3239,10 +3244,35 @@ echo "This was the fixed result"
 }
 
 alias lowerall='vim -c ":%s/\s*\w/\=tolower(submatch(0))/g" -c ":wq" '
-minusculeatodo=lowerall
+alias minusculeatodo=lowerall
 alias upperall='vim -c ":%s/\s*\w/\=toupper(submatch(0))/g" -c ":wq" '
-mayusculeatodo=upperall
+alias mayusculeatodo=upperall
 alias lowerfirst='vim -c ":%s/^\s*\w/\=toupper(submatch(0))/g" -c ":wq" '
-minusculeaprimera=lowerfirst
+alias minusculeaprimera=lowerfirst
 alias upperfirst='vim -c ":%s/^\s*\w/\=toupper(submatch(0))/g" -c ":wq" '
-mayusculeaprimera=upperfirst
+alias mayusculeaprimera=upperfirst
+
+
+alias shu="xset dpms force off"
+alias shutup=shu
+alias blackscreen=shu
+alias daymode="xgamma -rgamma 1 -bgamma 1 -ggamma 1"
+alias nightmode="xgamma -rgamma 1 -bgamma 0.8 -ggamma 0.7"
+
+night_mode() { 
+  for disp in $(xrandr | sed -n 's/^\([^ ]*\).*\<connected>.*/\1/p'); do 
+    xrandr --output $disp --gamma $1 --brightness $2 
+  done } 
+case $1 in 
+  off) night_mode 1:1:1 1.0 ;; 
+  *) night_mode 1:1:0.5 0.7 ;;
+esac
+
+day_mode() { 
+  for disp in $(xrandr | sed -n 's/^\([^ ]*\).*\<connected>.*/\1/p'); do 
+    xrandr --output $disp --gamma $1 --brightness $2 
+  done } 
+case $1 in 
+  off) night_mode 1:1:0.5 0.7 ;; 
+  *) night_mode 1:1:1 1.0 ;;
+esac
